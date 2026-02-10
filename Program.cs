@@ -1,3 +1,5 @@
+using MediClinic.Models;
+using Microsoft.EntityFrameworkCore;
 namespace MediClinic
 {
     public class Program
@@ -8,6 +10,10 @@ namespace MediClinic
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<MediClinicDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             var app = builder.Build();
 
