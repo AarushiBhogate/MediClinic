@@ -1,0 +1,73 @@
+﻿@model List<MediClinic.Models.MyScheduleVM>
+
+@{
+    ViewData["Title"] = "My Schedule";
+}
+
+<div class="phys-container">
+
+    <h2 class="phys-title">My Schedule</h2>
+    <p class="phys-subtitle">Your upcoming and completed appointments</p>
+
+    <div class="phys-card">
+
+        <div class="phys-table-wrap">
+            <table class="table phys-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Criticality</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ScheduleDate</td>
+                                <td>@item.ScheduleTime</td>
+                                <td>@item.PatientName</td>
+                                <td>@item.Criticality</td>
+                                <td>@item.Reason</td>
+
+                                <td>
+                                    @if (item.ScheduleStatus == "Confirmed")
+                                    {
+                                        <span class="badge-soft badge-confirmed">Confirmed</span>
+                                    }
+                                    else if (item.ScheduleStatus == "Completed")
+                                    {
+                                        <span class="badge-soft badge-completed">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-soft badge-pending">@item.ScheduleStatus</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No schedules found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <a class="btn btn-outline-teal" href="/Physician/Dashboard">Back</a>
+        </div>
+
+    </div>
+</div>
