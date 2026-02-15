@@ -1,6 +1,5 @@
 ﻿using MediClinic.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace MediClinic.Controllers
 {
@@ -13,47 +12,43 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
-        // -------- REGISTER (GET) --------
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // -------- REGISTER (POST) --------
-        [HttpPost]
-        public IActionResult Register(User user)
-        {
-            user.Status = "Active";
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return RedirectToAction("Login");
-        }
-
-        // -------- LOGIN (GET) --------
-        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // -------- LOGIN (POST) --------
         [HttpPost]
-        public IActionResult Login(User user)
+        public IActionResult Login(string username, string password)
         {
-            var result = _context.Users.FirstOrDefault(x =>
-                x.UserName == user.UserName &&
-                x.Password == user.Password &&
-                x.Status == "Active");
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserName == username && u.Password == password);
 
-            if (result != null)
+            if (user == null)
             {
-                return RedirectToAction("Index", "Home");
+                ViewBag.Error = "Invalid login";
+                return View();
             }
 
-            ViewBag.Error = "Invalid Username or Password";
-            return View();
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            if (user.Role == "Patient")
+            {
+                if (user.RoleReferenceId != null)
+                    HttpContext.Session.SetInt32("PatientId", user.RoleReferenceId.Value);
+
+                return Redirect("/Patients/Dashboard");
+            }
+
+            return Redirect("/Home/Index");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }
+
+

@@ -1,0 +1,30 @@
+﻿@model MediClinic.Models.Appointment
+
+<h2>Book Appointment</h2>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Date & Time</label>
+        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Reason</label>
+        <input asp-for="Reason" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Criticality</label>
+        <select asp-for="Criticality" class="form-select">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Book
+    </button>
+
+</form>
