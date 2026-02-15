@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "View Advice";
+    var schedule = ViewBag.Schedule as MediClinic.Models.Schedule;
+    var advice = ViewBag.Advice as MediClinic.Models.PhysicianAdvice;
+}
+
+<div class="phys-container">
+
+    <h2 class="phys-title">Advice Details</h2>
+    <p class="phys-subtitle">View doctor advice for this appointment</p>
+
+    <div class="phys-card">
+
+        <div class="phys-info mb-3">
+            <div><b>Patient:</b> @schedule?.Appointment?.Patient?.PatientName</div>
+            <div><b>Date:</b> @schedule?.ScheduleDate</div>
+            <div><b>Time:</b> @schedule?.ScheduleTime</div>
+            <div><b>Reason:</b> @schedule?.Appointment?.Reason</div>
+        </div>
+
+        <hr />
+
+        <div class="mb-3">
+            <label class="fw-bold">Advice</label>
+            <div class="mt-2">@advice?.Advice</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="fw-bold">Doctor Note</label>
+            <div class="mt-2">@advice?.Note</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-teal" href="/PhysicianAdvice/EditAdvice?scheduleId=@schedule?.ScheduleId">
+                Edit Advice
+            </a>
+
+            <a class="btn btn-outline-teal" href="/PhysicianAdvice/Index">
+                Back
+            </a>
+        </div>
+
+    </div>
+</div>

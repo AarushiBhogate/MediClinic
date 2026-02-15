@@ -1,3 +1,55 @@
+﻿//using MediClinic.Models;
+//using Microsoft.EntityFrameworkCore;
+//namespace MediClinic
+//{
+//    public class Program
+//    {
+//        public static void Main(string[] args)
+//        {
+
+//            var builder = WebApplication.CreateBuilder(args);
+
+//            // Add services to the container.
+//            builder.Services.AddControllersWithViews();
+
+//            builder.Services.AddDbContext<MediClinicDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+//            var app = builder.Build();
+
+//            // Configure the HTTP request pipeline.
+//            if (!app.Environment.IsDevelopment())
+//            {
+//                app.UseExceptionHandler("/Home/Error");
+//            }
+//            //app.UseRouting();
+
+//            //app.UseAuthorization();
+
+//            //app.MapStaticAssets();
+//            //app.MapControllerRoute(
+//            //    name: "default",
+//            //    pattern: "{controller=Home}/{action=Index}/{id?}")
+//            //    .WithStaticAssets();
+//            app.UseStaticFiles();
+
+//            app.UseRouting();
+
+//            app.UseSession();
+
+//            app.UseAuthorization();
+
+//            app.MapControllerRoute(
+//                name: "default",
+//                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+//            app.Run();
+//        }
+//    }
+//}
+
 using MediClinic.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,30 +63,36 @@ namespace MediClinic
 
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddDistributedMemoryCache();
-
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-
+            // DB Connection
             builder.Services.AddDbContext<MediClinicDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
+
+            // ✅ SESSION CONFIG (Required)
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
-            app.UseHttpsRedirection();
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
             app.UseStaticFiles();
+
             app.UseRouting();
+
+            // ✅ Enable Session
             app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=User}/{action=Login}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

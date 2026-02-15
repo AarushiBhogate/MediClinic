@@ -1,0 +1,64 @@
+﻿/*body {
+    background: #f4f7fb;
+}*/
+
+/* Top Header */
+/*.physician-header {
+    background: white;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    margin-bottom: 25px;
+}*/
+
+/* Card Styling */
+/*.physician-card {
+    border-radius: 18px;
+    border: 1px solid #eef2f7;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    padding: 22px;
+    height: 200px;*/ /* Bigger cards */
+    /*display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.25s ease;
+}
+
+    .physician-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }*/
+
+/* Icon circle */
+/*.physician-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: #e8f0ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #0d6efd;
+}*/
+
+/* Primary Button (same everywhere) */
+/*.btn-physician {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+    .btn-physician:hover {
+        background: #0b5ed7;
+        color: white;
+    }*/
+
+/* Small text */
+/*.small-muted {
+    font-size: 0.92rem;
+    color: #6c757d;
+}*/
