@@ -1,13 +1,14 @@
-﻿@model List<MediClinic.Models.PhysicianPrescrip>
+﻿@model List<MediClinic.Models.PhysicianAdvice>
 
 <h2>My Prescriptions</h2>
 
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Drug</th>
-            <th>Dosage</th>
+            <th>Date</th>
+            <th>Doctor</th>
+            <th>Specialization</th>
+            <th>Reason</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -16,19 +17,18 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.PrescriptionId</td>
-                <td>@item.DrugId</td>
-                <td>@item.Dosage</td>
+                <td>@item.Schedule?.Appointment?.AppointmentDate?.ToString("dd MMM yyyy")</td>
+                <td>@item.Schedule?.Physician?.PhysicianName</td>
+                <td>@item.Schedule?.Physician?.Specialization</td>
+                <td>@item.Schedule?.Appointment?.Reason</td>
                 <td>
-                    <a asp-action="RequestMedicine"
-                       asp-route-id="@item.PrescriptionId"
-                       class="btn btn-warning btn-sm">
-                        Request Medicine
+                    <a asp-action="Details"
+                       asp-route-id="@item.PhysicianAdviceId"
+                       class="btn btn-sm btn-primary">
+                        View
                     </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-
