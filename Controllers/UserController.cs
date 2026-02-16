@@ -1,6 +1,6 @@
 ﻿using MediClinic.Models;
-using MediClinic.Models.ModelViews;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace MediClinic.Controllers
 {
@@ -13,48 +13,45 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Register(RegisterVM vm)
-        {
-            user.Status = "Active";
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return RedirectToAction("Login");
-        }
-
-        // -------- LOGIN (GET) --------
+        // ================= LOGIN GET =================
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // -------- LOGIN (POST) --------
+        // ================= LOGIN POST =================
         [HttpPost]
-        public IActionResult Login(User user)
+        public IActionResult Login(string username, string password)
         {
-            var result = _context.Users.FirstOrDefault(x =>
-                x.UserName == user.UserName &&
-                x.Password == user.Password &&
-                x.Status == "Active");
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserName == username && u.Password == password);
 
-            if (result != null)
+            if (user == null)
             {
-                return RedirectToAction("Index", "Home");
+                ViewBag.Error = "Invalid username or password";
+                return View();
             }
 
+            // Store session
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            if (user.Role == "Patient")
+            {
+                HttpContext.Session.SetInt32("PatientId", user.RoleReferenceId ?? 0);
+                return RedirectToAction("Dashboard", "Patients");
+            }
+
+            return RedirectToAction("Login");
+        }
+
+        // ================= LOGOUT =================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
-
     }
 }
 
