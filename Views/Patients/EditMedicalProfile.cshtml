@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model MediClinic.Models.PatientMedicalProfile
+
+<h2>Edit Medical Profile</h2>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Allergies</label>
+        <input asp-for="MedicalAllergies" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Chronic Diseases</label>
+        <input asp-for="MedicalChronicDiseases" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Past Illness</label>
+        <input asp-for="MedicalPastIllness" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Notes</label>
+        <textarea asp-for="MedicalNotes" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
