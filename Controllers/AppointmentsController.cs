@@ -57,11 +57,12 @@ namespace MediClinic.Controllers
 
             if (appointment != null &&
                 appointment.ScheduleStatus == "Scheduled" &&
-                appointment.AppointmentDate > DateTime.Now)
+    appointment.AppointmentDate > DateTime.Now)
             {
                 appointment.ScheduleStatus = "Cancelled";
                 _context.SaveChanges();
             }
+
 
             return RedirectToAction("Index");
         }

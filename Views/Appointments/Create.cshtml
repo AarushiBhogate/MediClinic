@@ -1,5 +1,7 @@
 ﻿@model MediClinic.Models.Appointment
-
+@{
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+}
 <h2>Book Appointment</h2>
 
 <form method="post">
@@ -22,6 +24,17 @@
             <option>High</option>
         </select>
     </div>
+
+    <div class="mb-3">
+    <label>Required Specialization</label>
+    <select asp-for="RequiredSpecialization" class="form-select" required>
+        <option value="">-- Select Specialization --</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Orthopedics">Orthopedics</option>
+    </select>
+</div>
 
     <button type="submit" class="btn btn-primary">
         Book
