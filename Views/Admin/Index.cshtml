@@ -1,0 +1,250 @@
+﻿@model List<MediClinic.Models.Patient>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Welcome Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-info text-white shadow">
+            <div class="card-body text-center">
+                <h2 class="mb-1">
+                    <i class="fas fa-user-shield"></i> Welcome to Admin Portal!!
+                </h2>
+                <small>Manage your MediClinic system efficiently</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Boxes -->
+<div class="row">
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.TotalPhysicians</h3>
+                <p>Physicians</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-user-md"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.TotalPatients</h3>
+                <p>Patients</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-procedures"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.TotalSuppliers</h3>
+                <p>Suppliers</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-truck"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3>@ViewBag.ChemistCount</h3>
+                <p>Chemists</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-pills"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-indigo">
+            <div class="inner">
+                <h3>@ViewBag.DrugCount</h3>
+                <p>Drugs</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-capsules"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.ScheduleCount</h3>
+                <p>Schedules</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.PhysicianAdviceCount</h3>
+                <p>Physician Advice</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-notes-medical"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.PrescriptionCount</h3>
+                <p>Prescriptions</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-prescription-bottle-alt"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@ViewBag.DrugRequestCount</h3>
+                <p>Drug Requests</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-file-medical"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-dark">
+            <div class="inner">
+                <h3>@ViewBag.PurchaseOrderCount</h3>
+                <p>Purchase Orders</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-secondary">
+            <div class="inner">
+                <h3>@ViewBag.PurchaseProductLineCount</h3>
+                <p>Purchase Product Lines</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.PendingPatientCount</h3>
+                <p>Pending Patients</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@ViewBag.TotalAppointments</h3>
+                <p>Appointments</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* <!-- ================= Pending Patients Section ================= -->
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-clock"></i>
+                    Pending Patients (@ViewBag.PendingCount)
+                </h4>
+            </div>
+
+            <div class="card-body">
+
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="alert alert-success">
+                        No Pending Patients Available
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th style="width:200px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in Model)
+                            {
+                                <tr>
+                                    <td>@patient.PatientName</td>
+                                    <td>@patient.Email</td>
+                                    <td>@patient.Phone</td>
+                                    <td>
+                                        <span class="badge bg-warning">
+                                            @patient.PatientStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="ApprovePatient"
+                                           asp-route-id="@patient.PatientId"
+                                           class="btn btn-success btn-sm">
+                                            Approve
+                                        </a>
+
+                                        <a asp-action="DenyPatient"
+                                           asp-route-id="@patient.PatientId"
+                                           class="btn btn-danger btn-sm">
+                                            Deny
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                } *@
+
+            </div>
+        </div>
+    </div>
+</div>

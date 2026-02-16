@@ -1,0 +1,61 @@
+﻿@model IEnumerable<MediClinic.Models.PhysicianPrescrip>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Physician Prescription";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h3>Physician Prescription List</h3>
+
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Prescription
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Advice ID</th>
+                    <th>Drug</th>
+                    <th>Prescription</th>
+                    <th>Dosage</th>
+                    <th width="220px">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PhysicianAdviceId</td>
+                        <td>@item.Drug?.DrugTitle</td>
+                        <td>@item.Prescription</td>
+                        <td>@item.Dosage</td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.PrescriptionId"
+                               class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.PrescriptionId"
+                               class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.PrescriptionId"
+                               class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

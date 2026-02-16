@@ -1,0 +1,69 @@
+﻿@model IEnumerable<MediClinic.Models.PurchaseProductLine>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Purchase Product Lines";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">Purchase Product Line List</h3>
+
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Product Line
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>PO Number</th>
+                    <th>Sl No</th>
+                    <th>Drug</th>
+                    <th>Qty</th>
+                    <th>Note</th>
+                    <th width="220px">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        
+                        <td>@item.Po?.Pono</td>
+
+                        <td>@item.SlNo</td>
+
+                        <td>@item.Drug?.DrugTitle</td>
+
+                        <td>@item.Qty</td>
+
+                        <td>@item.Note</td>
+
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.PolineId"
+                               class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.PolineId"
+                               class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.PolineId"
+                               class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
