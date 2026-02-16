@@ -24,13 +24,13 @@ namespace MediClinic.Controllers
             ViewBag.TotalPatients = _context.Patients.Count();
             ViewBag.TotalSuppliers = _context.Suppliers.Count();
             ViewBag.ChemistCount = _context.Chemists.Count();
-            ViewBag.DrugCount = _context.Drugs.Count();
+           
             ViewBag.ScheduleCount = _context.Schedules.Count();
-            ViewBag.PhysicianAdviceCount = _context.PhysicianAdvices.Count();
-            ViewBag.PrescriptionCount = _context.PhysicianPrescrips.Count();
-            ViewBag.DrugRequestCount = _context.DrugRequests.Count();
-            ViewBag.PurchaseOrderCount = _context.PurchaseOrderHeaders.Count();
-            ViewBag.PurchaseProductLineCount = _context.PurchaseProductLines.Count();
+            
+            
+           
+            
+            
             ViewBag.TotalAppointments = _context.Appointments.Count();
             ViewBag.TotalUsers = _context.Users.Count();
 
