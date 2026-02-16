@@ -39,7 +39,7 @@ namespace MediClinic.Controllers
         {
             int? patientId = HttpContext.Session.GetInt32("PatientId");
             appointment.PatientId = patientId;
-            appointment.ScheduleStatus = "Scheduled";
+            appointment.ScheduleStatus = "Pending";
 
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
@@ -56,12 +56,13 @@ namespace MediClinic.Controllers
                                      a.PatientId == patientId);
 
             if (appointment != null &&
-                appointment.ScheduleStatus == "Scheduled" &&
-                appointment.AppointmentDate > DateTime.Now)
+   (appointment.ScheduleStatus == "Pending" || appointment.ScheduleStatus == "Scheduled") &&
+    appointment.AppointmentDate > DateTime.Now)
             {
                 appointment.ScheduleStatus = "Cancelled";
                 _context.SaveChanges();
             }
+
 
             return RedirectToAction("Index");
         }

@@ -8,7 +8,8 @@ namespace MediClinic.Controllers
         {
             get
             {
-                return HttpContext.Session.GetInt32("PatientId");
+                return HttpContext.Session.GetInt32("RoleReferenceID");
+
             }
         }
 
