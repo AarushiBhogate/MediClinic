@@ -13,21 +13,26 @@ namespace MediClinic.Controllers
         {
             _context = context;
         }
-        
 
-        public IActionResult Index()
+
+        public IActionResult Index(string status)
         {
-            var check = RequireLogin();
-            if (check != null) return check;
-
             int? patientId = HttpContext.Session.GetInt32("PatientId");
-            var appointments = _context.Appointments
-                .Where(a => a.PatientId == patientId)
-                .OrderByDescending(a => a.AppointmentDate)
-                .ToList();
+            if (patientId == null)
+                return RedirectToAction("Login", "User");
 
-            return View(appointments);
+            var appointments = _context.Appointments
+                .Where(a => a.PatientId == patientId);
+
+            // Apply status filter
+            if (!string.IsNullOrEmpty(status))
+            {
+                appointments = appointments.Where(a => a.ScheduleStatus == status);
+            }
+
+            return View(appointments.ToList());
         }
+
 
         public IActionResult Create()
         {
@@ -38,14 +43,18 @@ namespace MediClinic.Controllers
         public IActionResult Create(Appointment appointment)
         {
             int? patientId = HttpContext.Session.GetInt32("PatientId");
+            if (patientId == null)
+                return RedirectToAction("Login", "User");
+
             appointment.PatientId = patientId;
-            appointment.ScheduleStatus = "Scheduled";
+            appointment.ScheduleStatus = "Pending";   // 🔥 MUST BE PENDING
 
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
+
 
         public IActionResult Cancel(int id)
         {
@@ -56,7 +65,7 @@ namespace MediClinic.Controllers
                                      a.PatientId == patientId);
 
             if (appointment != null &&
-                appointment.ScheduleStatus == "Scheduled" &&
+   (appointment.ScheduleStatus == "Pending" || appointment.ScheduleStatus == "Scheduled") &&
     appointment.AppointmentDate > DateTime.Now)
             {
                 appointment.ScheduleStatus = "Cancelled";

@@ -14,27 +14,30 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
-        // -------- REGISTER (GET) --------
+        // ==============================
+        // REGISTER (GET)
+        // ==============================
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // -------- REGISTER (POST) --------
+        // ==============================
+        // REGISTER (POST)
+        // ==============================
         [HttpPost]
         public IActionResult Register(RegisterVM vm)
-
         {
-            // 1) Role validation
             if (vm.Role != "Patient" && vm.Role != "Physician")
             {
-                ViewBag.Error = "Only Patient and Physician registration is allowed.";
+                ViewBag.Error = "Only Patient and Physician registration allowed.";
                 return View(vm);
             }
 
-            // 2) Username check
-            var existingUser = _context.Users.FirstOrDefault(x => x.UserName == vm.UserName);
+            var existingUser = _context.Users
+                .FirstOrDefault(x => x.UserName == vm.UserName);
+
             if (existingUser != null)
             {
                 ViewBag.Error = "Username already exists.";
@@ -43,18 +46,19 @@ namespace MediClinic.Controllers
 
             int roleReferenceId = 0;
 
-            // 3) Insert into Patient / Physician table first
             if (vm.Role == "Patient")
             {
-                Patient p = new Patient();
-                p.PatientName = vm.FullName;
-                p.Dob = vm.DOB;
-                p.Gender = vm.Gender;
-                p.Address = vm.Address;
-                p.Phone = vm.Phone;
-                p.Email = vm.Email;
-                p.Summary = "Registered from website";
-                p.PatientStatus = "Active";
+                Patient p = new Patient
+                {
+                    PatientName = vm.FullName,
+                    Dob = vm.DOB,
+                    Gender = vm.Gender,
+                    Address = vm.Address,
+                    Phone = vm.Phone,
+                    Email = vm.Email,
+                    Summary = "Registered from website",
+                    PatientStatus = "Active"
+                };
 
                 _context.Patients.Add(p);
                 _context.SaveChanges();
@@ -63,14 +67,16 @@ namespace MediClinic.Controllers
             }
             else if (vm.Role == "Physician")
             {
-                Physician d = new Physician();
-                d.PhysicianName = vm.FullName;
-                d.Specialization = vm.Specialization;
-                d.Address = vm.Address;
-                d.Phone = vm.Phone;
-                d.Email = vm.Email;
-                d.Summary = vm.Summary;
-                d.PhysicianStatus = "Active";
+                Physician d = new Physician
+                {
+                    PhysicianName = vm.FullName,
+                    Specialization = vm.Specialization,
+                    Address = vm.Address,
+                    Phone = vm.Phone,
+                    Email = vm.Email,
+                    Summary = vm.Summary,
+                    PhysicianStatus = "Active"
+                };
 
                 _context.Physicians.Add(d);
                 _context.SaveChanges();
@@ -78,13 +84,14 @@ namespace MediClinic.Controllers
                 roleReferenceId = d.PhysicianId;
             }
 
-            // 4) Insert into Users table
-            User u = new User();
-            u.UserName = vm.UserName;
-            u.Password = vm.Password; // (later hashing karna)
-            u.Role = vm.Role;
-            u.RoleReferenceId = roleReferenceId;
-            u.Status = "Active";
+            User u = new User
+            {
+                UserName = vm.UserName,
+                Password = vm.Password, // demo only
+                Role = vm.Role,
+                RoleReferenceId = roleReferenceId,
+                Status = "Active"
+            };
 
             _context.Users.Add(u);
             _context.SaveChanges();
@@ -92,79 +99,116 @@ namespace MediClinic.Controllers
             return RedirectToAction("Login");
         }
 
-
-        // -------- LOGIN (GET) --------
+        // ==============================
+        // LOGIN (GET)
+        // ==============================
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // -------- LOGIN (POST) --------
+        // ==============================
+        // LOGIN (POST)
+        // ==============================
         [HttpPost]
-        //public IActionResult Login(User user)
-        //{
-        //    var result = _context.Users.FirstOrDefault(x =>
-        //        x.UserName == user.UserName &&
-        //        x.Password == user.Password &&
-        //        x.Status == "Active");
-
-        //    if (result != null)
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    ViewBag.Error = "Invalid Username or Password";
-        //    return View();
-        //}
-        [HttpPost]
-        public IActionResult Login(User user)
+        public IActionResult Login(string UserName, string Password)
         {
             var result = _context.Users.FirstOrDefault(x =>
-                x.UserName == user.UserName &&
-                x.Password == user.Password &&
+                x.UserName == UserName &&
+                x.Password == Password &&
                 x.Status == "Active");
 
-            if (result != null)
+            if (result == null)
             {
-                // Store session
-                HttpContext.Session.SetInt32("UserID", result.UserId);
-                HttpContext.Session.SetString("UserName", result.UserName);
-                HttpContext.Session.SetString("Role", result.Role);
-
-                if (result.RoleReferenceId != null)
-                    HttpContext.Session.SetInt32("RoleReferenceID", result.RoleReferenceId.Value);
-
-                // Redirect based on role
-                if (result.Role == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-
-                if (result.Role == "Physician")
-                {
-                    HttpContext.Session.SetInt32("PhysicianId", result.RoleReferenceId.Value);
-                    return RedirectToAction("Dashboard", "Physician");
-                }
-
-
-                if (result.Role == "Patient")
-                {
-                    HttpContext.Session.SetInt32("PatientId", result.RoleReferenceId.Value);
-                    return RedirectToAction("Dashboard", "Patients");
-                }
-
-                if (result.Role == "Supplier")
-                    return RedirectToAction("Dashboard", "Supplier");
-
-                if (result.Role == "Chemist")
-                    return RedirectToAction("Dashboard", "Chemist");
-
-                // fallback
-                return RedirectToAction("Index", "Home");
+                ViewBag.Error = "Invalid Username or Password";
+                return View();
             }
 
-            ViewBag.Error = "Invalid Username or Password";
+            // Store Session (IMPORTANT: consistent naming)
+            HttpContext.Session.SetInt32("UserId", result.UserId);
+            HttpContext.Session.SetString("UserName", result.UserName);
+            HttpContext.Session.SetString("Role", result.Role);
+
+            if (result.RoleReferenceId != null)
+                HttpContext.Session.SetInt32("RoleReferenceID", result.RoleReferenceId.Value);
+
+            // Role-based redirect
+            if (result.Role == "Patient")
+            {
+                HttpContext.Session.SetInt32("PatientId", result.RoleReferenceId.Value);
+                return RedirectToAction("Dashboard", "Patients");
+            }
+
+            if (result.Role == "Physician")
+            {
+                HttpContext.Session.SetInt32("PhysicianId", result.RoleReferenceId.Value);
+                return RedirectToAction("Dashboard", "Physician");
+            }
+
+            if (result.Role == "Admin")
+                return RedirectToAction("Dashboard", "Admin");
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ==============================
+        // CHANGE PASSWORD (GET)
+        // ==============================
+        public IActionResult ChangePassword()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+                return RedirectToAction("Login");
+
             return View();
         }
 
+        // ==============================
+        // CHANGE PASSWORD (POST)
+        // ==============================
+        [HttpPost]
+        public IActionResult ChangePassword(string currentPassword,
+                                            string newPassword,
+                                            string confirmPassword)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+                return RedirectToAction("Login");
+
+            if (user.Password != currentPassword)
+            {
+                ViewBag.Error = "Current password is incorrect.";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "New password and confirm password do not match.";
+                return View();
+            }
+
+            user.Password = newPassword;
+            _context.SaveChanges();
+
+            ViewBag.Success = "Password changed successfully.";
+            return View();
+        }
+
+        // ==============================
+        // LOGOUT
+        // ==============================
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
     }
 }
