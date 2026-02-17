@@ -18,44 +18,41 @@ namespace MediClinic.Controllers
             var check = RequireLogin();
             if (check != null) return check;
 
-            var list = _context.PhysicianAdvices
-                .Include(a => a.Schedule)
-                    .ThenInclude(s => s.Physician)
-                .Include(a => a.Schedule)
-                    .ThenInclude(s => s.Appointment)
-                .Where(a => a.Schedule.Appointment.PatientId == PatientId)
-                .OrderByDescending(a => a.PhysicianAdviceId)
+            int? patientId = HttpContext.Session.GetInt32("PatientId");
+
+            var prescriptions = _context.PhysicianPrescrips
+                .Include(p => p.PhysicianAdvice)
+                .ThenInclude(pa => pa.Schedule)
+                .ThenInclude(s => s.Appointment)
+                .Where(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == patientId)
                 .ToList();
 
-            return View(list);
+            return View(prescriptions);
         }
 
-        public IActionResult Details(int id)
+        public IActionResult RequestMedicine(int id)
         {
-            var check = RequireLogin();
-            if (check != null) return check;
+            var request = new DrugRequest
+            {
+                PhysicianId = 1,
+                DrugsInfoText = "Requested from Prescription ID: " + id,
+                RequestDate = DateTime.Now,
+                RequestStatus = "Pending"
+            };
 
-            var advice = _context.PhysicianAdvices
-                .Include(a => a.Schedule)
-                    .ThenInclude(s => s.Physician)
-                .Include(a => a.Schedule)
-                    .ThenInclude(s => s.Appointment)
-                .FirstOrDefault(a => a.PhysicianAdviceId == id);
+            _context.DrugRequests.Add(request);
+            _context.SaveChanges();
 
-            if (advice == null) return NotFound();
-
-            // security: patient should only see their own advice
-            if (advice.Schedule.Appointment.PatientId != PatientId)
-                return RedirectToAction("AccessDenied", "User");
-
-            var medicines = _context.PhysicianPrescrips
-                .Include(p => p.Drug)
-                .Where(p => p.PhysicianAdviceId == id)
-                .ToList();
-
-            ViewBag.Medicines = medicines;
-
-            return View(advice);
+            return RedirectToAction("Index", "DrugRequests");
         }
     }
 }
+
+
+
+
+
+
+
+
+

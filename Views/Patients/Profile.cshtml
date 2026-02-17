@@ -23,18 +23,6 @@
     </tr>
 </table>
 
-<hr />
-
-<h4>Medical Profile</h4>
-
-<p><strong>Allergies:</strong> @(Model.PatientMedicalProfile?.MedicalAllergies ?? "Not Provided")</p>
-<p><strong>Chronic Diseases:</strong> @(Model.PatientMedicalProfile?.MedicalChronicDiseases ?? "Not Provided")</p>
-<p><strong>Past Illness:</strong> @(Model.PatientMedicalProfile?.MedicalPastIllness ?? "Not Provided")</p>
-<p><strong>Notes:</strong> @(Model.PatientMedicalProfile?.MedicalNotes ?? "Not Provided")</p>
-
-<a asp-action="EditProfile" class="btn btn-warning">Edit Profile</a>
-<a asp-action="EditMedicalProfile" class="btn btn-primary">Edit Medical Profile</a>
-
 <a asp-action="EditProfile" class="btn btn-warning">
     Edit Profile
 </a>

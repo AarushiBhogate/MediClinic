@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 
 namespace MediClinic.Models
 {
@@ -17,8 +15,6 @@ namespace MediClinic.Models
         public string? MedicalChronicDiseases { get; set; }
         public string? MedicalNotes { get; set; }
 
-        [ForeignKey("PatientId")]
         public virtual Patient? Patient { get; set; }
     }
-
 }
