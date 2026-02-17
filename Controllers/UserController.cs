@@ -1,4 +1,5 @@
 ﻿using MediClinic.Models;
+using MediClinic.Models.ModelViews;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -22,7 +23,8 @@ namespace MediClinic.Controllers
 
         // -------- REGISTER (POST) --------
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public IActionResult Register(RegisterVM vm)
+
         {
             // 1) Role validation
             if (vm.Role != "Patient" && vm.Role != "Physician")
