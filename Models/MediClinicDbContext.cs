@@ -378,8 +378,9 @@ public partial class MediClinicDbContext : DbContext
             entity.Property(e => e.MedicalNotes).HasMaxLength(1000);
 
             entity.HasOne(d => d.Patient)
-                  .WithOne()
-                  .HasForeignKey<PatientMedicalProfile>(d => d.PatientId);
+      .WithOne(p => p.PatientMedicalProfile)
+      .HasForeignKey<PatientMedicalProfile>(d => d.PatientId);
+
         });
 
 
