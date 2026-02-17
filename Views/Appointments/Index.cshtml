@@ -42,32 +42,39 @@
     </div>
 
 </form>
-<div class="mb-3">
+<<div class="mb-3">
 
     <a asp-action="Index"
-       class="btn btn-outline-dark btn-sm">
+       class="btn btn-outline-dark">
         All
     </a>
 
     <a asp-action="Index"
        asp-route-status="Scheduled"
-       class="btn btn-outline-primary btn-sm">
+       class="btn btn-outline-primary">
         Scheduled
     </a>
 
     <a asp-action="Index"
-       asp-route-status="Completed"
-       class="btn btn-outline-success btn-sm">
-        Completed
+       asp-route-status="Pending"
+       class="btn btn-outline-warning">
+        Pending
     </a>
 
     <a asp-action="Index"
        asp-route-status="Cancelled"
-       class="btn btn-outline-danger btn-sm">
+       class="btn btn-outline-danger">
         Cancelled
     </a>
 
+    <a asp-action="Index"
+       asp-route-status="Completed"
+       class="btn btn-outline-success">
+        Completed
+    </a>
+
 </div>
+
 
 
 

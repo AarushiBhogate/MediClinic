@@ -1,4 +1,8 @@
 ﻿@model List<MediClinic.Models.PhysicianPrescrip>
+@{
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+}
+
 
 <h2>My Prescriptions</h2>
 
@@ -8,7 +12,7 @@
             <th>ID</th>
             <th>Drug</th>
             <th>Dosage</th>
-            <th>Action</th>
+            
         </tr>
     </thead>
 
@@ -19,13 +23,7 @@
                 <td>@item.PrescriptionId</td>
                 <td>@item.DrugId</td>
                 <td>@item.Dosage</td>
-                <td>
-                    <a asp-action="RequestMedicine"
-                       asp-route-id="@item.PrescriptionId"
-                       class="btn btn-warning btn-sm">
-                        Request Medicine
-                    </a>
-                </td>
+                
             </tr>
         }
     </tbody>
