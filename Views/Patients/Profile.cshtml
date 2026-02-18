@@ -1,42 +1,174 @@
 ﻿@model MediClinic.Models.Patient
 @{
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
+    ViewData["Title"] = "Patient Profile";
 }
-<h2>My Profile</h2>
 
-<table class="table">
-    <tr>
-        <th>Name</th>
-        <td>@Model.PatientName</td>
-    </tr>
-    <tr>
-        <th>Email</th>
-        <td>@Model.Email</td>
-    </tr>
-    <tr>
-        <th>Phone</th>
-        <td>@Model.Phone</td>
-    </tr>
-    <tr>
-        <th>Address</th>
-        <td>@Model.Address</td>
-    </tr>
-</table>
+<style>
+    .profile-wrapper {
+        padding: 30px;
+    }
 
-<hr />
+    .profile-card {
+        background: white;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
 
-<h4>Medical Profile</h4>
+    .profile-header {
+        display: flex;
+        gap: 25px;
+        align-items: center;
+        margin-bottom: 25px;
+    }
 
-<p><strong>Allergies:</strong> @(Model.PatientMedicalProfile?.MedicalAllergies ?? "Not Provided")</p>
-<p><strong>Chronic Diseases:</strong> @(Model.PatientMedicalProfile?.MedicalChronicDiseases ?? "Not Provided")</p>
-<p><strong>Past Illness:</strong> @(Model.PatientMedicalProfile?.MedicalPastIllness ?? "Not Provided")</p>
-<p><strong>Notes:</strong> @(Model.PatientMedicalProfile?.MedicalNotes ?? "Not Provided")</p>
+    .profile-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 16px;
+        object-fit: cover;
+    }
 
-<a asp-action="EditProfile" class="btn btn-warning">Edit Profile</a>
-<a asp-action="EditMedicalProfile" class="btn btn-primary">Edit Medical Profile</a>
+    .profile-name {
+        font-size: 22px;
+        font-weight: 600;
+    }
 
-<a asp-action="EditProfile" class="btn btn-warning">
-    Edit Profile
-</a>
+    .badge-active {
+        background: #e0f2f1;
+        color: #0f766e;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info-box {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+        .info-box label {
+            font-size: 13px;
+            color: gray;
+        }
+
+    .medical-section {
+        margin-top: 30px;
+    }
+
+    .btn-modern {
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+</style>
+
+<div class="profile-wrapper">
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+
+        <div class="profile-header">
+
+            <!-- Profile Photo -->
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
+                 class="profile-photo" />
+
+            <div>
+                <div class="profile-name">@Model.PatientName</div>
+                <div>@Model.Email</div>
+                <div class="mt-2">
+                    <span class="badge-active">Active</span>
+                </div>
+            </div>
+
+            <div class="ms-auto">
+                <a asp-action="EditProfile"
+                   class="btn btn-primary btn-modern">
+                    Edit Profile
+                </a>
+            </div>
+
+        </div>
+
+        <!-- GENERAL INFORMATION -->
+        <h5 class="mb-3">General Information</h5>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <label>Phone</label>
+                <div>@Model.Phone</div>
+            </div>
+
+            <div class="info-box">
+                <label>Address</label>
+                <div>@Model.Address</div>
+            </div>
+
+            <div class="info-box">
+                <label>Date of Birth</label>
+                <div>@Model.Dob?.ToString("dd MMM yyyy")</div>
+            </div>
+
+            <div class="info-box">
+                <label>Gender</label>
+                <div>@Model.Gender</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEDICAL PROFILE -->
+    <div class="profile-card medical-section">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Medical Information</h5>
+
+            <a asp-action="EditMedicalProfile"
+               class="btn btn-outline-primary btn-modern">
+                Edit Medical Info
+            </a>
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <label>Allergies</label>
+                <div>@Model.PatientMedicalProfile?.MedicalAllergies ?? "Not Provided"</div>
+            </div>
+
+            <div class="info-box">
+                <label>Chronic Diseases</label>
+                <div>@Model.PatientMedicalProfile?.MedicalChronicDiseases ?? "Not Provided"</div>
+            </div>
+
+            <div class="info-box">
+                <label>Past Illness</label>
+                <div>@Model.PatientMedicalProfile?.MedicalPastIllness ?? "Not Provided"</div>
+            </div>
+
+            <div class="info-box">
+                <label>Notes</label>
+                <div>@Model.PatientMedicalProfile?.MedicalNotes ?? "Not Provided"</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 

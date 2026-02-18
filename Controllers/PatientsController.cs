@@ -62,21 +62,30 @@ namespace MediClinic.Controllers
             var check = RequireLogin();
             if (check != null) return check;
 
-            var patient = _context.Patients.Find(PatientId);
+            if (PatientId == null)
+                return RedirectToAction("Login", "User");
+
+            var patientId = PatientId.Value;
+
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == patientId);
+
+            // SET SESSION IMAGE
+            HttpContext.Session.SetString("ProfileImage",
+                patient?.ProfileImage ?? "");
 
             var nextAppointment = _context.Appointments
-                .Where(a => a.PatientId == PatientId)
+                .Where(a => a.PatientId == patientId &&
+                            a.ScheduleStatus != "Cancelled" &&
+                            a.AppointmentDate >= DateTime.Now)
                 .OrderBy(a => a.AppointmentDate)
                 .FirstOrDefault();
-
-            var totalAppointments = _context.Appointments
-                .Count(a => a.PatientId == PatientId);
 
             var totalPrescriptions = _context.PhysicianPrescrips
                 .Include(p => p.PhysicianAdvice)
                 .ThenInclude(pa => pa.Schedule)
                 .ThenInclude(s => s.Appointment)
-                .Count(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == PatientId);
+                .Count(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == patientId);
 
             var pendingRequests = _context.DrugRequests
                 .Where(r => r.RequestStatus == "Pending")
@@ -90,10 +99,11 @@ namespace MediClinic.Controllers
                 PendingDrugRequests = pendingRequests
             };
 
-            ViewBag.TotalAppointments = totalAppointments;
-
             return View(vm);
         }
+
+
+
 
         public IActionResult Profile()
         {
@@ -118,22 +128,52 @@ namespace MediClinic.Controllers
             return View(patient);
         }
 
+
         [HttpPost]
-        public IActionResult EditProfile(Patient model)
+        public async Task<IActionResult> EditProfile(Patient model, IFormFile? ProfileImageFile)
         {
             var check = RequireLogin();
             if (check != null) return check;
 
             var patient = _context.Patients.Find(PatientId);
+            if (patient == null)
+                return NotFound();
 
             patient.PatientName = model.PatientName;
             patient.Phone = model.Phone;
             patient.Address = model.Address;
 
-            _context.SaveChanges();
-            return RedirectToAction("Profile");
+            // IMAGE UPLOAD
+            if (ProfileImageFile != null && ProfileImageFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() +
+                               Path.GetExtension(ProfileImageFile.FileName);
 
+                var uploadPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "uploads",
+                    fileName);
+
+                using (var stream = new FileStream(uploadPath, FileMode.Create))
+                {
+                    await ProfileImageFile.CopyToAsync(stream);
+                }
+
+                patient.ProfileImage = fileName;
+            }
+
+            _context.SaveChanges();
+
+            // UPDATE SESSION
+            HttpContext.Session.SetString("ProfileImage",
+                patient.ProfileImage ?? "");
+
+            return RedirectToAction("Profile");
         }
+
+
+
     }
 }
 

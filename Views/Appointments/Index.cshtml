@@ -1,194 +1,102 @@
-﻿@model List<MediClinic.Models.Appointment>
+﻿@model IEnumerable<MediClinic.Models.Appointment>
 @{
+    ViewData["Title"] = "My Appointments";
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
 }
-<h2>My Appointments</h2>
-<form method="get" class="row mb-4">
 
-    <div class="col-md-3">
-        <input type="text"
-               name="search"
-               class="form-control"
-               placeholder="Search by reason" />
-    </div>
+<div class="custom-card">
+    <form method="get" class="row g-3">
 
-    <div class="col-md-2">
-        <select name="status" class="form-select">
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Completed">Completed</option>
-        </select>
-    </div>
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by reason..." />
+        </div>
 
-    <div class="col-md-2">
-        <input type="date"
-               name="fromDate"
-               class="form-control" />
-    </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All Status</option>
+                <option>Scheduled</option>
+                <option>Pending</option>
+                <option>Cancelled</option>
+            </select>
+        </div>
 
-    <div class="col-md-2">
-        <input type="date"
-               name="toDate"
-               class="form-control" />
-    </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
 
-    <div class="col-md-3">
-        <button type="submit"
-                class="btn btn-primary w-100">
-            Filter
-        </button>
-    </div>
-
-</form>
-<<div class="mb-3">
-
-    <a asp-action="Index"
-       class="btn btn-outline-dark">
-        All
-    </a>
-
-    <a asp-action="Index"
-       asp-route-status="Scheduled"
-       class="btn btn-outline-primary">
-        Scheduled
-    </a>
-
-    <a asp-action="Index"
-       asp-route-status="Pending"
-       class="btn btn-outline-warning">
-        Pending
-    </a>
-
-    <a asp-action="Index"
-       asp-route-status="Cancelled"
-       class="btn btn-outline-danger">
-        Cancelled
-    </a>
-
-    <a asp-action="Index"
-       asp-route-status="Completed"
-       class="btn btn-outline-success">
-        Completed
-    </a>
-
+    </form>
 </div>
 
+<div class="custom-card">
+    <table class="table align-middle">
 
-
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Reason</th>
-            <th>Criticality</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
+        <thead>
             <tr>
-                <td>
-                    <a asp-action="Details"
-                       asp-route-id="@item.AppointmentId">
-                        @item.AppointmentDate?.ToString("dd MMM yyyy HH:mm")
-                    </a>
-                </td>
-
-                <td>@item.Reason</td>
-                <td>@item.Criticality</td>
-
-                <td>
-                    @if (item.ScheduleStatus == "Pending")
-                    {
-                        <span class="badge bg-warning text-dark">Pending</span>
-                    }
-                    else if (item.ScheduleStatus == "Scheduled")
-                    {
-                        <span class="badge bg-primary">Scheduled</span>
-                    }
-                    else if (item.ScheduleStatus == "Cancelled")
-                    {
-                        <span class="badge bg-danger">Cancelled</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Completed</span>
-                    }
-                </td>
-
-                <td>
-                    @if (item.ScheduleStatus == "Scheduled"
-                    && item.AppointmentDate > DateTime.Now)
-                    {
-                        <a asp-action="Cancel"
-                           asp-route-id="@item.AppointmentId"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('Are you sure you want to cancel this appointment?');">
-                            Cancel
-                        </a>
-                    }
-                    else if (item.ScheduleStatus == "Scheduled"
-                    && item.AppointmentDate <= DateTime.Now)
-                    {
-                        <span class="badge bg-secondary">Expired</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Not Allowed</span>
-                    }
-                </td>
-
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Criticality</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
             </tr>
-        }
-    </tbody>
+        </thead>
 
-</table>
-<nav>
-    <ul class="pagination">
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.AppointmentDate?.ToString("dd MMM yyyy")
+                        <br />
+                        <small>@item.AppointmentDate?.ToString("hh:mm tt")</small>
+                    </td>
 
-        @if (ViewBag.CurrentPage > 1)
-        {
-            <li class="page-item">
-                <a class="page-link"
-                   asp-action="Index"
-                   asp-route-page="@(ViewBag.CurrentPage - 1)"
-                   asp-route-status="@ViewBag.CurrentStatus">
-                    Previous
-                </a>
-            </li>
-        }
+                    <td>@item.Reason</td>
 
-        @for (int i = 1; i <= ViewBag.TotalPages; i++)
-        {
-            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                <a class="page-link"
-                   asp-action="Index"
-                   asp-route-page="@i"
-                   asp-route-status="@ViewBag.CurrentStatus">
-                    @i
-                </a>
-            </li>
-        }
+                    <td>
+                        <span class="badge bg-secondary">
+                            @item.Criticality
+                        </span>
+                    </td>
 
-        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-        {
-            <li class="page-item">
-                <a class="page-link"
-                   asp-action="Index"
-                   asp-route-page="@(ViewBag.CurrentPage + 1)"
-                   asp-route-status="@ViewBag.CurrentStatus">
-                    Next
-                </a>
-            </li>
-        }
+                    <td>
+                        @if (item.ScheduleStatus == "Scheduled")
+                        {
+                            <span class="badge bg-success">Scheduled</span>
+                        }
+                        else if (item.ScheduleStatus == "Pending")
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Cancelled</span>
+                        }
+                    </td>
 
-    </ul>
-</nav>
+                    <td class="text-end">
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.AppointmentId"
+                           class="btn btn-outline-primary btn-sm">
+                            View
+                        </a>
+
+                        @if (item.ScheduleStatus == "Scheduled")
+                        {
+                            <a asp-action="Cancel"
+                               asp-route-id="@item.AppointmentId"
+                               class="btn btn-outline-danger btn-sm">
+                                Cancel
+                            </a>
+                        }
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
 
 

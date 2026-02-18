@@ -1,11 +1,9 @@
 ﻿using MediClinic.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-
 
 namespace MediClinic.Controllers
 {
-    public class AppointmentsController : PatientBaseController
+    public class AppointmentsController : Controller
     {
         private readonly MediClinicDbContext _context;
 
@@ -14,47 +12,41 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
-
-        public IActionResult Index(string status)
+        public IActionResult Index(string status, string search)
         {
             int? patientId = HttpContext.Session.GetInt32("PatientId");
+
             if (patientId == null)
                 return RedirectToAction("Login", "User");
 
             var appointments = _context.Appointments
                 .Where(a => a.PatientId == patientId);
 
-            // Apply status filter
             if (!string.IsNullOrEmpty(status))
-            {
                 appointments = appointments.Where(a => a.ScheduleStatus == status);
-            }
 
-            return View(appointments.ToList());
+            if (!string.IsNullOrEmpty(search))
+                appointments = appointments.Where(a => a.Reason.Contains(search));
+
+            return View(appointments.OrderByDescending(a => a.AppointmentDate).ToList());
         }
 
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Appointment appointment)
+        public IActionResult Details(int id)
         {
             int? patientId = HttpContext.Session.GetInt32("PatientId");
+
             if (patientId == null)
                 return RedirectToAction("Login", "User");
 
-            appointment.PatientId = patientId;
-            appointment.ScheduleStatus = "Pending";   // 🔥 MUST BE PENDING
+            var appointment = _context.Appointments
+                .FirstOrDefault(a => a.AppointmentId == id &&
+                                     a.PatientId == patientId);
 
-            _context.Appointments.Add(appointment);
-            _context.SaveChanges();
+            if (appointment == null)
+                return NotFound();
 
-            return RedirectToAction("Index");
+            return View(appointment);
         }
-
 
         public IActionResult Cancel(int id)
         {
@@ -65,26 +57,15 @@ namespace MediClinic.Controllers
                                      a.PatientId == patientId);
 
             if (appointment != null &&
-   (appointment.ScheduleStatus == "Pending" || appointment.ScheduleStatus == "Scheduled") &&
-    appointment.AppointmentDate > DateTime.Now)
+                (appointment.ScheduleStatus == "Scheduled" ||
+                 appointment.ScheduleStatus == "Pending") &&
+                 appointment.AppointmentDate > DateTime.Now)
             {
                 appointment.ScheduleStatus = "Cancelled";
                 _context.SaveChanges();
             }
 
-
             return RedirectToAction("Index");
-        }
-
-        public IActionResult Details(int id)
-        {
-            int? patientId = HttpContext.Session.GetInt32("PatientId");
-
-            var appointment = _context.Appointments
-                .FirstOrDefault(a => a.AppointmentId == id &&
-                                     a.PatientId == patientId);
-
-            return View(appointment);
         }
     }
 }
