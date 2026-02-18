@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 
 namespace MediClinic.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class PhysiciansController : Controller
     {
         private readonly MediClinicDbContext _context;
+
 
         public PhysiciansController(MediClinicDbContext context)
         {

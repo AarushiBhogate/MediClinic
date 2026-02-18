@@ -1,4 +1,9 @@
-﻿@model List<MediClinic.Models.MyScheduleVM>
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<MediClinic.Models.MyScheduleVM>
+
+
 @{
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
@@ -125,21 +130,15 @@
 
         .schedule-wrapper {
             max-width: 1150px;
-            margin: 0 auto;
-            padding-top: 40px;
+            margin: 40px auto;
         }
-
 
         .schedule-header {
-            position: sticky;
-            top: 60px; /* height of fixed navbar */
-            z-index: 200; /* must be higher than cards */
-            background: #f4f7fb;
-            padding: 20px 0 15px 0;
-            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
-
-
 
         .left-header {
             display: flex;
@@ -282,8 +281,17 @@
             padding: 10px 14px;
         }
 
-        .schedule-card {
-            margin-top: 20px;
+        .schedule-wrapper {
+            margin: 0 auto !important;
+            padding-top: 40px; /* replaces the old margin */
+        }
+
+        .schedule-header {
+            position: sticky;
+            top: 60px; /* height of your navbar */
+            z-index: 100;
+            background: #f4f7fb;
+            padding: 15px 0;
         }
 
     </style>
@@ -300,18 +308,18 @@
 
                 <div>
                     <h2 class="schedule-title mb-1">
-                        @(ViewBag.PageType == "Previous" ? "Previous Schedule" : "Schedule")
+                        Previous Schedule
                     </h2>
 
                     <p class="schedule-subtitle mb-0">
-                        @(ViewBag.PageType == "Previous"
-                                                ? "Your past appointments"
-                                                : "Your today and upcoming appointments")
+                        Your past appointments
                     </p>
+
+
+                   
                 </div>
             </div>
         </div>
-
 
 
         <!-- ===== MAIN CARD ===== -->
@@ -330,9 +338,12 @@
 
                     <select id="dateFilter" class="form-select">
                         <option value="all">All</option>
-                        <option value="today">Today</option>
-                        <option value="upcoming">Upcoming</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="thisWeek">This Week</option>
+                        <option value="previousWeek">Previous Week</option>
                     </select>
+
+
 
                     <div class="toggle-wrapper">
                         <button id="btnTable" class="toggle-btn active"
@@ -466,7 +477,19 @@
 
             let selected = this.value;
             let rows = document.querySelectorAll("#scheduleTable tr");
+
             let today = new Date();
+            let yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            let startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+
+            let startOfPreviousWeek = new Date(startOfWeek);
+            startOfPreviousWeek.setDate(startOfWeek.getDate() - 7);
+
+            let endOfPreviousWeek = new Date(startOfWeek);
+            endOfPreviousWeek.setDate(startOfWeek.getDate() - 1);
 
             rows.forEach(function (row) {
 
@@ -476,24 +499,30 @@
                 if (selected === "all") {
                     row.style.display = "";
                 }
-                else if (selected === "today") {
-                    if (rowDate.toDateString() === today.toDateString()) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
+                else if (selected === "yesterday") {
+                    row.style.display =
+                        rowDate.toDateString() === yesterday.toDateString()
+                            ? ""
+                            : "none";
                 }
-                else if (selected === "upcoming") {
-                    if (rowDate >= today) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
+                else if (selected === "thisWeek") {
+                    row.style.display =
+                        rowDate >= startOfWeek && rowDate <= today
+                            ? ""
+                            : "none";
+                }
+                else if (selected === "previousWeek") {
+                    row.style.display =
+                        rowDate >= startOfPreviousWeek && rowDate <= endOfPreviousWeek
+                            ? ""
+                            : "none";
                 }
 
             });
+
         });
     </script>
+
     <script>
         let rowsPerPage = 5;
         let rows = document.querySelectorAll("#scheduleTable tr");

@@ -1,12 +1,11 @@
 ﻿using MediClinic.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MediClinic.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MediClinic.Controllers
 {
-    public class DrugRequestsController : Controller
     public class DrugRequestsController : PatientBaseController
     {
         private readonly MediClinicDbContext _context;
@@ -27,25 +26,19 @@ namespace MediClinic.Controllers
 
             return View(requests);
         }
-            ViewData["PhysicianId"] = new SelectList(_context.Physicians, "PhysicianId", "PhysicianId", drugRequest.PhysicianId);
-            return View(drugRequest);
-    }
 
         // GET: DrugRequests/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-}
 
             var drugRequest = await _context.DrugRequests
                 .Include(d => d.Physician)
                 .FirstOrDefaultAsync(m => m.DrugRequestId == id);
+
             if (drugRequest == null)
-            {
                 return NotFound();
-            }
 
             return View(drugRequest);
         }
@@ -56,18 +49,13 @@ namespace MediClinic.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var drugRequest = await _context.DrugRequests.FindAsync(id);
+
             if (drugRequest != null)
-            {
                 _context.DrugRequests.Remove(drugRequest);
-            }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool DrugRequestExists(int id)
-        {
-            return _context.DrugRequests.Any(e => e.DrugRequestId == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

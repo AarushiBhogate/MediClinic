@@ -1,4 +1,7 @@
 ﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+@{
     ViewData["Title"] = "Advice & Prescription";
     var pending = ViewBag.Pending as List<MediClinic.Models.AdviceListVM>;
     var completed = ViewBag.Completed as List<MediClinic.Models.AdviceListVM>;

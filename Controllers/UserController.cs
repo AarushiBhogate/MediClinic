@@ -156,7 +156,8 @@ namespace MediClinic.Controllers
             }
 
             if (result.Role == "Admin")
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Index", "Admin");
+
 
             return RedirectToAction("Index", "Home");
         }

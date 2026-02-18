@@ -1,57 +1,93 @@
-﻿@model MediClinic.Models.Appointment
-
+﻿@using MediClinic.Models
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+    var advice = ViewBag.Advice as PhysicianAdvice;
+    var drugs = ViewBag.Drugs as List<SelectListItem>;
 }
-<h2>Book Appointment</h2>
 
-<form method="post">
+<div class="phys-container">
 
-    <div class="mb-3">
-        <label>Date & Time</label>
-        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
-    </div>
+    <h2 class="phys-title">Add Prescription</h2>
+    <p class="phys-subtitle">Add medicines for this appointment</p>
 
-    <div class="mb-3">
-        <label>Reason</label>
-        <input asp-for="Reason" class="form-control" />
-                <span asp-validation-for="Reason" class="text-danger"></span>
+    <div class="phys-card">
+
+        <div class="phys-info-grid mb-4">
+            <div class="phys-info-item">
+                <div class="phys-info-label">Patient</div>
+                <div class="phys-info-value">
+                    @advice?.Schedule?.Appointment?.Patient?.PatientName
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <input asp-for="Note" class="form-control" />
-                <span asp-validation-for="Note" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
-        <label>Criticality</label>
-        <select asp-for="Criticality" class="form-select">
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-        </select>
-    </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="phys-info-item">
+                <div class="phys-info-label">Date</div>
+                <div class="phys-info-value">
+                    @advice?.Schedule?.ScheduleDate
+                </div>
             </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Time</div>
+                <div class="phys-info-value">
+                    @advice?.Schedule?.ScheduleTime
+                </div>
+            </div>
+        </div>
+
+        <div class="phys-divider"></div>
+
+        <form asp-action="Create" method="post">
+
+            <input type="hidden" name="physicianAdviceId" value="@advice?.PhysicianAdviceId" />
+
+            <div class="mb-3">
+                <label class="fw-semibold mb-2">Drug</label>
+                <select class="form-control phys-input" name="drugId" required>
+                    <option value="">-- Select Drug --</option>
+                    @if (drugs != null)
+                    {
+                        foreach (var d in drugs)
+                        {
+                            <option value="@d.Value">@d.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-semibold mb-2">Dosage</label>
+                <input class="form-control phys-input"
+                       name="dosage"
+                       placeholder="e.g. 1 tablet twice a day"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-semibold mb-2">Prescription</label>
+                <input class="form-control phys-input"
+                       name="prescription"
+                       placeholder="e.g. After meals for 5 days"
+                       required />
+            </div>
+
+            <div class="d-flex gap-3 mt-3">
+                <button type="submit" class="btn btn-teal">
+                    Add Medicine
+                </button>
+
+                <a asp-action="View"
+                   asp-route-physicianAdviceId="@advice?.PhysicianAdviceId"
+                   class="btn btn-outline-teal">
+                    View Prescription
+                </a>
+
+                <a asp-controller="PhysicianAdvice"
+                   asp-action="Index"
+                   class="btn btn-outline-teal">
+                    Back
+                </a>
+            </div>
+
         </form>
     </div>
 </div>
-
-    <div class="mb-3">
-    <label>Required Specialization</label>
-    <select asp-for="RequiredSpecialization" class="form-select" required>
-        <option value="">-- Select Specialization --</option>
-            <option value="Neurology">Neurology</option>
-            <option value="Dermatology">Dermatology</option>
-            <option value="Cardiology">Cardiology</option>
-            <option value="Orthopedics">Orthopedics</option>
-    </select>
-</div>
-
-    <button type="submit" class="btn btn-primary">
-        Book
-    </button>
-
-</form>

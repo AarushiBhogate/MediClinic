@@ -1,38 +1,90 @@
 ﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+@{
     ViewData["Title"] = "Edit Advice";
     var schedule = ViewBag.Schedule as MediClinic.Models.Schedule;
     var advice = ViewBag.Advice as MediClinic.Models.PhysicianAdvice;
 }
-
 <div class="phys-container">
 
-    <h2 class="phys-title">Edit Advice</h2>
-    <p class="phys-subtitle">Update advice for the selected patient</p>
+    <div class="phys-header">
+        <h2 class="phys-title">Edit Advice</h2>
+        <p class="phys-subtitle">
+            Update advice for the selected appointment
+        </p>
+    </div>
 
-    <div class="phys-card phys-form">
+    <div class="phys-card">
 
-        <div class="mb-3 phys-info">
-            <div><b>Patient:</b> @schedule?.Appointment?.Patient?.PatientName</div>
+        <!-- Appointment Info -->
+        <div class="phys-info-grid">
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Patient</div>
+                <div class="phys-info-value">
+                    @schedule?.Appointment?.Patient?.PatientName
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Date</div>
+                <div class="phys-info-value">
+                    @schedule?.ScheduleDate
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Time</div>
+                <div class="phys-info-value">
+                    @schedule?.ScheduleTime
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Reason</div>
+                <div class="phys-info-value">
+                    @schedule?.Appointment?.Reason
+                </div>
+            </div>
+
         </div>
 
+        <div class="phys-divider"></div>
+
+        <!-- Form -->
         <form method="post" action="/PhysicianAdvice/EditAdvice">
 
-            <input type="hidden" name="scheduleId" value="@schedule?.ScheduleId" />
-            <input type="hidden" name="physicianAdviceId" value="@advice?.PhysicianAdviceId" />
+            <input type="hidden" name="scheduleId"
+                   value="@schedule?.ScheduleId" />
 
-            <div class="mb-3">
-                <label>Advice *</label>
-                <textarea class="form-control phys-textarea" name="advice" required>@advice?.Advice</textarea>
+            <input type="hidden" name="physicianAdviceId"
+                   value="@advice?.PhysicianAdviceId" />
+
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Advice *</label>
+                <textarea class="form-control phys-textarea"
+                          name="advice" required>
+@advice?.Advice
+                </textarea>
             </div>
 
-            <div class="mb-3">
-                <label>Doctor Note</label>
-                <input class="form-control phys-input" name="note" value="@advice?.Note" />
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Doctor Note</label>
+                <input class="form-control phys-input"
+                       name="note"
+                       value="@advice?.Note" />
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-teal">Update Advice</button>
-                <a class="btn btn-outline-teal" href="/PhysicianAdvice/Index">Cancel</a>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-teal">
+                    Update Advice
+                </button>
+
+                <a class="btn btn-outline-teal"
+                   href="/PhysicianAdvice/Index">
+                    Cancel
+                </a>
             </div>
 
         </form>

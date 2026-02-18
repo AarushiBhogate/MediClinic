@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MediClinic.Controllers
 {
-    [Authorize(Roles = "Admin")]   // 🔐 Only Admin can access
+    //[Authorize(Roles = "Admin")]   // 🔐 Only Admin can access
     public class AdminController : Controller
     {
         private readonly MediClinicDbContext _context;

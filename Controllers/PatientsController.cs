@@ -1,13 +1,11 @@
 ﻿using MediClinic.Models;
 using MediClinic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MediClinic.Models;
+using System.Linq;
 
 namespace MediClinic.Controllers
 {
-    public class PatientsController : Controller
     public class PatientsController : PatientBaseController
     {
         private readonly MediClinicDbContext _context;
@@ -16,52 +14,11 @@ namespace MediClinic.Controllers
         {
             _context = context;
         }
-        public IActionResult EditMedicalProfile()
+        // ADMIN PATIENT LIST
+        public async Task<IActionResult> Index()
         {
-            var check = RequireLogin();
-            if (check != null) return check;
-
-            var profile = _context.PatientMedicalProfiles
-                .FirstOrDefault(p => p.PatientId == PatientId);
-
-            if (profile == null)
-            {
-                profile = new PatientMedicalProfile
-                {
-                    PatientId = PatientId.Value
-                };
-            }
-
-            return View(profile);
+            return View(await _context.Patients.ToListAsync());
         }
-        [HttpPost]
-        public IActionResult EditMedicalProfile(PatientMedicalProfile model)
-        {
-            var check = RequireLogin();
-            if (check != null) return check;
-
-            var profile = _context.PatientMedicalProfiles
-                .FirstOrDefault(p => p.PatientId == PatientId);
-
-            if (profile == null)
-            {
-                model.PatientId = PatientId.Value;
-                _context.PatientMedicalProfiles.Add(model);
-            }
-            else
-            {
-                profile.MedicalAllergies = model.MedicalAllergies;
-                profile.MedicalChronicDiseases = model.MedicalChronicDiseases;
-                profile.MedicalPastIllness = model.MedicalPastIllness;
-                profile.MedicalNotes = model.MedicalNotes;
-            }
-            return View(patient);
-        }
-
-            _context.SaveChanges();
-            return RedirectToAction("Profile");
-        }
-
         public IActionResult Dashboard()
         {
             var check = RequireLogin();
@@ -106,11 +63,8 @@ namespace MediClinic.Controllers
             if (check != null) return check;
 
             var patient = _context.Patients
-    .Include(p => p.PatientMedicalProfile)
-    .FirstOrDefault(p => p.PatientId == PatientId);
-
-            return View(patient);
-        }
+                .Include(p => p.PatientMedicalProfile)
+                .FirstOrDefault(p => p.PatientId == PatientId);
 
             return View(patient);
         }
@@ -138,6 +92,52 @@ namespace MediClinic.Controllers
 
             _context.SaveChanges();
             return RedirectToAction("Profile");
+        }
+
+        public IActionResult EditMedicalProfile()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var profile = _context.PatientMedicalProfiles
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (profile == null)
+            {
+                profile = new PatientMedicalProfile
+                {
+                    PatientId = PatientId.Value
+                };
+            }
+
+            return View(profile);
+        }
+
+        [HttpPost]
+        public IActionResult EditMedicalProfile(PatientMedicalProfile model)
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var profile = _context.PatientMedicalProfiles
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (profile == null)
+            {
+                model.PatientId = PatientId.Value;
+                _context.PatientMedicalProfiles.Add(model);
+            }
+            else
+            {
+                profile.MedicalAllergies = model.MedicalAllergies;
+                profile.MedicalChronicDiseases = model.MedicalChronicDiseases;
+                profile.MedicalPastIllness = model.MedicalPastIllness;
+                profile.MedicalNotes = model.MedicalNotes;
+            }
+
+            _context.SaveChanges();
+            return RedirectToAction("Profile");
+        }
 
         private bool PatientExists(int id)
         {
@@ -145,16 +145,3 @@ namespace MediClinic.Controllers
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
