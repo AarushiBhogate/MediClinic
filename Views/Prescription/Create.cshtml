@@ -1,0 +1,59 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Add Prescription";
+    var advice = ViewBag.Advice as MediClinic.Models.PhysicianAdvice;
+    var drugs = ViewBag.Drugs as List<SelectListItem>;
+}
+
+<h2>Add Prescription</h2>
+
+<div class="card p-4 shadow-sm">
+    <h4>Patient: @advice?.Schedule?.Appointment?.Patient?.PatientName</h4>
+    <p><b>Date:</b> @advice?.Schedule?.ScheduleDate | <b>Time:</b> @advice?.Schedule?.ScheduleTime</p>
+
+    <hr />
+
+    <form method="post">
+        <input type="hidden" name="physicianAdviceId" value="@advice?.PhysicianAdviceId" />
+
+        <div class="mb-3">
+            <label class="form-label">Drug</label>
+            <select class="form-control" name="drugId" required>
+                <option value="">-- Select Drug --</option>
+                @foreach (var d in drugs)
+                {
+                    <option value="@d.Value">@d.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Dosage</label>
+            <input class="form-control" name="dosage" placeholder="e.g. 1 tablet twice a day" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Prescription</label>
+            <input class="form-control" name="prescription" placeholder="e.g. After meals for 5 days" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Add Medicine
+        </button>
+
+        <a href="/Prescription/View?physicianAdviceId=@advice?.PhysicianAdviceId"
+           class="btn btn-dark ms-2">
+            View Prescription
+        </a>
+
+        <a href="/PhysicianAdvice/Index" class="btn btn-secondary ms-2">
+            Back
+        </a>
+    </form>
+</div>

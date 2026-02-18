@@ -40,6 +40,11 @@ public partial class MediClinicDbContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    
+
+
+    public virtual DbSet<PatientMedicalProfile> PatientMedicalProfiles { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -360,6 +365,24 @@ public partial class MediClinicDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });
+
+        modelBuilder.Entity<PatientMedicalProfile>(entity =>
+        {
+            entity.HasKey(e => e.MedicalProfileId);
+
+            entity.ToTable("PatientMedicalProfile");
+
+            entity.Property(e => e.MedicalAllergies).HasMaxLength(500);
+            entity.Property(e => e.MedicalPastIllness).HasMaxLength(500);
+            entity.Property(e => e.MedicalChronicDiseases).HasMaxLength(500);
+            entity.Property(e => e.MedicalNotes).HasMaxLength(1000);
+
+            entity.HasOne(d => d.Patient)
+      .WithOne(p => p.PatientMedicalProfile)
+      .HasForeignKey<PatientMedicalProfile>(d => d.PatientId);
+
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

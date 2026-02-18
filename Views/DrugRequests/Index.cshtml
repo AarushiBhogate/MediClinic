@@ -1,74 +1,35 @@
-﻿@model IEnumerable<MediClinic.Models.DrugRequest>
-
+﻿@model List<MediClinic.Models.DrugRequest>
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Drug Requests";
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
 }
 
 <div class="card">
     <div class="card-header d-flex justify-content-between">
         <h3>Drug Request List</h3>
 
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Drug Request
-        </a>
-    </div>
+<h2>My Drug Requests</h2>
 
-    <div class="card-body">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Physician</th>
-                    <th>Drugs Info</th>
-                    <th>Request Date</th>
-                    <th>Status</th>
-                    <th width="220px">Actions</th>
-                </tr>
-            </thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
 
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Physician?.PhysicianName</td>
-                        <td>@item.DrugsInfoText</td>
-                        <td>@item.RequestDate?.ToString("dd-MM-yyyy")</td>
-                        <td>
-                            @if (item.RequestStatus == "Approved")
-                            {
-                                <span class="badge bg-success">Approved</span>
-                            }
-                            else if (item.RequestStatus == "Rejected")
-                            {
-                                <span class="badge bg-danger">Rejected</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning">Pending</span>
-                            }
-                        </td>
-                        <td>
-                            <a asp-action="Edit"
-                               asp-route-id="@item.DrugRequestId"
-                               class="btn btn-sm btn-warning">
-                                <i class="fas fa-edit"></i>
-                            </a>
-
-                            <a asp-action="Details"
-                               asp-route-id="@item.DrugRequestId"
-                               class="btn btn-sm btn-info">
-                                <i class="fas fa-eye"></i>
-                            </a>
-
-                            <a asp-action="Delete"
-                               asp-route-id="@item.DrugRequestId"
-                               class="btn btn-sm btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DrugRequestId</td>
+                <td>@item.RequestStatus</td>
+                <td>@item.RequestDate?.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
     </div>
 </div>

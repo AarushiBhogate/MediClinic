@@ -18,4 +18,5 @@ public partial class PhysicianPrescrip
     public virtual Drug? Drug { get; set; }
 
     public virtual PhysicianAdvice? PhysicianAdvice { get; set; }
+    
 }

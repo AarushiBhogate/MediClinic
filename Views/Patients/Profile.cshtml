@@ -1,0 +1,42 @@
+﻿@model MediClinic.Models.Patient
+@{
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+}
+<h2>My Profile</h2>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <td>@Model.PatientName</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Phone</th>
+        <td>@Model.Phone</td>
+    </tr>
+    <tr>
+        <th>Address</th>
+        <td>@Model.Address</td>
+    </tr>
+</table>
+
+<hr />
+
+<h4>Medical Profile</h4>
+
+<p><strong>Allergies:</strong> @(Model.PatientMedicalProfile?.MedicalAllergies ?? "Not Provided")</p>
+<p><strong>Chronic Diseases:</strong> @(Model.PatientMedicalProfile?.MedicalChronicDiseases ?? "Not Provided")</p>
+<p><strong>Past Illness:</strong> @(Model.PatientMedicalProfile?.MedicalPastIllness ?? "Not Provided")</p>
+<p><strong>Notes:</strong> @(Model.PatientMedicalProfile?.MedicalNotes ?? "Not Provided")</p>
+
+<a asp-action="EditProfile" class="btn btn-warning">Edit Profile</a>
+<a asp-action="EditMedicalProfile" class="btn btn-primary">Edit Medical Profile</a>
+
+<a asp-action="EditProfile" class="btn btn-warning">
+    Edit Profile
+</a>
+
+

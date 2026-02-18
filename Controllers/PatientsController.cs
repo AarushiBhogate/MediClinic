@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MediClinic.Models;
+using MediClinic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +8,7 @@ using MediClinic.Models;
 namespace MediClinic.Controllers
 {
     public class PatientsController : Controller
+    public class PatientsController : PatientBaseController
     {
         private readonly MediClinicDbContext _context;
 
@@ -17,136 +16,128 @@ namespace MediClinic.Controllers
         {
             _context = context;
         }
-
-        // GET: Patients
-        public async Task<IActionResult> Index()
+        public IActionResult EditMedicalProfile()
         {
-            return View(await _context.Patients.ToListAsync());
-        }
+            var check = RequireLogin();
+            if (check != null) return check;
 
-        // GET: Patients/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            var profile = _context.PatientMedicalProfiles
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (profile == null)
             {
-                return NotFound();
-            }
-
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.PatientId == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
-
-            return View(patient);
-        }
-
-        // GET: Patients/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Patients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PatientId,PatientName,Dob,Gender,Address,Phone,Email,Summary,PatientStatus")] Patient patient)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(patient);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(patient);
-        }
-
-        // GET: Patients/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
-            return View(patient);
-        }
-
-        // POST: Patients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PatientId,PatientName,Dob,Gender,Address,Phone,Email,Summary,PatientStatus")] Patient patient)
-        {
-            if (id != patient.PatientId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                profile = new PatientMedicalProfile
                 {
-                    _context.Update(patient);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PatientExists(patient.PatientId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    PatientId = PatientId.Value
+                };
+            }
+
+            return View(profile);
+        }
+        [HttpPost]
+        public IActionResult EditMedicalProfile(PatientMedicalProfile model)
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var profile = _context.PatientMedicalProfiles
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (profile == null)
+            {
+                model.PatientId = PatientId.Value;
+                _context.PatientMedicalProfiles.Add(model);
+            }
+            else
+            {
+                profile.MedicalAllergies = model.MedicalAllergies;
+                profile.MedicalChronicDiseases = model.MedicalChronicDiseases;
+                profile.MedicalPastIllness = model.MedicalPastIllness;
+                profile.MedicalNotes = model.MedicalNotes;
             }
             return View(patient);
         }
 
-        // GET: Patients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.SaveChanges();
+            return RedirectToAction("Profile");
+        }
 
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.PatientId == id);
-            if (patient == null)
+        public IActionResult Dashboard()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var patient = _context.Patients.Find(PatientId);
+
+            var nextAppointment = _context.Appointments
+                .Where(a => a.PatientId == PatientId)
+                .OrderBy(a => a.AppointmentDate)
+                .FirstOrDefault();
+
+            var totalAppointments = _context.Appointments
+                .Count(a => a.PatientId == PatientId);
+
+            var totalPrescriptions = _context.PhysicianPrescrips
+                .Include(p => p.PhysicianAdvice)
+                .ThenInclude(pa => pa.Schedule)
+                .ThenInclude(s => s.Appointment)
+                .Count(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == PatientId);
+
+            var pendingRequests = _context.DrugRequests
+                .Where(r => r.RequestStatus == "Pending")
+                .Count();
+
+            var vm = new PatientDashboardViewModel
             {
-                return NotFound();
-            }
+                Patient = patient,
+                NextAppointment = nextAppointment,
+                TotalPrescriptions = totalPrescriptions,
+                PendingDrugRequests = pendingRequests
+            };
+
+            ViewBag.TotalAppointments = totalAppointments;
+
+            return View(vm);
+        }
+
+        public IActionResult Profile()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var patient = _context.Patients
+    .Include(p => p.PatientMedicalProfile)
+    .FirstOrDefault(p => p.PatientId == PatientId);
 
             return View(patient);
         }
 
-        // POST: Patients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient != null)
-            {
-                _context.Patients.Remove(patient);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return View(patient);
         }
+
+        public IActionResult EditProfile()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var patient = _context.Patients.Find(PatientId);
+            return View(patient);
+        }
+
+        [HttpPost]
+        public IActionResult EditProfile(Patient model)
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            var patient = _context.Patients.Find(PatientId);
+
+            patient.PatientName = model.PatientName;
+            patient.Phone = model.Phone;
+            patient.Address = model.Address;
+
+            _context.SaveChanges();
+            return RedirectToAction("Profile");
 
         private bool PatientExists(int id)
         {
@@ -154,3 +145,16 @@ namespace MediClinic.Controllers
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

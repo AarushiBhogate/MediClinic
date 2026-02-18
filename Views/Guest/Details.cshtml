@@ -1,0 +1,20 @@
+﻿@model MediClinic.Models.Drug
+
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h3>@Model.DrugTitle</h3>
+        <hr />
+
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Dosage:</strong> @Model.Dosage</p>
+        <p>
+            <strong>Expiry:</strong> @Model.Expiry?.ToString("dd-MM-yyyy")
+        </p>
+        <p><strong>Status:</strong> @Model.DrugStatus</p>
+
+        <a asp-action="Drugs" class="btn btn-outline-success mt-3">
+            Back
+        </a>
+    </div>
+</div>

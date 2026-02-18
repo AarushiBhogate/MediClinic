@@ -1,0 +1,513 @@
+﻿@model List<MediClinic.Models.MyScheduleVM>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My Schedule</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7fb;
+            font-family: 'Inter',sans-serif;
+        }
+
+        .page-wrap {
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .card-modern {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        }
+
+        /* ===== CONTROLS ===== */
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            border-radius: 10px;
+        }
+
+        .view-toggle button {
+            border-radius: 20px;
+        }
+
+        /* ===== TABLE ===== */
+
+        .table-modern {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+            .table-modern thead th {
+                border: none;
+                font-size: 13px;
+                text-transform: uppercase;
+                color: #64748b;
+            }
+
+            .table-modern tbody tr {
+                background: #f9fbfd;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+                .table-modern tbody tr:hover {
+                    background: #e8f1f8;
+                }
+
+            .table-modern td {
+                border: none;
+                padding: 14px;
+            }
+
+        /* Status */
+
+        .badge-soft {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-confirmed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-pending {
+            background: #fef9c3;
+            color: #b45309;
+        }
+
+        /* Pagination */
+
+        .pagination button {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin: 0 3px;
+        }
+
+            .pagination button.active {
+                background: #14b8a6;
+                color: white;
+            }
+
+        .timeline-card {
+            background: #f9fbfd;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+
+        .schedule-wrapper {
+            max-width: 1150px;
+            margin: 40px auto;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .left-header {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: #eef2f7;
+            padding: 8px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #334155;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+            .back-btn:hover {
+                background: #e2e8f0;
+            }
+
+        .schedule-title {
+            font-weight: 700;
+        }
+
+        .schedule-subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .schedule-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        /* Table Improvements */
+
+        .table-modern tbody tr {
+            border-radius: 12px;
+            transition: 0.2s ease;
+        }
+
+            .table-modern tbody tr:hover {
+                transform: scale(1.01);
+                background: #f1f5f9;
+            }
+
+        /* Status badges */
+
+        .badge-soft {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Pagination */
+
+        .pagination-modern {
+            text-align: center;
+        }
+
+        .page-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 14px;
+            margin: 0 4px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+            .page-btn:hover {
+                background: #e2e8f0;
+            }
+
+            .page-btn.active {
+                background: #14b8a6;
+                color: white;
+            }
+        /* Toggle buttons */
+
+        .toggle-wrapper {
+            background: #f1f5f9;
+            border-radius: 30px;
+            padding: 4px;
+            display: flex;
+        }
+
+        .toggle-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            transition: 0.2s;
+        }
+
+            .toggle-btn.active {
+                background: white;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                color: #0f172a;
+            }
+
+
+        /* Timeline */
+
+        .timeline-modern {
+            display: flex;
+            gap: 20px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: #14b8a6;
+            min-width: 80px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+
+        /* Improve table header spacing */
+
+        .table-modern thead th {
+            padding-bottom: 12px;
+        }
+
+
+        /* Better search box */
+
+        .search-box input {
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="schedule-wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <div class="schedule-header">
+            <div class="left-header">
+                <a href="/Physician/Dashboard" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+
+                <div>
+                    <h2 class="schedule-title mb-1">My Schedule</h2>
+                    <p class="schedule-subtitle mb-0">
+                        Your upcoming and completed appointments
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ===== MAIN CARD ===== -->
+        <div class="schedule-card">
+
+            <!-- ===== CONTROLS ===== -->
+            <div class="controls">
+
+                <div class="search-box flex-grow-1">
+                    <input type="text" id="searchInput"
+                           class="form-control"
+                           placeholder="Search patient or reason..." />
+                </div>
+
+                <div class="d-flex gap-2 align-items-center">
+
+                    <select id="dateFilter" class="form-select">
+                        <option value="all">All</option>
+                        <option value="today">Today</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+
+                    <div class="toggle-wrapper">
+                        <button id="btnTable" class="toggle-btn active"
+                                onclick="showTable()">
+                            Table
+                        </button>
+
+                        <button id="btnTimeline" class="toggle-btn"
+                                onclick="showTimeline()">
+                            Timeline
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===== TABLE VIEW ===== -->
+            <div id="tableView">
+
+                <table class="table table-modern align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="scheduleTable">
+
+                        @foreach (var item in Model)
+                        {
+                            <tr onclick="openModal('@item.PatientName','@item.Reason','@item.ScheduleStatus')">
+                                <td>@(item.ScheduleDate.HasValue? item.ScheduleDate.Value.ToString("dd MMM yyyy") : "-")</td>
+                                <td>@item.ScheduleTime</td>
+                                <td class="fw-semibold">@item.PatientName</td>
+                                <td class="text-muted">@item.Reason</td>
+                                <td>
+                                    @if (item.ScheduleStatus == "Confirmed")
+                                    {
+                                        <span class="badge-soft badge-confirmed">Confirmed</span>
+                                    }
+                                    else if (item.ScheduleStatus == "Completed")
+                                    {
+                                        <span class="badge-soft badge-completed">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-soft badge-pending">@item.ScheduleStatus</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <!-- ===== TIMELINE VIEW ===== -->
+            <div id="timelineView" style="display:none;">
+
+                @foreach (var item in Model)
+                {
+                    <div class="timeline-modern">
+                        <div class="timeline-date">
+                            @(item.ScheduleDate.HasValue? item.ScheduleDate.Value.ToString("dd MMM") : "-")
+                        </div>
+
+                        <div class="timeline-content">
+                            <div class="fw-semibold">@item.PatientName</div>
+                            <div class="text-muted small">@item.Reason</div>
+                            <div class="small text-secondary mt-1">
+                                @item.ScheduleTime
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- ===== PAGINATION ===== -->
+            <div class="pagination-modern mt-4" id="pagination"></div>
+
+        </div>
+
+    </div>
+    <script>
+                function showTimeline(){
+            document.getElementById("tableView").style.display="none";
+            document.getElementById("timelineView").style.display="block";
+
+            document.getElementById("btnTable").classList.remove("active");
+            document.getElementById("btnTimeline").classList.add("active");
+        }
+
+        function showTable(){
+            document.getElementById("tableView").style.display="block";
+            document.getElementById("timelineView").style.display="none";
+
+            document.getElementById("btnTable").classList.add("active");
+            document.getElementById("btnTimeline").classList.remove("active");
+        }
+
+    </script>
+    <script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let value = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#scheduleTable tr");
+
+            rows.forEach(function (row) {
+                let patient = row.cells[2].innerText.toLowerCase();
+                let reason = row.cells[3].innerText.toLowerCase();
+
+                if (patient.includes(value) || reason.includes(value)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById("dateFilter").addEventListener("change", function () {
+
+            let selected = this.value;
+            let rows = document.querySelectorAll("#scheduleTable tr");
+            let today = new Date();
+
+            rows.forEach(function (row) {
+
+                let dateText = row.cells[0].innerText;
+                let rowDate = new Date(dateText);
+
+                if (selected === "all") {
+                    row.style.display = "";
+                }
+                else if (selected === "today") {
+                    if (rowDate.toDateString() === today.toDateString()) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+                else if (selected === "upcoming") {
+                    if (rowDate >= today) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+
+            });
+        });
+    </script>
+    <script>
+        let rowsPerPage = 5;
+        let rows = document.querySelectorAll("#scheduleTable tr");
+        let pageCount = Math.ceil(rows.length / rowsPerPage);
+        let pagination = document.getElementById("pagination");
+
+        function showPage(page) {
+            rows.forEach((row, index) => {
+                row.style.display = (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage)
+                    ? ""
+                    : "none";
+            });
+
+            document.querySelectorAll(".page-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById("page" + page).classList.add("active");
+        }
+
+        for (let i = 1; i <= pageCount; i++) {
+            let btn = document.createElement("button");
+            btn.innerText = i;
+            btn.className = "page-btn";
+            btn.id = "page" + i;
+            btn.onclick = () => showPage(i);
+            pagination.appendChild(btn);
+        }
+
+        showPage(1);
+    </script>
+
+
+</body>
+</html>
