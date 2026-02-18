@@ -1,0 +1,67 @@
+﻿@model IEnumerable<MediClinic.Models.Supplier>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Suppliers";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h3>Supplier List</h3>
+
+        <a asp-action="CreateSupplier" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Supplier
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th width="220px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SupplierName</td>
+                        <td>@item.Address</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        <td>
+                            @if (item.SupplierStatus == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (item.SupplierStatus == "Pending")
+                            {
+                                <span class="badge bg-warning">Pending</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@item.SupplierStatus</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="EditSupplier" asp-route-id="@item.SupplierId" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a asp-action="SupplierDetails" asp-route-id="@item.SupplierId" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a asp-action="DeleteSupplier" asp-route-id="@item.SupplierId" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

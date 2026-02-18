@@ -83,6 +83,7 @@ namespace MediClinic
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseAuthentication();
 
             app.UseStaticFiles();
 

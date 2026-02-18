@@ -1,0 +1,48 @@
+﻿@model MediClinic.Models.Schedule
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+
+<h4>Assign Doctor</h4>
+
+<form asp-action="AssignDoctor">
+
+    <input type="hidden" name="AppointmentId" value="@ViewBag.Appointment.AppointmentId" />
+
+    <div>
+        <label>Patient</label>
+        <input class="form-control"
+               value="@ViewBag.Appointment.Patient.PatientName"
+               readonly />
+    </div>
+
+    <div>
+        <label>Date</label>
+        <input asp-for="ScheduleDate" type="date" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Time</label>
+        <input asp-for="ScheduleTime" type="time" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Physician</label>
+        <select asp-for="PhysicianId"
+                asp-items="ViewBag.PhysicianId"
+                class="form-control"
+                required>
+            <option value="">Select Doctor</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">
+        Assign Doctor
+    </button>
+</form>

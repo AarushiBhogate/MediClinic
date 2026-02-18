@@ -1,0 +1,93 @@
+﻿@model IEnumerable<MediClinic.Models.PurchaseOrderHeader>
+
+@{
+    Layout = "~/Views/Shared/_SupplierLayout.cshtml";
+    ViewData["Title"] = "Supplier Dashboard";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Orders</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.TotalOrders</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-dark bg-warning mb-3">
+            <div class="card-header">Pending Orders</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.Pending</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Accepted Orders</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.Accepted</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Declined Orders</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.Declined</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header">
+        <h4>Purchase Orders</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>PO No</th>
+                    <th>PO Date</th>
+                    <th>Status</th>
+                    <th>Total Items</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var po in Model)
+                {
+                    <tr>
+                        <td>@po.Pono</td>
+                        <td>@po.Podate</td>
+                        <td class="text-center">
+                            @if (po.PurchaseOrderStatus?.ToLower() == "pending")
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else if (po.PurchaseOrderStatus?.ToLower() == "accepted")
+                            {
+                                <span class="badge bg-success">Accepted</span>
+                            }
+                            else if (po.PurchaseOrderStatus?.ToLower() == "declined")
+                            {
+                                <span class="badge bg-danger">Declined</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Unknown</span>
+                            }
+                        </td>
+                        <td class="text-center">@po.PurchaseProductLines?.Count() ?? 0</td>
+                        <td class="text-center">
+                            <a asp-action="Details" asp-route-id="@po.Poid" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
