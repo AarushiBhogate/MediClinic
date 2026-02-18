@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Views\Billing\" />
     <Folder Include="Views\Profile\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>

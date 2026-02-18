@@ -1,170 +1,201 @@
 ﻿@model MediClinic.ViewModels.PatientDashboardViewModel
 @{
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
-}
-@{
     ViewData["Title"] = "Patient Dashboard";
 }
 
 <style>
-    body {
-        background: #f4f6f9;
-    }
-
-    .welcome-box {
-        background: linear-gradient(135deg, #4f46e5, #3b82f6);
-        color: white;
-        border-radius: 20px;
+    .dashboard-wrapper {
         padding: 30px;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.08);
     }
 
-    .dashboard-card {
+    .profile-header {
+        background: linear-gradient(135deg,#0f766e,#2563eb);
+        color: white;
+        padding: 30px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+        .profile-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
         background: white;
-        border-radius: 20px;
-        padding: 25px;
-        height: 190px;
+        padding: 20px;
+        border-radius: 16px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.06);
         transition: 0.3s ease;
+        text-align: center;
     }
 
-        .dashboard-card:hover {
+        .stat-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.1);
         }
 
-    .card-title {
+    .stat-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .appointment-card {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .doctor-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .doctor-photo {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+    }
+
+    .appointment-details h5 {
+        margin-bottom: 5px;
+    }
+
+    .appointment-meta {
         font-size: 14px;
-        color: #6b7280;
-        letter-spacing: 1px;
+        color: #555;
     }
 
-    .card-value {
-        font-size: 26px;
-        font-weight: 600;
-        margin-top: 10px;
-        color: #111827;
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border-radius: 8px;
+        padding: 8px 18px;
+        border: none;
     }
-
-    .card-link {
-        margin-top: 15px;
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        color: #3b82f6;
-    }
-
-    .quick-btn {
-        border-radius: 12px;
-        padding: 12px 30px;
-        font-weight: 500;
-        transition: 0.3s ease;
-    }
-
-        .quick-btn:hover {
-            transform: translateY(-2px);
-        }
 </style>
 
-<div class="container py-4">
+<div class="dashboard-wrapper">
 
-    <!-- Welcome Section -->
-    <div class="welcome-box mb-5">
-        <h3 class="fw-semibold">
-            Welcome back, @Model.Patient?.PatientName 👋
-        </h3>
-        <p class="mb-0">Here’s your personal health overview</p>
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+        <div>
+            <h3>Welcome back, @Model.Patient?.PatientName 👋</h3>
+            <p>Your complete health overview at a glance.</p>
+        </div>
+
+        <!-- Profile Photo -->
+        <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
+             alt="Patient" />
     </div>
 
-    <!-- Cards -->
-    <div class="row g-4">
+    <!-- STATISTICS CARDS -->
+    <div class="stats-grid">
 
-        <div class="col-md-3">
-            <div class="dashboard-card">
-                <div class="card-title">NEXT APPOINTMENT</div>
-                <div class="card-value">
-                    @(Model.NextAppointment?.AppointmentDate?.ToString("dd MMM yyyy")
-                                        ?? "No Appointment")
-                </div>
-                <a asp-controller="Appointments"
-                   asp-action="Index"
-                   class="card-link">
-                    View details →
-                </a>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <h6>Next Appointment</h6>
+
+            @if (Model.NextAppointment?.AppointmentDate != null)
+            {
+                <strong>
+                    @Model.NextAppointment.AppointmentDate.Value.ToString("dd MMM yyyy")
+                </strong>
+            }
+            else
+            {
+                <strong>No Appointment</strong>
+            }
         </div>
 
-        <div class="col-md-3">
-            <div class="dashboard-card">
-                <div class="card-title">PRESCRIPTIONS</div>
-                <div class="card-value">
-                    @Model.TotalPrescriptions
-                </div>
-                <a asp-controller="Prescriptions"
-                   asp-action="Index"
-                   class="card-link">
-                    View →
-                </a>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">💊</div>
+            <h6>Prescriptions</h6>
+            <strong>@Model.TotalPrescriptions</strong>
         </div>
 
-        <div class="col-md-3">
-            <div class="dashboard-card">
-                <div class="card-title">PENDING REQUESTS</div>
-                <div class="card-value">
-                    @Model.PendingDrugRequests
-                </div>
-                <a asp-controller="DrugRequests"
-                   asp-action="Index"
-                   class="card-link">
-                    View →
-                </a>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <h6>Pending Requests</h6>
+            <strong>@Model.PendingDrugRequests</strong>
         </div>
 
-        <div class="col-md-3">
-            <div class="dashboard-card">
-                <div class="card-title">MY PROFILE</div>
-                <div class="card-value">
-                    @Model.Patient?.PatientName
-                </div>
-                <a asp-controller="Patients"
-                   asp-action="Profile"
-                   class="card-link">
-                    Manage →
-                </a>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">✔</div>
+            <h6>Status</h6>
+            <strong>Active</strong>
         </div>
 
     </div>
 
-    <!-- Quick Actions -->
-    <div class="mt-5">
-        <h5 class="fw-semibold mb-3">Quick Actions</h5>
+    <!-- UPCOMING APPOINTMENT SECTION -->
+    @if (Model.NextAppointment?.AppointmentDate != null)
+    {
+        <div class="appointment-card">
 
-        <div class="d-flex gap-3 flex-wrap">
-            <a asp-controller="Appointments"
-               asp-action="Create"
-               class="btn btn-primary quick-btn">
-                Book Appointment
-            </a>
+            <div class="doctor-info">
 
-            <a asp-controller="User"
-               asp-action="ChangePassword"
-               class="btn btn-outline-dark quick-btn">
-                Change Password
-            </a>
+                <!-- Doctor Image -->
+                <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7"
+                     class="doctor-photo" />
 
-            <a asp-controller="User"
-               asp-action="Logout"
-               class="btn btn-outline-danger quick-btn">
-                Logout
-            </a>
+                <div class="appointment-details">
+                    <h5>Upcoming Appointment</h5>
+
+                    <div class="appointment-meta">
+                        <div>
+                            <strong>Date:</strong>
+                            @Model.NextAppointment.AppointmentDate.Value.ToString("dd MMM yyyy")
+                        </div>
+
+                        <div>
+                            <strong>Time:</strong>
+                            @Model.NextAppointment.AppointmentDate.Value.ToString("hh:mm tt")
+                        </div>
+
+                        <div>
+                            <strong>Status:</strong>
+                            @Model.NextAppointment.ScheduleStatus
+                        </div>
+
+                        <div>
+                            <strong>Reason:</strong>
+                            @Model.NextAppointment.Reason
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="btn-view">View Details</button>
+
         </div>
-    </div>
+    }
 
 </div>
+
+
+
+
 
 
 

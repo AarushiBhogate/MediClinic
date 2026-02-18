@@ -4,13 +4,20 @@
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
 }
-<h2>Appointment Details</h2>
 
-<div class="card shadow p-4 mt-3">
+<div class="custom-card">
+
+    <h4>Appointment Details</h4>
+    <hr />
 
     <p>
         <strong>Date:</strong>
-        @Model.AppointmentDate?.ToString("dd MMM yyyy HH:mm")
+        @Model.AppointmentDate?.ToString("dd MMM yyyy")
+    </p>
+
+    <p>
+        <strong>Time:</strong>
+        @Model.AppointmentDate?.ToString("hh:mm tt")
     </p>
 
     <p>
@@ -28,16 +35,9 @@
         @Model.ScheduleStatus
     </p>
 
-    <p>
-        <strong>Notes:</strong>
-        @Model.Note
-    </p>
+    <a asp-action="Index"
+       class="btn btn-secondary mt-3">
+        Back
+    </a>
 
 </div>
-
-<br />
-
-<a asp-action="Index"
-   class="btn btn-secondary">
-    Back to List
-</a>
