@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<MediClinic.Models.Appointment>
 @{
-    ViewData["Title"] = "My Appointments";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Appointments";
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
 }
 
@@ -31,15 +32,18 @@
 <div class="custom-card">
     <table class="table align-middle">
 
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Reason</th>
-                <th>Criticality</th>
-                <th>Status</th>
-                <th class="text-end">Action</th>
-            </tr>
-        </thead>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Reason</th>
+            <th>Criticality</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
 
         <tbody>
             @foreach (var item in Model)
@@ -59,20 +63,24 @@
                         </span>
                     </td>
 
-                    <td>
-                        @if (item.ScheduleStatus == "Scheduled")
-                        {
-                            <span class="badge bg-success">Scheduled</span>
-                        }
-                        else if (item.ScheduleStatus == "Pending")
-                        {
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">Cancelled</span>
-                        }
-                    </td>
+                <td>
+                    @if (item.ScheduleStatus == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                    else if (item.ScheduleStatus == "Scheduled")
+                    {
+                        <span class="badge bg-primary">Scheduled</span>
+                    }
+                    else if (item.ScheduleStatus == "Cancelled")
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                </td>
 
                     <td class="text-end">
 

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MediClinic</title>
+
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/css/physician-theme.css" asp-append-version="true" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,7 +27,10 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MediClinic.styles.css" asp-append-version="true" />
 </head>
+
 <body>
+
+    <!-- ================= NAVBAR ================= -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top px-4">
             <div class="container-fluid">
@@ -55,6 +59,7 @@
                         </li>
 
                     </ul>
+
                 </div>
             </div>
         </nav>
@@ -62,14 +67,19 @@
     </header>
     @RenderBody()
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - MediClinic - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container text-center">
+            &copy; 2026 - MediClinic |
+            <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
         </div>
     </footer>
+
+    <!-- ================= SCRIPTS ================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
     <script>
         const videos = document.querySelectorAll(".bg-video");

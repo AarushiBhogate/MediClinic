@@ -1,10 +1,13 @@
 ﻿using MediClinic.Models;
 using MediClinic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MediClinic.Models;
 
 namespace MediClinic.Controllers
 {
+    public class PatientsController : Controller
     public class PatientsController : PatientBaseController
     {
         private readonly MediClinicDbContext _context;
@@ -52,6 +55,8 @@ namespace MediClinic.Controllers
                 profile.MedicalPastIllness = model.MedicalPastIllness;
                 profile.MedicalNotes = model.MedicalNotes;
             }
+            return View(patient);
+        }
 
             _context.SaveChanges();
             return RedirectToAction("Profile");
@@ -115,6 +120,7 @@ namespace MediClinic.Controllers
     .FirstOrDefault(p => p.PatientId == PatientId);
 
             return View(patient);
+        }
 
             return View(patient);
         }
@@ -174,6 +180,10 @@ namespace MediClinic.Controllers
 
 
 
+        private bool PatientExists(int id)
+        {
+            return _context.Patients.Any(e => e.PatientId == id);
+        }
     }
 }
 

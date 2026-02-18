@@ -1,0 +1,35 @@
+﻿@model List<MediClinic.Models.DrugRequest>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Drug Requests";
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h3>Drug Request List</h3>
+
+<h2>My Drug Requests</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DrugRequestId</td>
+                <td>@item.RequestStatus</td>
+                <td>@item.RequestDate?.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+    </div>
+</div>
