@@ -18,17 +18,20 @@ namespace MediClinic.Controllers
             var check = RequireLogin();
             if (check != null) return check;
 
-            var list = _context.PhysicianAdvices
+            var data = _context.PhysicianAdvices
                 .Include(a => a.Schedule)
                     .ThenInclude(s => s.Physician)
                 .Include(a => a.Schedule)
                     .ThenInclude(s => s.Appointment)
+                .Include(a => a.PhysicianPrescrips)
+                    .ThenInclude(p => p.Drug)
                 .Where(a => a.Schedule.Appointment.PatientId == PatientId)
                 .OrderByDescending(a => a.PhysicianAdviceId)
                 .ToList();
 
-            return View(list);
+            return View(data);
         }
+
 
         public IActionResult Details(int id)
         {

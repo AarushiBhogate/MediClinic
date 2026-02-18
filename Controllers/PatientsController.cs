@@ -3,6 +3,7 @@ using MediClinic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MediClinic.Controllers
 {
@@ -14,31 +15,42 @@ namespace MediClinic.Controllers
         {
             _context = context;
         }
-        // ADMIN PATIENT LIST
+
+        // ================= ADMIN PATIENT LIST =================
         public async Task<IActionResult> Index()
         {
             return View(await _context.Patients.ToListAsync());
         }
+
+        // ================= DASHBOARD =================
         public IActionResult Dashboard()
         {
             var check = RequireLogin();
             if (check != null) return check;
 
-            var patient = _context.Patients.Find(PatientId);
+            if (PatientId == null)
+                return RedirectToAction("Login", "User");
+
+            var patientId = PatientId.Value;
+
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == patientId);
 
             var nextAppointment = _context.Appointments
-                .Where(a => a.PatientId == PatientId)
+                .Where(a => a.PatientId == patientId &&
+                            a.ScheduleStatus != "Cancelled" &&
+                            a.AppointmentDate >= DateTime.Now)
                 .OrderBy(a => a.AppointmentDate)
                 .FirstOrDefault();
 
             var totalAppointments = _context.Appointments
-                .Count(a => a.PatientId == PatientId);
+                .Count(a => a.PatientId == patientId);
 
             var totalPrescriptions = _context.PhysicianPrescrips
                 .Include(p => p.PhysicianAdvice)
                 .ThenInclude(pa => pa.Schedule)
                 .ThenInclude(s => s.Appointment)
-                .Count(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == PatientId);
+                .Count(p => p.PhysicianAdvice.Schedule.Appointment.PatientId == patientId);
 
             var pendingRequests = _context.DrugRequests
                 .Where(r => r.RequestStatus == "Pending")
@@ -57,6 +69,7 @@ namespace MediClinic.Controllers
             return View(vm);
         }
 
+        // ================= PROFILE =================
         public IActionResult Profile()
         {
             var check = RequireLogin();
@@ -69,6 +82,7 @@ namespace MediClinic.Controllers
             return View(patient);
         }
 
+        // ================= EDIT PROFILE =================
         public IActionResult EditProfile()
         {
             var check = RequireLogin();
@@ -85,6 +99,8 @@ namespace MediClinic.Controllers
             if (check != null) return check;
 
             var patient = _context.Patients.Find(PatientId);
+            if (patient == null)
+                return NotFound();
 
             patient.PatientName = model.PatientName;
             patient.Phone = model.Phone;
@@ -94,6 +110,7 @@ namespace MediClinic.Controllers
             return RedirectToAction("Profile");
         }
 
+        // ================= MEDICAL PROFILE =================
         public IActionResult EditMedicalProfile()
         {
             var check = RequireLogin();

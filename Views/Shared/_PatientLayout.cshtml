@@ -29,9 +29,11 @@
             width: 230px;
             background: #1e3a5f;
             color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 20px;
         }
 
             .sidebar h4 {
@@ -53,6 +55,7 @@
 
         /* RIGHT SIDE */
         .main-wrapper {
+            margin-left: 230px; /* IMPORTANT */
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -109,7 +112,8 @@
             <i class="bi bi-calendar-event"></i> Appointments
         </a>
 
-        <a asp-controller="PhysicianPrescrip" asp-action="Index">
+        <a asp-controller="Prescriptions" asp-action="Index">
+
             <i class="bi bi-file-earmark-medical"></i> Prescriptions
         </a>
 

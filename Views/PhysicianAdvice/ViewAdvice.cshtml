@@ -1,65 +1,75 @@
 ﻿@{
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
-}
-@{
-    ViewData["Title"] = "View Advice";
+    ViewData["Title"] = "Advice Details";
     var schedule = ViewBag.Schedule as MediClinic.Models.Schedule;
     var advice = ViewBag.Advice as MediClinic.Models.PhysicianAdvice;
 }
+
 <div class="phys-container">
 
-    <div class="phys-header">
-        <h2 class="phys-title">Advice Details</h2>
-        <p class="phys-subtitle">
-            View doctor advice for this appointment
-        </p>
+    <!-- Standard Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="phys-title mb-1">Advice Details</h2>
+            <p class="phys-subtitle">
+                View doctor advice for this appointment
+            </p>
+        </div>
+
+        <a class="btn btn-outline-teal"
+           href="/PhysicianAdvice/Index">
+            ← Back
+        </a>
     </div>
 
     <div class="phys-card">
 
+        <!-- Appointment Info -->
         <div class="phys-info-grid">
             <div class="phys-info-item">
                 <div class="phys-info-label">Patient</div>
                 <div class="phys-info-value">
-                    @schedule?.Appointment?.Patient?.PatientName
+                    @(schedule?.Appointment?.Patient?.PatientName ?? "N/A")
                 </div>
             </div>
 
             <div class="phys-info-item">
                 <div class="phys-info-label">Date</div>
                 <div class="phys-info-value">
-                    @schedule?.ScheduleDate
+                    @(schedule?.ScheduleDate?.ToString() ?? "N/A")
                 </div>
             </div>
 
             <div class="phys-info-item">
                 <div class="phys-info-label">Time</div>
                 <div class="phys-info-value">
-                    @schedule?.ScheduleTime
+                    @(schedule?.ScheduleTime ?? "N/A")
                 </div>
             </div>
 
             <div class="phys-info-item">
                 <div class="phys-info-label">Reason</div>
                 <div class="phys-info-value">
-                    @schedule?.Appointment?.Reason
+                    @(schedule?.Appointment?.Reason ?? "N/A")
                 </div>
             </div>
         </div>
 
         <div class="phys-divider"></div>
 
+        <!-- Advice Section -->
         <div class="mb-4">
             <div class="fw-semibold mb-2">Advice</div>
             <div class="p-3 bg-light rounded-3">
-                @advice?.Advice
+                @(string.IsNullOrEmpty(advice?.Advice) ? "Not Provided" : advice.Advice)
             </div>
         </div>
 
+        <!-- Doctor Note -->
         <div class="mb-4">
             <div class="fw-semibold mb-2">Doctor Note</div>
             <div class="p-3 bg-light rounded-3">
-                @advice?.Note
+                @(string.IsNullOrEmpty(advice?.Note) ? "Not Provided" : advice.Note)
             </div>
         </div>
 
@@ -71,7 +81,7 @@
 
             <a class="btn btn-outline-teal"
                href="/PhysicianAdvice/Index">
-                Back
+                Cancel
             </a>
         </div>
 

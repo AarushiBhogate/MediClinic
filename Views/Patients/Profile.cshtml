@@ -144,24 +144,30 @@
 
         <div class="info-grid">
 
-            <div class="info-box">
-                <label>Allergies</label>
-                <div>@Model.PatientMedicalProfile?.MedicalAllergies ?? "Not Provided"</div>
+            <div>
+                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalAllergies)
+                                ? "Not Provided"
+                                : Model.PatientMedicalProfile.MedicalAllergies)
             </div>
 
-            <div class="info-box">
-                <label>Chronic Diseases</label>
-                <div>@Model.PatientMedicalProfile?.MedicalChronicDiseases ?? "Not Provided"</div>
+            <div>
+                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalChronicDiseases)
+                                ? "Not Provided"
+                                : Model.PatientMedicalProfile.MedicalChronicDiseases)
             </div>
 
-            <div class="info-box">
-                <label>Past Illness</label>
-                <div>@Model.PatientMedicalProfile?.MedicalPastIllness ?? "Not Provided"</div>
+
+            <div>
+                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalPastIllness)
+                                ? "Not Provided"
+                                : Model.PatientMedicalProfile.MedicalPastIllness)
             </div>
 
-            <div class="info-box">
-                <label>Notes</label>
-                <div>@Model.PatientMedicalProfile?.MedicalNotes ?? "Not Provided"</div>
+
+            <div>
+                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalNotes)
+                                ? "Not Provided"
+                                : Model.PatientMedicalProfile.MedicalNotes)
             </div>
 
         </div>

@@ -1,0 +1,78 @@
+﻿@model MediClinic.Models.ModelViews.AssignAppointmentVM
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Assign Appointment";
+}
+
+<h2>Assign Appointment</h2>
+
+<div class="card p-4 shadow-sm">
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Patient Name</label>
+        <input type="text" class="form-control" value="@Model.PatientName" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Requested Date</label>
+        <input type="text" class="form-control"
+               value="@Model.RequestedDate?.ToString("dd-MMM-yyyy")"
+               readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Required Specialization</label>
+        <input type="text" class="form-control"
+               value="@Model.RequiredSpecialization"
+               readonly />
+    </div>
+
+    <hr />
+
+    <form asp-action="AssignAppointment" method="post">
+
+        <input type="hidden" asp-for="AppointmentId" />
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Select Doctor</label>
+            <select asp-for="SelectedPhysicianId" class="form-select" required>
+                <option value="">-- Select Doctor --</option>
+                @foreach (var doc in Model.AvailableDoctors)
+                {
+                    <option value="@doc.PhysicianId">
+                        @doc.PhysicianName (@doc.Specialization)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Confirmed Date</label>
+            <input asp-for="ConfirmedDate"
+                   type="date"
+                   class="form-control"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Confirmed Time</label>
+            <input asp-for="ConfirmedTime"
+                   type="time"
+                   class="form-control"
+                   required />
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">
+                Confirm & Schedule
+            </button>
+
+            <a asp-action="Appointments" class="btn btn-secondary ms-2">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>

@@ -87,10 +87,11 @@
         font-weight: 600;
     }
 
-    /* ================= TABLE ================= */
+    /* ================= MODERN TABLE ================= */
 
     .modern-table {
-        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0 12px;
     }
 
         .modern-table thead th {
@@ -98,23 +99,36 @@
             text-transform: uppercase;
             color: #94a3b8;
             font-weight: 600;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 14px;
+            padding: 0 12px 10px 12px;
+            border: none;
         }
 
         .modern-table tbody tr {
-            border-bottom: 1px solid #f1f5f9;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.04);
+            border-radius: 12px;
             transition: 0.2s ease;
         }
 
             .modern-table tbody tr:hover {
-                background: #f8fafc;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(15,23,42,0.08);
             }
 
-        .modern-table td {
-            padding: 16px 10px;
+        .modern-table tbody td {
+            padding: 18px 14px;
+            border: none;
             vertical-align: middle;
         }
+
+        .modern-table tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .modern-table tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
 
     .fw-semibold {
         font-weight: 600;
@@ -155,40 +169,40 @@
             text-overflow: ellipsis;
         }
 
-    /* ================= PILLS ================= */
+    /* ===== PILLS CLEAN ===== */
 
     .pill {
         padding: 6px 14px;
-        border-radius: 30px;
+        border-radius: 999px;
         font-size: 12px;
         font-weight: 600;
         display: inline-block;
     }
 
-    .low {
-        background: #dcfce7;
-        color: #15803d;
-    }
+        .pill.low {
+            background: #dcfce7;
+            color: #15803d;
+        }
 
-    .medium {
-        background: #fef9c3;
-        color: #b45309;
-    }
+        .pill.medium {
+            background: #fef9c3;
+            color: #b45309;
+        }
 
-    .high {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+        .pill.high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
 
-    .confirmed {
-        background: #dcfce7;
-        color: #15803d;
-    }
+        .pill.confirmed {
+            background: #dcfce7;
+            color: #15803d;
+        }
 
-    .completed {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
+        .pill.completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
 
     /* ================= BUTTONS ================= */
 
@@ -315,9 +329,10 @@
                                 <td class="text-muted">@item.Reason</td>
 
                                 <td>
-                                    <span class="status-pill confirmed">
+                                    <span class="pill confirmed">
                                         Confirmed
                                     </span>
+
                                 </td>
 
                                 <td class="action-cell">
@@ -394,14 +409,15 @@
                                 <td class="fw-semibold">@item.PatientName</td>
 
                                 <td>
-                                    <span class="crit-pill @criticalClass">
+                                    <span class="pill @item.Criticality?.ToLower()">
                                         @item.Criticality
                                     </span>
+
                                 </td>
 
                                 <td class="text-muted">@item.Reason</td>
 
-                                <td>
+                                <td class="action-cell">
                                     <span class="status-pill completed">
                                         Completed
                                     </span>
