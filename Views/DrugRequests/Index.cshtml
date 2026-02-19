@@ -1,8 +1,13 @@
 ﻿@model List<MediClinic.Models.DrugRequest>
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Drug Requests";
     Layout = "~/Views/Shared/_PatientLayout.cshtml";
 }
 
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h3>Drug Request List</h3>
 
 <h2>My Drug Requests</h2>
 
@@ -26,3 +31,5 @@
         }
     </tbody>
 </table>
+    </div>
+</div>

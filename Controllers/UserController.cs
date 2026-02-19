@@ -2,6 +2,13 @@
 using MediClinic.Models.ModelViews;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MediClinic.Controllers
 {
@@ -14,6 +21,7 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
+        // ================= REGISTER =================
         // ==============================
         // REGISTER (GET)
         // ==============================
@@ -114,6 +122,7 @@ namespace MediClinic.Controllers
         [HttpPost]
         public IActionResult Login(string UserName, string Password)
         {
+            // 1️⃣ Check if user exists & is Active
             var result = _context.Users.FirstOrDefault(x =>
                 x.UserName == UserName &&
                 x.Password == Password &&
@@ -147,7 +156,8 @@ namespace MediClinic.Controllers
             }
 
             if (result.Role == "Admin")
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Index", "Admin");
+
 
             return RedirectToAction("Index", "Home");
         }

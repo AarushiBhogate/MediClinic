@@ -9,7 +9,7 @@ public partial class Patient
 
     public string? PatientName { get; set; }
 
-    public DateOnly? Dob { get; set; }
+    public DateOnly? Dob{ get; set; }
 
     public string? Gender { get; set; }
 
@@ -23,6 +23,7 @@ public partial class Patient
 
     public string? PatientStatus { get; set; }
     public virtual PatientMedicalProfile? PatientMedicalProfile { get; set; }
+    //public string? ProfileImage { get; set; }
 
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

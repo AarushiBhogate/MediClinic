@@ -1,43 +1,90 @@
 ﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
     ViewData["Title"] = "Write Advice";
     var schedule = ViewBag.Schedule as MediClinic.Models.Schedule;
 }
 
 <div class="phys-container">
 
-    <h2 class="phys-title">Write Advice</h2>
-    <p class="phys-subtitle">Add doctor advice for the selected appointment</p>
-
-    <div class="phys-card phys-form">
-
-        <div class="mb-3 phys-info">
-            <div><b>Patient:</b> @schedule?.Appointment?.Patient?.PatientName</div>
-            <div><b>Criticality:</b> @schedule?.Appointment?.Criticality</div>
-            <div><b>Reason:</b> @schedule?.Appointment?.Reason</div>
-            <div><b>Note:</b> @schedule?.Appointment?.Note</div>
+    <!-- Standard Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="phys-title mb-1">Write Advice</h2>
+            <p class="phys-subtitle">
+                Add doctor advice for the selected appointment
+            </p>
         </div>
 
-        <hr />
+        <a class="btn btn-outline-teal"
+           href="/PhysicianAdvice/Index">
+            ← Back
+        </a>
+    </div>
 
+    <div class="phys-card">
+
+        <!-- Appointment Info -->
+        <div class="phys-info-grid">
+            <div class="phys-info-item">
+                <div class="phys-info-label">Patient</div>
+                <div class="phys-info-value">
+                    @(schedule?.Appointment?.Patient?.PatientName ?? "N/A")
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Criticality</div>
+                <div class="phys-info-value">
+                    @(schedule?.Appointment?.Criticality ?? "N/A")
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Reason</div>
+                <div class="phys-info-value">
+                    @(schedule?.Appointment?.Reason ?? "N/A")
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Note</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(schedule?.Appointment?.Note) ? "Not Provided" : schedule.Appointment.Note)
+                </div>
+            </div>
+        </div>
+
+        <div class="phys-divider"></div>
+
+        <!-- Form -->
         <form method="post" action="/PhysicianAdvice/Write">
-            <input type="hidden" name="scheduleId" value="@schedule?.ScheduleId" />
+            <input type="hidden"
+                   name="scheduleId"
+                   value="@schedule?.ScheduleId" />
 
-            <div class="mb-3">
-                <label>Advice *</label>
-                <textarea class="form-control phys-textarea" name="advice" required></textarea>
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Advice *</label>
+                <textarea class="form-control phys-textarea"
+                          name="advice"
+                          required></textarea>
             </div>
 
-            <div class="mb-3">
-                <label>Doctor Note</label>
-                <input class="form-control phys-input" name="note" />
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Doctor Note</label>
+                <input class="form-control phys-input"
+                       name="note" />
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-teal">
-                    Save Advice (Mark Completed)
+            <div class="d-flex gap-3">
+                <button type="submit"
+                        class="btn btn-teal">
+                    Save & Mark Completed
                 </button>
 
-                <a class="btn btn-outline-teal" href="/PhysicianAdvice/Index">Cancel</a>
+                <a class="btn btn-outline-teal"
+                   href="/PhysicianAdvice/Index">
+                    Cancel
+                </a>
             </div>
         </form>
 

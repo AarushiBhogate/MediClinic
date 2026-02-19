@@ -1,27 +1,49 @@
 ﻿@model List<MediClinic.Models.DrugRequest>
-
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
 @{
     ViewData["Title"] = "Drug Requests";
 }
+<div class="advice-wrapper">
 
-<div class="phys-container">
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Drug Requests</h2>
+            <p class="page-subtitle">
+                Request medicines from the clinic inventory
+            </p>
+        </div>
 
-    <h2 class="phys-title">Drug Requests</h2>
-    <p class="phys-subtitle">Request medicines from the clinic inventory</p>
+        <div class="header-actions">
+            <a class="btn-primary-action" href="/DrugRequest/Create">
+                + New Request
+            </a>
 
-    <div class="d-flex gap-2 mb-3">
-        <a class="btn btn-teal" href="/DrugRequest/Create">+ New Request</a>
-        <a class="btn btn-outline-teal" href="/Physician/Dashboard">Back</a>
+            <a class="btn-secondary-action" href="/Physician/Dashboard">
+                Back
+            </a>
+        </div>
     </div>
 
-    <div class="phys-card">
-        <div class="phys-table-wrap">
-            <table class="table phys-table">
+    <!-- CARD -->
+    <div class="section-card">
+
+        <div class="section-header">
+            <h5>All Requests</h5>
+            <span class="section-count">
+                @(Model?.Count ?? 0)
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table modern-table align-middle">
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Drugs Requested</th>
-                        <th style="width:200px;">Status</th>
+                        <th style="width:160px;">Status</th>
                     </tr>
                 </thead>
 
@@ -32,20 +54,15 @@
                         {
                             <tr>
                                 <td>@item.RequestDate</td>
-                                <td>@item.DrugsInfoText</td>
+
+                                <td class="fw-semibold text-muted">
+                                    @item.DrugsInfoText
+                                </td>
+
                                 <td>
-                                    @if (item.RequestStatus == "Pending")
-                                    {
-                                        <span class="badge-soft badge-pending">Pending</span>
-                                    }
-                                    else if (item.RequestStatus == "Approved")
-                                    {
-                                        <span class="badge-soft badge-confirmed">Approved</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge-soft badge-completed">@item.RequestStatus</span>
-                                    }
+                                    <span class="pill @item.RequestStatus.ToLower()">
+                                        @item.RequestStatus
+                                    </span>
                                 </td>
                             </tr>
                         }
@@ -61,6 +78,144 @@
                 </tbody>
             </table>
         </div>
+
     </div>
 
 </div>
+<style>
+    /* ===== HEADER ===== */
+
+    .advice-wrapper {
+        max-width: 1000px;
+        margin: 50px auto;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-weight: 700;
+        font-size: 28px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        margin-top: 4px;
+        font-size: 14px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    /* ===== CARD ===== */
+
+    .section-card {
+        background: white;
+        padding: 35px 40px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.04);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-count {
+        background: #eef2ff;
+        color: #4338ca;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* ===== TABLE ===== */
+
+    .modern-table thead th {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #94a3b8;
+        font-weight: 600;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .modern-table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: 0.2s ease;
+    }
+
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+    .modern-table td {
+        padding: 14px 0;
+    }
+
+    /* ===== PILLS ===== */
+
+    .pill {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .pending {
+        background: #fef9c3;
+        color: #b45309;
+    }
+
+    .approved {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .rejected {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    /* ===== BUTTONS ===== */
+
+    .btn-primary-action {
+        background: #0ea5e9;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-primary-action:hover {
+            background: #0284c7;
+        }
+
+    .btn-secondary-action {
+        background: transparent;
+        color: #64748b;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+        .btn-secondary-action:hover {
+            background: #f1f5f9;
+        }
+
+</style>

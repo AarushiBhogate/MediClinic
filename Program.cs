@@ -52,6 +52,8 @@
 
 using MediClinic.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 
 namespace MediClinic
 {
@@ -75,10 +77,11 @@ namespace MediClinic
 
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
        
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");

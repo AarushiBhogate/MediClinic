@@ -1,7 +1,6 @@
 ﻿@model List<MediClinic.Models.MyScheduleVM>
-
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
 <!DOCTYPE html>
@@ -126,15 +125,21 @@
 
         .schedule-wrapper {
             max-width: 1150px;
-            margin: 40px auto;
+            margin: 0 auto;
+            padding-top: 40px;
         }
 
+
         .schedule-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            position: sticky;
+            top: 60px; /* height of fixed navbar */
+            z-index: 200; /* must be higher than cards */
+            background: #f4f7fb;
+            padding: 20px 0 15px 0;
+            border-bottom: 1px solid #e2e8f0;
         }
+
+
 
         .left-header {
             display: flex;
@@ -277,6 +282,10 @@
             padding: 10px 14px;
         }
 
+        .schedule-card {
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -290,13 +299,19 @@
                 </a>
 
                 <div>
-                    <h2 class="schedule-title mb-1">My Schedule</h2>
+                    <h2 class="schedule-title mb-1">
+                        @(ViewBag.PageType == "Previous" ? "Previous Schedule" : "Schedule")
+                    </h2>
+
                     <p class="schedule-subtitle mb-0">
-                        Your upcoming and completed appointments
+                        @(ViewBag.PageType == "Previous"
+                                                ? "Your past appointments"
+                                                : "Your today and upcoming appointments")
                     </p>
                 </div>
             </div>
         </div>
+
 
 
         <!-- ===== MAIN CARD ===== -->
