@@ -23,7 +23,7 @@ public partial class Patient
 
     public string? PatientStatus { get; set; }
     public virtual PatientMedicalProfile? PatientMedicalProfile { get; set; }
-    //public string? ProfileImage { get; set; }
+    public string? ProfileImage { get; set; }
 
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

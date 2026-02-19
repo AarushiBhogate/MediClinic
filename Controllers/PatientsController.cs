@@ -37,11 +37,13 @@ namespace MediClinic.Controllers
                 .FirstOrDefault(p => p.PatientId == patientId);
 
             var nextAppointment = _context.Appointments
-                .Where(a => a.PatientId == patientId &&
-                            a.ScheduleStatus != "Cancelled" &&
-                            a.AppointmentDate >= DateTime.Now)
-                .OrderBy(a => a.AppointmentDate)
-                .FirstOrDefault();
+    .Where(a => a.PatientId == patientId &&
+                a.ScheduleStatus != "Cancelled" &&
+                a.AppointmentDate.HasValue &&
+                a.AppointmentDate >= DateTime.Now)
+    .OrderBy(a => a.AppointmentDate)
+    .FirstOrDefault();
+
 
             var totalAppointments = _context.Appointments
                 .Count(a => a.PatientId == patientId);
@@ -82,83 +84,137 @@ namespace MediClinic.Controllers
             return View(patient);
         }
 
-        // ================= EDIT PROFILE =================
+        //// ================= EDIT PROFILE =================
+        //public IActionResult EditProfile()
+        //{
+        //    var check = RequireLogin();
+        //    if (check != null) return check;
+
+        //    var patient = _context.Patients.Find(PatientId);
+        //    return View(patient);
+        //}
+
+        //[HttpPost]
+        //public IActionResult EditProfile(Patient model)
+        //{
+        //    var check = RequireLogin();
+        //    if (check != null) return check;
+
+        //    var patient = _context.Patients.Find(PatientId);
+        //    if (patient == null)
+        //        return NotFound();
+
+        //    patient.PatientName = model.PatientName;
+        //    patient.Phone = model.Phone;
+        //    patient.Address = model.Address;
+
+        //    _context.SaveChanges();
+        //    return RedirectToAction("Profile");
+        //}
+
+        // ================= MEDICAL PROFILE =================
+        
+
+        // GET: Edit Profile
         public IActionResult EditProfile()
         {
             var check = RequireLogin();
             if (check != null) return check;
 
-            var patient = _context.Patients.Find(PatientId);
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (patient == null) return NotFound();
+
             return View(patient);
         }
 
+        // POST: Edit Profile
         [HttpPost]
         public IActionResult EditProfile(Patient model)
         {
             var check = RequireLogin();
             if (check != null) return check;
 
-            var patient = _context.Patients.Find(PatientId);
-            if (patient == null)
-                return NotFound();
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (patient == null) return NotFound();
 
             patient.PatientName = model.PatientName;
+            patient.Email = model.Email;
             patient.Phone = model.Phone;
             patient.Address = model.Address;
+            patient.Dob = model.Dob;
 
             _context.SaveChanges();
-            return RedirectToAction("Profile");
+
+            return RedirectToAction("Profile"); // ✅ back to profile page
         }
 
-        // ================= MEDICAL PROFILE =================
-        public IActionResult EditMedicalProfile()
-        {
-            var check = RequireLogin();
-            if (check != null) return check;
-
-            var profile = _context.PatientMedicalProfiles
-                .FirstOrDefault(p => p.PatientId == PatientId);
-
-            if (profile == null)
-            {
-                profile = new PatientMedicalProfile
-                {
-                    PatientId = PatientId.Value
-                };
-            }
-
-            return View(profile);
-        }
-
-        [HttpPost]
-        public IActionResult EditMedicalProfile(PatientMedicalProfile model)
-        {
-            var check = RequireLogin();
-            if (check != null) return check;
-
-            var profile = _context.PatientMedicalProfiles
-                .FirstOrDefault(p => p.PatientId == PatientId);
-
-            if (profile == null)
-            {
-                model.PatientId = PatientId.Value;
-                _context.PatientMedicalProfiles.Add(model);
-            }
-            else
-            {
-                profile.MedicalAllergies = model.MedicalAllergies;
-                profile.MedicalChronicDiseases = model.MedicalChronicDiseases;
-                profile.MedicalPastIllness = model.MedicalPastIllness;
-                profile.MedicalNotes = model.MedicalNotes;
-            }
-
-            _context.SaveChanges();
-            return RedirectToAction("Profile");
-        }
 
         private bool PatientExists(int id)
         {
             return _context.Patients.Any(e => e.PatientId == id);
         }
+        [HttpPost]
+        public async Task<IActionResult> UploadProfileImage(IFormFile profileImage)
+        {
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+                var path = Path.Combine(Directory.GetCurrentDirectory(),
+                                        "wwwroot/images",
+                                        fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await profileImage.CopyToAsync(stream);
+                }
+
+                var patient = _context.Patients
+                    .FirstOrDefault(p => p.PatientId == PatientId);
+
+                if (patient != null)
+                {
+                    patient.ProfileImage = "/images/" + fileName;
+                    _context.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveProfileImage()
+        {
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == PatientId);
+
+            if (patient != null && !string.IsNullOrEmpty(patient.ProfileImage))
+            {
+                var fullPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    patient.ProfileImage.TrimStart('/')
+                );
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                patient.ProfileImage = null;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+
+
+
+
+
     }
 }

@@ -1,180 +1,226 @@
 ﻿@model MediClinic.Models.Patient
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
 @{
-    Layout = "~/Views/Shared/_PatientLayout.cshtml";
-    ViewData["Title"] = "Patient Profile";
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
+
+    var profileImage = Context.Session.GetString("ProfileImage");
 }
 
-<style>
-    .profile-wrapper {
-        padding: 30px;
-    }
 
+<style>
     .profile-card {
         background: white;
-        border-radius: 18px;
-        padding: 25px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        margin-bottom: 25px;
+        border-radius: 22px;
+        padding: 50px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        max-width: 1000px;
+        margin: auto;
+        position: relative;
     }
 
     .profile-header {
         display: flex;
-        gap: 25px;
         align-items: center;
-        margin-bottom: 25px;
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+
+    .profile-photo-wrapper {
+        position: relative;
+        cursor: pointer;
     }
 
     .profile-photo {
-        width: 120px;
-        height: 120px;
-        border-radius: 16px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
         object-fit: cover;
+        border: 4px solid #e5e7eb;
+    }
+
+    .profile-icon {
+        font-size: 140px;
+        color: #cbd5e1;
     }
 
     .profile-name {
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 600;
+        color: #1e3a8a;
     }
 
-    .badge-active {
-        background: #e0f2f1;
-        color: #0f766e;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 13px;
+    .profile-email {
+        color: #6b7280;
+        margin-top: 6px;
+        font-size: 15px;
+    }
+
+    .profile-actions {
+        position: absolute;
+        top: 30px;
+        right: 40px;
     }
 
     .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 20px;
     }
 
     .info-box {
-        background: #f8fafc;
-        padding: 15px;
-        border-radius: 12px;
+        background: #f9fafb;
+        padding: 25px;
+        border-radius: 14px;
+        transition: 0.2s;
     }
 
-        .info-box label {
-            font-size: 13px;
-            color: gray;
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
-    .medical-section {
-        margin-top: 30px;
+    .dropdown-menu-custom {
+        position: absolute;
+        top: 155px;
+        left: 0;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        padding: 8px 0;
+        display: none;
+        width: 190px;
+        z-index: 100;
     }
 
-    .btn-modern {
-        border-radius: 8px;
-        padding: 6px 14px;
-        font-size: 14px;
-    }
+        .dropdown-menu-custom button,
+        .dropdown-menu-custom label {
+            width: 100%;
+            padding: 10px 18px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .dropdown-menu-custom button:hover,
+            .dropdown-menu-custom label:hover {
+                background: #f3f4f6;
+            }
 </style>
 
-<div class="profile-wrapper">
 
-    <!-- PROFILE CARD -->
-    <div class="profile-card">
+<div class="profile-card">
 
-        <div class="profile-header">
+    <div class="profile-actions">
+        <a asp-action="EditProfile"
+           class="btn btn-primary"
+           style="border-radius:12px; padding:8px 20px;">
+            Edit Profile
+        </a>
+    </div>
 
-            <!-- Profile Photo -->
-            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
-                 class="profile-photo" />
+    <div class="profile-header">
 
-            <div>
-                <div class="profile-name">@Model.PatientName</div>
-                <div>@Model.Email</div>
-                <div class="mt-2">
-                    <span class="badge-active">Active</span>
-                </div>
-            </div>
+        <div class="profile-photo-wrapper" onclick="toggleImageMenu()">
 
-            <div class="ms-auto">
-                <a asp-action="EditProfile"
-                   class="btn btn-primary btn-modern">
-                    Edit Profile
-                </a>
+            @if (string.IsNullOrEmpty(profileImage))
+            {
+                <i class="fas fa-user-circle profile-icon"></i>
+            }
+            else
+            {
+                <img src="@profileImage" class="profile-photo" />
+            }
+
+            <div class="dropdown-menu-custom" id="imageMenu">
+
+                <!-- Upload / Change -->
+                <form asp-action="UploadProfileImage"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    <label for="uploadImage">
+                        @(string.IsNullOrEmpty(profileImage)
+                                                ? "Add Image"
+                                                : "Change Image")
+                    </label>
+
+                    <input type="file"
+                           id="uploadImage"
+                           name="profileImage"
+                           style="display:none;"
+                           onchange="this.form.submit();" />
+                </form>
+
+                <!-- Remove -->
+                @if (!string.IsNullOrEmpty(profileImage))
+                {
+                    <form asp-action="RemoveProfileImage"
+                          method="post">
+                        <button type="submit">
+                            Remove Image
+                        </button>
+                    </form>
+                }
+
             </div>
 
         </div>
 
-        <!-- GENERAL INFORMATION -->
-        <h5 class="mb-3">General Information</h5>
-
-        <div class="info-grid">
-
-            <div class="info-box">
-                <label>Phone</label>
-                <div>@Model.Phone</div>
-            </div>
-
-            <div class="info-box">
-                <label>Address</label>
-                <div>@Model.Address</div>
-            </div>
-
-            <div class="info-box">
-                <label>Date of Birth</label>
-                <div>@Model.Dob?.ToString("dd MMM yyyy")</div>
-            </div>
-
-            <div class="info-box">
-                <label>Gender</label>
-                <div>@Model.Gender</div>
-            </div>
-
+        <div>
+            <div class="profile-name">@Model.PatientName</div>
+            <div class="profile-email">@Model.Email</div>
         </div>
 
     </div>
 
+    <div class="info-grid">
 
-    <!-- MEDICAL PROFILE -->
-    <div class="profile-card medical-section">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5>Medical Information</h5>
-
-            <a asp-action="EditMedicalProfile"
-               class="btn btn-outline-primary btn-modern">
-                Edit Medical Info
-            </a>
+        <div class="info-box">
+            <strong>Phone</strong>
+            <div>@Model.Phone</div>
         </div>
 
-        <div class="info-grid">
+        <div class="info-box">
+            <strong>Address</strong>
+            <div>@Model.Address</div>
+        </div>
 
-            <div>
-                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalAllergies)
-                                ? "Not Provided"
-                                : Model.PatientMedicalProfile.MedicalAllergies)
-            </div>
+        <div class="info-box">
+            <strong>Date of Birth</strong>
+            <div>@Model.Dob?.ToString("dd MMM yyyy")</div>
+        </div>
 
-            <div>
-                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalChronicDiseases)
-                                ? "Not Provided"
-                                : Model.PatientMedicalProfile.MedicalChronicDiseases)
-            </div>
-
-
-            <div>
-                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalPastIllness)
-                                ? "Not Provided"
-                                : Model.PatientMedicalProfile.MedicalPastIllness)
-            </div>
-
-
-            <div>
-                @(string.IsNullOrWhiteSpace(Model.PatientMedicalProfile?.MedicalNotes)
-                                ? "Not Provided"
-                                : Model.PatientMedicalProfile.MedicalNotes)
-            </div>
-
+        <div class="info-box">
+            <strong>Gender</strong>
+            <div>@Model.Gender</div>
         </div>
 
     </div>
 
 </div>
+
+<script>
+    function toggleImageMenu() {
+        var menu = document.getElementById("imageMenu");
+        menu.style.display =
+            menu.style.display === "block" ? "none" : "block";
+    }
+
+    window.onclick = function (e) {
+        if (!e.target.closest('.profile-photo-wrapper')) {
+            document.getElementById("imageMenu").style.display = "none";
+        }
+    }
+</script>
+
+
+
 
 
 

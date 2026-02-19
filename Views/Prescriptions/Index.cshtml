@@ -1,186 +1,113 @@
 ﻿@model IEnumerable<MediClinic.Models.PhysicianAdvice>
 
 @{
-    ViewData["Title"] = "My Prescriptions";
-    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+    ViewData["Title"] = "Prescriptions";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
 }
 
 <style>
-
-    body {
-        background: #f5f7fb;
-    }
-
-    .page-wrapper {
-        max-width: 1000px;
-        margin: 40px auto;
-    }
-
-    .page-title {
-        font-weight: 700;
-        color: #1f2d3d;
-    }
-
-    .page-subtitle {
-        color: #6c757d;
-        margin-bottom: 30px;
-    }
-
-    /* ===== Card ===== */
-
     .prescription-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 30px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        border: 1px solid #eef1f6;
-        transition: 0.3s ease;
-    }
-
-        .prescription-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        }
-
-    /* ===== Header Info ===== */
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #34495e;
-        margin-right: 5px;
-    }
-
-    .advice-box {
-        background: #f8fafc;
-        padding: 15px 18px;
-        border-radius: 10px;
-        border-left: 4px solid #3498db;
-        margin-top: 10px;
-        margin-bottom: 20px;
-        color: #2c3e50;
-    }
-
-    /* ===== Medicine Table ===== */
-
-    .medicine-title {
-        font-weight: 600;
-        margin-bottom: 15px;
-        color: #2c3e50;
-    }
-
-    .medicine-table {
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #e9ecef;
-    }
-
-        .medicine-table thead {
-            background: #f1f4f8;
-        }
-
-        .medicine-table th {
-            font-weight: 600;
-            color: #34495e;
-            padding: 12px;
-        }
-
-        .medicine-table td {
-            padding: 12px;
-            vertical-align: middle;
-        }
-
-        .medicine-table tbody tr:hover {
-            background: #f8fafc;
-        }
-
-    /* ===== Empty Message ===== */
-
-    .empty-box {
-        background: #ffffff;
+        background: white;
+        border-radius: 22px;
         padding: 40px;
-        text-align: center;
-        border-radius: 14px;
-        border: 1px dashed #dbe2ea;
-        color: #6c757d;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        max-width: 1100px;
+        margin: auto;
     }
 
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        text-align: left;
+        padding-bottom: 15px;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    tbody tr {
+        border-top: 1px solid #e5e7eb;
+        transition: 0.2s ease;
+    }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+    td {
+        padding: 18px 0;
+    }
+
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+        .btn-view:hover {
+            background: #1e40af;
+        }
+
+    .date-small {
+        color: #6b7280;
+        font-size: 13px;
+    }
 </style>
 
-<div class="page-wrapper">
+<div class="prescription-card">
 
-    <h2 class="page-title">My Prescriptions</h2>
-    <p class="page-subtitle">
-        View all advice and medicines prescribed by your doctors
-    </p>
+    <h4 style="color:#1e3a8a; margin-bottom:30px;">
+        My Prescriptions
+    </h4>
 
-    @if (!Model.Any())
-    {
-        <div class="empty-box">
-            No prescriptions available yet.
-        </div>
-    }
-    else
-    {
-        @foreach (var advice in Model)
-        {
-            <div class="prescription-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Diagnosis</th>
+                <th>Action</th>
+            </tr>
+        </thead>
 
-                <div class="info-row">
-                    <div>
-                        <span class="info-label">Date:</span>
-                        @(advice.Schedule?.Appointment?.AppointmentDate?.ToString("dd MMM yyyy"))
-                    </div>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <strong>
+                            @item.Schedule.Appointment.AppointmentDate?.ToString("dd MMM yyyy")
+                        </strong><br />
+                        <span class="date-small">
+                            @item.Schedule.Appointment.AppointmentDate?.ToString("hh:mm tt")
+                        </span>
+                    </td>
 
-                    <div>
-                        <span class="info-label">Doctor:</span>
-                        @advice.Schedule?.Physician?.PhysicianName
-                    </div>
-                </div>
+                    <td>
+                        @item.Schedule?.Physician?.PhysicianName
+                    </td>
 
-                <div class="advice-box">
-                    <span class="info-label">Advice:</span>
-                    @advice.Advice
-                </div>
 
-                <div class="medicine-title">Medicines</div>
+                    <td>
+                        @item.Advice
+                    </td>
 
-                @if (advice.PhysicianPrescrips != null && advice.PhysicianPrescrips.Any())
-                {
-                    <table class="table medicine-table">
-                        <thead>
-                            <tr>
-                                <th>Drug</th>
-                                <th>Dosage</th>
-                                <th>Instructions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var med in advice.PhysicianPrescrips)
-                            {
-                                <tr>
-                                    <td>@med.Drug?.DrugTitle</td>
-                                    <td>@med.Dosage</td>
-                                    <td>@med.Prescription</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <p class="text-muted">No medicines prescribed.</p>
-                }
-
-            </div>
-        }
-    }
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@item.PhysicianAdviceId"
+                           class="btn-view">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
 </div>

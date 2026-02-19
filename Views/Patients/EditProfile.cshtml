@@ -1,23 +1,112 @@
 ﻿@model MediClinic.Models.Patient
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
+}
 
-<form asp-action="EditProfile" method="post">
 
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input asp-for="PatientName" class="form-control" />
-    </div>
+<style>
+     .edit-card {
+         background: white;
+         max-width: 800px;
+         margin: auto;
+         padding: 50px;
+         border-radius: 22px;
+         box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+     }
 
-    <div class="mb-3">
-        <label class="form-label">Phone</label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
+     .edit-title {
+         font-size: 24px;
+         font-weight: 600;
+         color: #1e3a8a;
+         margin-bottom: 25px;
+     }
 
-    <div class="mb-3">
-        <label class="form-label">Address</label>
-        <input asp-for="Address" class="form-control" />
-    </div>
+     .form-group {
+         margin-bottom: 25px;
+     }
 
-    <button type="submit" class="btn btn-primary">
-        Save Changes
-    </button>
-</form>
+     .form-label {
+         display: block;
+         font-weight: 600;
+         margin-bottom: 8px;
+         color: #374151;
+     }
+
+     .form-control-custom {
+         width: 100%;
+         padding: 12px 15px;
+         border-radius: 12px;
+         border: 1px solid #d1d5db;
+         font-size: 15px;
+         transition: 0.2s;
+     }
+
+         .form-control-custom:focus {
+             outline: none;
+             border-color: #2563eb;
+             box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+         }
+
+     .save-btn {
+         background: #2563eb;
+         color: white;
+         padding: 10px 25px;
+         border: none;
+         border-radius: 12px;
+         font-size: 15px;
+         transition: 0.2s;
+     }
+
+         .save-btn:hover {
+             background: #1e40af;
+         }
+</style>
+
+
+<div class="edit-card">
+
+    <div class="edit-title">Edit Profile</div>
+    <hr style="margin-bottom:30px;" />
+
+    <form asp-action="EditProfile" method="post">
+
+        <div class="form-group">
+            <label class="form-label">Name</label>
+            <input asp-for="PatientName"
+                   class="form-control-custom" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input asp-for="Email"
+                   class="form-control-custom" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input asp-for="Phone"
+                   class="form-control-custom" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input asp-for="Dob"
+                   type="date"
+                   class="form-control-custom" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Address</label>
+            <input asp-for="Address"
+                   class="form-control-custom" />
+        </div>
+
+        <button type="submit" class="save-btn">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+

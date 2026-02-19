@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace MediClinic.Controllers
 {
@@ -9,7 +10,6 @@ namespace MediClinic.Controllers
             get
             {
                 return HttpContext.Session.GetInt32("RoleReferenceID");
-
             }
         }
 

@@ -1,103 +1,173 @@
 ﻿@model IEnumerable<MediClinic.Models.Appointment>
+
 @{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Appointments";
-    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
 }
 
-<div class="custom-card">
-    <form method="get" class="row g-3">
-
-        <div class="col-md-4">
-            <input type="text" name="search" class="form-control"
-                   placeholder="Search by reason..." />
-        </div>
-
-        <div class="col-md-3">
-            <select name="status" class="form-select">
-                <option value="">All Status</option>
-                <option>Scheduled</option>
-                <option>Pending</option>
-                <option>Cancelled</option>
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <button class="btn btn-primary w-100">Filter</button>
-        </div>
-
-    </form>
-</div>
-
-<div class="custom-card">
-    <table class="table align-middle">
+<style>
+    body {
+        background: linear-gradient(rgba(243,246,251,0.92), rgba(243,246,251,0.92)), url('/images/doctorbackgroundimage.jpg');
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        background-size: 500px;
+        background-attachment: fixed;
+    }
 
 
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Reason</th>
-            <th>Criticality</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+    /* Main Card */
+    .appointment-card {
+        background: white;
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    /* Table Layout */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        text-align: left;
+        padding-bottom: 15px;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    tbody tr {
+        border-top: 1px solid #e5e7eb;
+    }
+
+    td {
+        padding: 18px 0;
+        vertical-align: middle;
+    }
+
+    /* Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* View Button */
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .btn-view:hover {
+            background: #1e40af;
+        }
+
+    /* Cancel Button */
+    .btn-cancel {
+        background: transparent;
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .btn-cancel:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+</style>
+
+<div class="appointment-card">
+
+    <h4 class="mb-4" style="color:#1e3a8a;">My Appointments</h4>
+
+    <table class="table appointment-table">
+
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Criticality</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
+            </tr>
+        </thead>
 
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
                     <td>
-                        @item.AppointmentDate?.ToString("dd MMM yyyy")
-                        <br />
-                        <small>@item.AppointmentDate?.ToString("hh:mm tt")</small>
+                        <strong>@item.AppointmentDate?.ToString("dd MMM yyyy")</strong><br />
+                        <small class="text-muted">
+                            @item.AppointmentDate?.ToString("hh:mm tt")
+                        </small>
                     </td>
 
                     <td>@item.Reason</td>
 
                     <td>
-                        <span class="badge bg-secondary">
+                        <span class="status-badge"
+                              style="background:#f3f4f6; color:#374151;">
                             @item.Criticality
                         </span>
                     </td>
 
-                <td>
-                    @if (item.ScheduleStatus == "Pending")
-                    {
-                        <span class="badge bg-warning text-dark">Pending</span>
-                    }
-                    else if (item.ScheduleStatus == "Scheduled")
-                    {
-                        <span class="badge bg-primary">Scheduled</span>
-                    }
-                    else if (item.ScheduleStatus == "Cancelled")
-                    {
-                        <span class="badge bg-danger">Cancelled</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Completed</span>
-                    }
-                </td>
-
-                    <td class="text-end">
-
-                        <a asp-action="Details"
-                           asp-route-id="@item.AppointmentId"
-                           class="btn btn-outline-primary btn-sm">
-                            View
-                        </a>
-
+                    <td>
                         @if (item.ScheduleStatus == "Scheduled")
                         {
-                            <a asp-action="Cancel"
-                               asp-route-id="@item.AppointmentId"
-                               class="btn btn-outline-danger btn-sm">
-                                Cancel
-                            </a>
+                            <span class="status-badge status-scheduled">
+                                Scheduled
+                            </span>
                         }
+                        else if (item.ScheduleStatus == "Pending")
+                        {
+                            <span class="status-badge status-pending">
+                                Pending
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-cancelled">
+                                Cancelled
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <div class="action-buttons">
+                            
+
+                        <a asp-action="Details"
+   asp-route-id="@item.AppointmentId"
+   class="btn-view">
+    View
+</a>
+
+@if (item.ScheduleStatus == "Scheduled")
+{
+    <a asp-action="Cancel"
+       asp-route-id="@item.AppointmentId"
+       class="btn-cancel">
+        Cancel
+    </a>
+}
+
+                        </div>
 
                     </td>
                 </tr>
@@ -105,6 +175,8 @@
         </tbody>
 
     </table>
+
 </div>
+
 
 
