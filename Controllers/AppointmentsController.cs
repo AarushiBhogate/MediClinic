@@ -1,13 +1,12 @@
 ﻿using MediClinic.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System;
 
 namespace MediClinic.Controllers
 {
-    public class AppointmentsController : Controller
+    public class AppointmentsController : PatientBaseController
     {
         private readonly MediClinicDbContext _context;
 
@@ -63,7 +62,7 @@ namespace MediClinic.Controllers
             if (!ModelState.IsValid)
                 return View(appointment);
 
-            appointment.PatientId = PatientId;
+            appointment.PatientId = PatientId.Value;
             appointment.ScheduleStatus = "Pending";
 
             _context.Appointments.Add(appointment);
@@ -71,8 +70,6 @@ namespace MediClinic.Controllers
 
             return RedirectToAction("Index");
         }
-
-
 
         // ============================================
         // CANCEL APPOINTMENT
@@ -101,6 +98,8 @@ namespace MediClinic.Controllers
                 _context.SaveChanges();
             }
 
+            return RedirectToAction("Index");
+        }
 
         // ============================================
         // VIEW APPOINTMENT DETAILS
@@ -124,4 +123,3 @@ namespace MediClinic.Controllers
         }
     }
 }
-

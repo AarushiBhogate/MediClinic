@@ -221,21 +221,27 @@ namespace MediClinic.Controllers
         {
             return _context.Patients.Any(e => e.PatientId == id);
         }
+
+      
+        // ================= UPLOAD PROFILE IMAGE =================
         [HttpPost]
         public async Task<IActionResult> UploadProfileImage(IFormFile profileImage)
         {
+            var check = RequireLogin();
+            if (check != null) return check;
+
             if (profileImage != null && profileImage.Length > 0)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
-                var path = Path.Combine(Directory.GetCurrentDirectory(),
-                                        "wwwroot/images",
-                                        fileName);
+                var path = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/images",
+                    fileName);
 
-        // ================= MEDICAL PROFILE =================
-        public IActionResult EditMedicalProfile()
-        {
-            var check = RequireLogin();
-            if (check != null) return check;
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await profileImage.CopyToAsync(stream);
+                }
 
                 var patient = _context.Patients
                     .FirstOrDefault(p => p.PatientId == PatientId);
@@ -250,9 +256,13 @@ namespace MediClinic.Controllers
             return RedirectToAction("Profile");
         }
 
+        // ================= REMOVE PROFILE IMAGE =================
         [HttpPost]
         public IActionResult RemoveProfileImage()
         {
+            var check = RequireLogin();
+            if (check != null) return check;
+
             var patient = _context.Patients
                 .FirstOrDefault(p => p.PatientId == PatientId);
 
@@ -261,8 +271,7 @@ namespace MediClinic.Controllers
                 var fullPath = Path.Combine(
                     Directory.GetCurrentDirectory(),
                     "wwwroot",
-                    patient.ProfileImage.TrimStart('/')
-                );
+                    patient.ProfileImage.TrimStart('/'));
 
                 if (System.IO.File.Exists(fullPath))
                 {
@@ -275,11 +284,5 @@ namespace MediClinic.Controllers
 
             return RedirectToAction("Profile");
         }
-
-
-
-
-
-
     }
 }

@@ -18,6 +18,11 @@ namespace MediClinic.Controllers
         {
             _context = context;
         }
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            return role == "Admin";
+        }
 
         // ====================== DASHBOARD ======================
         public IActionResult Index()
@@ -128,12 +133,6 @@ namespace MediClinic.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        // ================= ASSIGN APPOINTMENT (GET) =================
-        private bool IsAdmin()
-        {
-            var role = HttpContext.Session.GetString("Role");
-            return role == "Admin";
-        }
         public IActionResult AssignAppointment(int id)
         {
             if (!IsAdmin())
@@ -145,12 +144,36 @@ namespace MediClinic.Controllers
             if (appointment == null)
                 return NotFound();
 
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == appointment.PatientId);
+
             var doctors = _context.Physicians
                 .Where(p => p.Specialization == appointment.RequiredSpecialization)
                 .ToList();
 
-            var patient = _context.Patients
-                .FirstOrDefault(p => p.PatientId == appointment.PatientId);
+            if (appointment.AppointmentDate.HasValue)
+            {
+                var requestedDateTime = appointment.AppointmentDate.Value;
+                var requestedDate = DateOnly.FromDateTime(requestedDateTime);
+
+                doctors = doctors.Where(doc =>
+                {
+                    var schedules = _context.Schedules
+                        .Where(s => s.PhysicianId == doc.PhysicianId &&
+                                    s.ScheduleDate == requestedDate &&
+                                    s.ScheduleStatus == "Confirmed")
+                        .ToList();
+
+                    return !schedules.Any(s =>
+                    {
+                        var existingDateTime = DateTime.Parse(
+                            s.ScheduleDate.ToString() + " " + s.ScheduleTime);
+
+                        return Math.Abs((existingDateTime - requestedDateTime).TotalMinutes) < 60;
+                    });
+
+                }).ToList();
+            }
 
             var vm = new AssignAppointmentVM
             {
@@ -164,12 +187,11 @@ namespace MediClinic.Controllers
                     : DateOnly.FromDateTime(DateTime.Today),
                 ConfirmedTime = appointment.AppointmentDate.HasValue
                     ? appointment.AppointmentDate.Value.ToString("HH:mm")
-                    : DateTime.Now.ToString("HH:mm")
+                    : "09:00"
             };
 
             return View(vm);
         }
-        // ================= ASSIGN APPOINTMENT (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AssignAppointment(AssignAppointmentVM vm)
@@ -192,16 +214,59 @@ namespace MediClinic.Controllers
             if (doctor == null || doctor.Specialization != appointment.RequiredSpecialization)
                 return BadRequest("Invalid doctor selection.");
 
-            // 🔎 CHECK DOCTOR AVAILABILITY
-            var alreadyBooked = _context.Schedules.Any(s =>
-                s.PhysicianId == vm.SelectedPhysicianId &&
-                s.ScheduleDate == vm.ConfirmedDate &&
-                s.ScheduleTime == vm.ConfirmedTime &&
-                s.ScheduleStatus == "Confirmed");
+            // 🔥 Validate Working Hours (9 AM – 5 PM)
+            var selectedTime = TimeSpan.Parse(vm.ConfirmedTime);
+            var workStart = new TimeSpan(9, 0, 0);
+            var workEnd = new TimeSpan(17, 0, 0);
 
-            if (alreadyBooked)
+            if (selectedTime < workStart || selectedTime >= workEnd)
             {
-                ModelState.AddModelError("", "Doctor not available at selected time.");
+                ModelState.AddModelError("", "Doctor works between 9 AM and 5 PM only.");
+                vm.AvailableDoctors = _context.Physicians
+                    .Where(p => p.Specialization == appointment.RequiredSpecialization)
+                    .ToList();
+                return View(vm);
+            }
+
+            // 🔥 Only 30-minute intervals allowed
+            if (selectedTime.Minutes % 30 != 0)
+            {
+                ModelState.AddModelError("", "Appointments must be in 30-minute intervals.");
+                vm.AvailableDoctors = _context.Physicians
+                    .Where(p => p.Specialization == appointment.RequiredSpecialization)
+                    .ToList();
+                return View(vm);
+            }
+
+            var confirmedDateTime = DateTime.Parse(
+                vm.ConfirmedDate.ToString() + " " + vm.ConfirmedTime);
+
+            // 🔥 Check 1-hour gap conflict
+            var doctorSchedules = _context.Schedules
+                .Where(s => s.PhysicianId == vm.SelectedPhysicianId &&
+                            s.ScheduleDate == vm.ConfirmedDate &&
+                            s.ScheduleStatus == "Confirmed")
+                .ToList();
+
+            bool hasConflict = doctorSchedules.Any(s =>
+            {
+                var existingDateTime = DateTime.Parse(
+                    s.ScheduleDate.ToString() + " " + s.ScheduleTime);
+
+                return Math.Abs((existingDateTime - confirmedDateTime).TotalMinutes) < 60;
+            });
+
+            if (hasConflict)
+            {
+                var nextAvailable = doctorSchedules
+                    .Select(s => DateTime.Parse(
+                        s.ScheduleDate.ToString() + " " + s.ScheduleTime))
+                    .OrderBy(t => t)
+                    .Last()
+                    .AddMinutes(60);
+
+                ModelState.AddModelError("",
+                    $"Doctor not available. Next available slot: {nextAvailable:hh:mm tt}");
 
                 vm.AvailableDoctors = _context.Physicians
                     .Where(p => p.Specialization == appointment.RequiredSpecialization)
@@ -210,21 +275,13 @@ namespace MediClinic.Controllers
                 return View(vm);
             }
 
-            // 🔄 Combine date + time
-            var confirmedDateTime = DateTime.Parse(
-                vm.ConfirmedDate.ToString() + " " + vm.ConfirmedTime);
-
-            // 🔄 If admin changed time → add note
-            if (appointment.AppointmentDate.HasValue)
+            // 🔥 Reschedule note
+            if (appointment.AppointmentDate.HasValue &&
+                appointment.AppointmentDate.Value != confirmedDateTime)
             {
-                var requestedDateTime = appointment.AppointmentDate.Value;
-
-                if (requestedDateTime != confirmedDateTime)
-                {
-                    appointment.AdminNote =
-                        "Requested time unavailable. Rescheduled to " +
-                        confirmedDateTime.ToString("dd MMM yyyy hh:mm tt");
-                }
+                appointment.AdminNote =
+                    "Requested time unavailable. Rescheduled to " +
+                    confirmedDateTime.ToString("dd MMM yyyy hh:mm tt");
             }
 
             appointment.AppointmentDate = confirmedDateTime;
@@ -243,40 +300,6 @@ namespace MediClinic.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Appointments");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignAppointment(Schedule schedule)
-        {
-            var doctorBusy = await _context.Schedules
-                .AnyAsync(s =>
-                    s.PhysicianId == schedule.PhysicianId &&
-                    s.ScheduleDate == schedule.ScheduleDate &&
-                    s.ScheduleTime == schedule.ScheduleTime &&
-                    s.ScheduleStatus == "Scheduled");
-
-            if (doctorBusy)
-            {
-                TempData["Error"] = "Doctor is busy at this time.";
-                return RedirectToAction("AssignAppointment", new { id = schedule.AppointmentId });
-            }
-
-            schedule.ScheduleStatus = "Scheduled";
-            _context.Schedules.Add(schedule);
-
-            var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(a => a.AppointmentId == schedule.AppointmentId);
-
-            if (appointment != null)
-            {
-                appointment.ScheduleStatus = "Scheduled";
-                _context.Update(appointment);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Appointments));
         }
 
 

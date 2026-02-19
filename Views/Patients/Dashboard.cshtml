@@ -149,14 +149,13 @@
     </div>
 
     <!-- Upcoming Appointment Details -->
+    <!-- Upcoming Appointment Details -->
     @if (Model.NextAppointment != null)
     {
         <div class="appointment-box">
             <h5 style="font-weight:600;">Upcoming Appointment Details</h5>
             <hr />
 
-        @if (Model.NextAppointment != null)
-        {
             <p><strong>Date:</strong> @Model.NextAppointment.AppointmentDate?.ToString("dd MMM yyyy")</p>
             <p><strong>Time:</strong> @Model.NextAppointment.AppointmentDate?.ToString("hh:mm tt")</p>
             <p><strong>Status:</strong> @Model.NextAppointment.ScheduleStatus</p>
@@ -168,11 +167,27 @@
                class="btn-view">
                 View Appointment
             </a>
-        }
-        else
-        {
+
+            <a asp-controller="Patients"
+               asp-action="BookAppointment"
+               class="btn btn-teal mt-2">
+                Book Appointment
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="appointment-box">
             <p>No upcoming appointment.</p>
-        }
+
+            <a asp-controller="Patients"
+               asp-action="BookAppointment"
+               class="btn btn-teal mt-2">
+                Book Appointment
+            </a>
+        </div>
+    }
+
 
         <a asp-controller="Patients"
            asp-action="BookAppointment"
