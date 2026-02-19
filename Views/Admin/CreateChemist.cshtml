@@ -1,55 +1,96 @@
 ﻿@model MediClinic.Models.Chemist
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Chemist";
 }
 
-<h1>Create</h1>
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-lightblue text-dark fw-bold fs-4">
+            Create Chemist
+        </div>
+        <div class="card-body bg-white">
+            <form asp-action="CreateChemist" class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="ChemistName" class="form-label">Chemist Name</label>
+                    <input asp-for="ChemistName" class="form-control" />
+                    <span asp-validation-for="ChemistName" class="text-danger"></span>
+                </div>
 
-<h4>Chemist</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateChemist">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ChemistName" class="control-label"></label>
-                <input asp-for="ChemistName" class="form-control" />
-                <span asp-validation-for="ChemistName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Summary" class="control-label"></label>
-                <input asp-for="Summary" class="form-control" />
-                <span asp-validation-for="Summary" class="text-danger"></span>
-            </div>
-            @* <div class="form-group">
-                <label asp-for="ChemistStatus" class="control-label"></label>
-                <input asp-for="ChemistStatus" class="form-control" />
-                <span asp-validation-for="ChemistStatus" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="col-md-12">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label">Phone</label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Summary" class="form-label">Summary</label>
+                    <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Summary" class="text-danger"></span>
+                </div>
+
+                @* Uncomment if you want Status dropdown *@
+                @* 
+                <div class="col-md-6">
+                    <label asp-for="ChemistStatus" class="form-label">Status</label>
+                    <select asp-for="ChemistStatus" class="form-select">
+                        <option value="">--Select--</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    <span asp-validation-for="ChemistStatus" class="text-danger"></span>
+                </div>
+                *@
+
+                <div class="col-12 d-flex justify-content-start mt-3">
+                    <button type="submit" class="btn btn-lightblue me-2">Create</button>
+                    <a asp-action="Getchemist" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Getchemist">Back to List</a>
-</div>
+<style>
+    body {
+        background-color: #f0f8ff; /* very light blue */
+        font-family: Arial, sans-serif;
+    }
 
+    .bg-lightblue {
+        background-color: #cce7ff !important; /* soft light blue */
+    }
+
+    .btn-lightblue {
+        background-color: #5dade2;
+        color: white;
+        border: none;
+    }
+
+        .btn-lightblue:hover {
+            background-color: #4a9edc;
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+
+    .card {
+        max-width: 900px;
+        margin: auto;
+        border-radius: 10px;
+    }
+</style>

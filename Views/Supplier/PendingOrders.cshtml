@@ -1,0 +1,91 @@
+﻿@model IEnumerable<MediClinic.Models.PurchaseOrderHeader>
+
+@{
+    ViewData["Title"] = "Pending Orders";
+    // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
+}
+
+
+
+<div class="orders-page">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="page-title">Pending Orders</h2>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="custom-alert">
+                <h5 style="color:bisque" class="mb-3">📦 No Pending Orders</h5>
+                <p class="mb-0">
+                    There are no pending purchase orders at the moment.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+
+                @foreach (var order in Model)
+                {
+                    <div class="col-lg-8 col-md-10 mx-auto">
+
+                        <div class="order-card">
+
+                            <div class="mb-3">
+                                <span class="info-label">PO No:</span>
+                                <span class="info-value">@order.Pono</span>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="info-label">Date:</span>
+                                <span class="info-value">
+                                    @order.Podate
+                                </span>
+                            </div>
+
+                            <table class="table table-bordered order-table mb-4">
+                                <thead>
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.PurchaseProductLines)
+                                    {
+                                        <tr>
+                                            <td>@item.Drug.DrugTitle</td>
+                                            <td>@item.Qty</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                            <div class="text-end">
+                                <a asp-action="Approve"
+                                   asp-route-id="@order.Poid"
+                                   class="btn-approve me-2">
+                                    ✔ Approve
+                                </a>
+
+                                <a asp-action="Reject"
+                                   asp-route-id="@order.Poid"
+                                   class="btn-reject">
+                                    ✖ Reject
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

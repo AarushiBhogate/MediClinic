@@ -1,56 +1,87 @@
 ﻿@model MediClinic.Models.Appointment
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Appointment";
 }
 
-<h1>Edit</h1>
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-lightblue text-dark fw-bold fs-4">
+            Edit Appointment
+        </div>
+        <div class="card-body bg-white">
 
-<h4>Appointment</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditAppointment">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="AppointmentId" />
-            <div class="form-group">
-                <label asp-for="PatientId" class="control-label"></label>
-                <select asp-for="PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
-                <span asp-validation-for="PatientId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AppointmentDate" class="control-label"></label>
-                <input asp-for="AppointmentDate" class="form-control" />
-                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Criticality" class="control-label"></label>
-                <input asp-for="Criticality" class="form-control" />
-                <span asp-validation-for="Criticality" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reason" class="control-label"></label>
-                <input asp-for="Reason" class="form-control" />
-                <span asp-validation-for="Reason" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <input asp-for="Note" class="form-control" />
-                <span asp-validation-for="Note" class="text-danger"></span>
-            </div>
-            @* <div class="form-group">
-                <label asp-for="ScheduleStatus" class="control-label"></label>
-                <input asp-for="ScheduleStatus" class="form-control" />
-                <span asp-validation-for="ScheduleStatus" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="EditAppointment">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="AppointmentId" />
+
+                <div class="mb-3">
+                    <label asp-for="PatientId" class="form-label"></label>
+                    <select asp-for="PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
+                    <span asp-validation-for="PatientId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AppointmentDate" class="form-label"></label>
+                    <input asp-for="AppointmentDate" class="form-control" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Criticality" class="form-label"></label>
+                    <input asp-for="Criticality" class="form-control" />
+                    <span asp-validation-for="Criticality" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Reason" class="form-label"></label>
+                    <input asp-for="Reason" class="form-control" />
+                    <span asp-validation-for="Reason" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Note" class="form-label"></label>
+                    <input asp-for="Note" class="form-control" />
+                    <span asp-validation-for="Note" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-lightblue">Save</button>
+                    <a asp-action="GetAppointment" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="GetAppointment">Back to List</a>
-</div>
+<style>
+    body {
+        background-color: #f0f8ff; /* very light blue background */
+        font-family: Arial, sans-serif;
+    }
 
+    .bg-lightblue {
+        background-color: #cce7ff !important; /* soft light blue header */
+    }
+
+    .btn-lightblue {
+        background-color: #5dade2;
+        color: white;
+        border: none;
+    }
+
+        .btn-lightblue:hover {
+            background-color: #4a9edc;
+        }
+
+    .card {
+        max-width: 700px;
+        margin: auto;
+        border-radius: 10px;
+    }
+
+    label {
+        font-weight: 500;
+    }
+</style>
