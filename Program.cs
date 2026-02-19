@@ -72,7 +72,9 @@ namespace MediClinic
 
             // ✅ SESSION CONFIG (Required)
             builder.Services.AddDistributedMemoryCache();
+
             builder.Services.AddSession();
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthorization();
@@ -87,6 +89,7 @@ namespace MediClinic
 
 
             var app = builder.Build();
+       
 
             if (!app.Environment.IsDevelopment())
             {

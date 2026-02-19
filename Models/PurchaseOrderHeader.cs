@@ -13,6 +13,8 @@ public partial class PurchaseOrderHeader
 
     public int? SupplierId { get; set; }
 
+    public string ? PoStatus { get; set; } 
+
     public virtual ICollection<PurchaseProductLine> PurchaseProductLines { get; set; } = new List<PurchaseProductLine>();
 
     public virtual Supplier? Supplier { get; set; }
