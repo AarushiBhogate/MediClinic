@@ -76,6 +76,15 @@ namespace MediClinic
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.LoginPath = "/User/Login";
+        options.AccessDeniedPath = "/User/AccessDenied";
+    });
+
+            builder.Services.AddAuthorization();
+
 
             var app = builder.Build();
 
@@ -92,7 +101,8 @@ namespace MediClinic
             app.UseSession();
 
             app.UseAuthorization();
-
+            app.UseAuthentication();
+      
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -10,7 +10,8 @@ public partial class Appointment
 
     public int? PatientId { get; set; }
 
-    
+    public string? AdminNote { get; set; }
+
     public DateTime? AppointmentDate { get; set; }
 
 

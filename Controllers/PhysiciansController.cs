@@ -145,7 +145,8 @@ namespace MediClinic.Controllers
             var physician = await _context.Physicians.FindAsync(id);
             if (physician != null)
             {
-                _context.Physicians.Remove(physician);
+                physician.PhysicianStatus = "Inactive";
+_context.Physicians.Update(physician);
             }
 
             await _context.SaveChangesAsync();
