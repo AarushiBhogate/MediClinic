@@ -70,10 +70,13 @@ namespace MediClinic
 
             // ✅ SESSION CONFIG (Required)
             builder.Services.AddDistributedMemoryCache();
+
             builder.Services.AddSession();
+
             builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
+       
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
