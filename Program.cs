@@ -29,8 +29,18 @@ namespace MediClinic
                 });
 
             builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.LoginPath = "/User/Login";
+        options.AccessDeniedPath = "/User/AccessDenied";
+    });
+
+            builder.Services.AddAuthorization();
+
 
             var app = builder.Build();
+       
 
             if (!app.Environment.IsDevelopment())
             {
@@ -44,7 +54,8 @@ namespace MediClinic
 
             app.UseAuthentication();   // ✅ Must come before Authorization
             app.UseAuthorization();
-
+            app.UseAuthentication();
+      
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

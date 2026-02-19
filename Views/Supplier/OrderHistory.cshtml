@@ -26,32 +26,32 @@
         {
             <div class="row g-4">
 
-                @foreach (var order in Model)
-                {
+    @foreach (var order in Model)
+    {
                     <div class="col-lg-8 col-md-10 mx-auto">
 
                         <div class="order-card">
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
+                <div>
                                     <div class="info-label">PO No:</div>
                                     <div class="info-value">@order.Pono</div>
-                                </div>
+                </div>
 
-                                <div>
+                <div>
                                     @if (order.PurchaseOrderStatus == "Approved")
-                                    {
+                    {
                                         <span class="status-badge status-approved">
-                                            Approved
-                                        </span>
-                                    }
+                            Approved
+                        </span>
+                    }
                                     else if (order.PurchaseOrderStatus == "Rejected")
-                                    {
+                    {
                                         <span class="status-badge status-rejected">
-                                            Rejected
-                                        </span>
-                                    }
-                                </div>
+                            Rejected
+                        </span>
+                    }
+                </div>
                             </div>
 
                             <div class="mb-4">
@@ -59,33 +59,33 @@
                                 <span class="info-value">
                                     @order.Podate)
                                 </span>
-                            </div>
+            </div>
 
                             <table class="table table-bordered order-table">
                                 <thead>
-                                    <tr>
-                                        <th>Medicine</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in order.PurchaseProductLines)
-                                    {
-                                        <tr>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in order.PurchaseProductLines)
+                        {
+                            <tr>
                                             <td>💊 @item.Drug.DrugTitle</td>
                                             <td>@item.Qty</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-                        </div>
+            </div>
 
                     </div>
                 }
 
-            </div>
-        }
+        </div>
+    }
 
     </div>
 

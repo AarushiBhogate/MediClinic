@@ -1,0 +1,461 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+@{
+    ViewData["Title"] = "Advice & Prescription";
+    var pending = ViewBag.Pending as List<MediClinic.Models.AdviceListVM>;
+    var completed = ViewBag.Completed as List<MediClinic.Models.AdviceListVM>;
+}
+
+<style>
+    body {
+        background: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .advice-wrapper {
+        max-width: 1000px; /* reduce this */
+        margin: 50px auto;
+    }
+    /* ================= HEADER ================= */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+    }
+
+    .page-title {
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: -0.3px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    .btn-back {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #f8fafc;
+        }
+
+    /* ================= SECTION CARD ================= */
+
+    .section-card {
+        background: white;
+        padding: 35px 40px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.04);
+    }
+
+        .section-card + .section-card {
+            margin-top: 30px;
+        }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .section-header h5 {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0;
+        }
+
+    .section-count {
+        background: #eef2ff;
+        color: #4338ca;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* ================= MODERN TABLE ================= */
+
+    .modern-table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .modern-table thead th {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 600;
+            padding: 0 12px 10px 12px;
+            border: none;
+        }
+
+        .modern-table tbody tr {
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.04);
+            border-radius: 12px;
+            transition: 0.2s ease;
+        }
+
+            .modern-table tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+            }
+
+        .modern-table tbody td {
+            padding: 18px 14px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .modern-table tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .modern-table tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+
+    .fw-semibold {
+        font-weight: 600;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    td {
+        padding: 10px 0;
+    }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 120px;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 80px;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 120px;
+        }
+
+        th:nth-child(6), td:nth-child(6) {
+            width: 120px;
+        }
+
+        th:nth-child(7), td:nth-child(7) {
+            width: 220px;
+        }
+
+        td:nth-child(5) {
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    /* ===== PILLS CLEAN ===== */
+
+    .pill {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+        .pill.low {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .pill.medium {
+            background: #fef9c3;
+            color: #b45309;
+        }
+
+        .pill.high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .pill.confirmed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .pill.completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+    /* ================= BUTTONS ================= */
+
+    .action-cell {
+        text-align: right;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .btn-primary-action {
+        background: #0ea5e9;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-primary-action:hover {
+            background: #0284c7;
+        }
+
+    .btn-secondary-action {
+        background: transparent;
+        color: #64748b;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-secondary-action:hover {
+            background: #f1f5f9;
+        }
+
+
+    .action-link {
+        font-weight: 500;
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+</style>
+
+<div class="advice-wrapper">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Advice & Prescription</h2>
+            <p class="page-subtitle">
+                Manage patient advice and prescriptions
+            </p>
+        </div>
+
+        <a class="btn btn-back" href="/Physician/Dashboard">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+
+    <!-- ===== PENDING SECTION ===== -->
+    <div class="section-card">
+
+        <div class="section-header">
+            <h5>Pending for Advice</h5>
+            <span class="section-count">
+                @(pending?.Count ?? 0)
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table modern-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Criticality</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th style="width:240px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (pending != null && pending.Count > 0)
+                    {
+                        foreach (var item in pending)
+                        {
+                            var criticalClass = item.Criticality?.ToLower() switch
+                            {
+                                        "low" => "crit-low",
+                                        "medium" => "crit-medium",
+                                        "high" => "crit-high",
+                                _ => ""
+                            };
+
+                            <tr>
+                                <td>@item.ScheduleDate</td>
+                                <td>@item.ScheduleTime</td>
+                                <td class="fw-semibold">@item.PatientName</td>
+
+                                <td>
+                                   <span class="pill @item.Criticality?.ToLower()">
+    @item.Criticality
+</span>
+
+                                </td>
+
+                                <td class="text-muted">@item.Reason</td>
+
+                                <td>
+                                    <span class="pill confirmed">
+                                        Confirmed
+                                    </span>
+
+                                </td>
+
+                                <td class="action-cell">
+                                    <div class="action-group">
+                                        <a class="btn-primary-action"
+                                           href="/PhysicianAdvice/Write?scheduleId=@item.ScheduleId">
+                                            Write
+                                        </a>
+
+                                        <a class="btn-secondary-action"
+                                           href="/Physician/PatientDetails?patientID=@item.PatientId">
+                                            Details
+                                        </a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No pending appointments
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ===== COMPLETED SECTION ===== -->
+    <div class="section-card mt-4">
+
+        <div class="section-header">
+            <h5>Completed Appointments</h5>
+            <span class="section-count">
+                @(completed?.Count ?? 0)
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table modern-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Criticality</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th style="width:320px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (completed != null && completed.Count > 0)
+                    {
+                        foreach (var item in completed)
+                        {
+                            var criticalClass = item.Criticality?.ToLower() switch
+                            {
+                                        "low" => "crit-low",
+                                        "medium" => "crit-medium",
+                                        "high" => "crit-high",
+                                _ => ""
+                            };
+
+                            <tr>
+                                <td>@item.ScheduleDate</td>
+                                <td>@item.ScheduleTime</td>
+                                <td class="fw-semibold">@item.PatientName</td>
+
+                                <td>
+                                    <span class="pill @item.Criticality?.ToLower()">
+                                        @item.Criticality
+                                    </span>
+
+                                </td>
+
+                                <td class="text-muted">@item.Reason</td>
+
+                                <td class="action-cell">
+                                    <span class="status-pill completed">
+                                        Completed
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a class="action-link"
+                                       href="/PhysicianAdvice/ViewAdvice?scheduleId=@item.ScheduleId">
+                                        View
+                                    </a>
+
+                                    <a class="action-link ms-3"
+                                       href="/PhysicianAdvice/EditAdvice?scheduleId=@item.ScheduleId">
+                                        Edit
+                                    </a>
+
+                                    @if (item.PhysicianAdviceId != null && item.PhysicianAdviceId > 0)
+                                    {
+                                        <a class="action-link ms-3"
+                                           href="/Prescription/View?physicianAdviceId=@item.PhysicianAdviceId">
+                                            Prescription
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No completed appointments
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

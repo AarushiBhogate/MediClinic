@@ -1,0 +1,185 @@
+﻿@model MediClinic.ViewModels.PatientDashboardViewModel
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<style>
+    .dashboard-wrapper {
+        padding: 40px;
+    }
+
+    .welcome-box {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.07);
+        margin-bottom: 35px;
+    }
+
+        .welcome-box h2 {
+            color: #1e3a8a;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .welcome-box p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        transition: 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .stat-title {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .btn-book-large {
+        background: #2563eb;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.25);
+        transition: 0.3s ease;
+        margin-top: 10px;
+    }
+
+        .btn-book-large:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+    .appointment-box {
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+    }
+
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+        .btn-view:hover {
+            background: #1e40af;
+        }
+</style>
+
+<div class="dashboard-wrapper">
+
+    <!-- Welcome Section -->
+    <div class="welcome-box">
+        <h2>Welcome back, @(Model.Patient?.PatientName ?? "Patient") 👋</h2>
+        <p>Here’s a quick summary of your health and appointments.</p>
+    </div>
+
+    <!-- Top 3 Cards -->
+    <div class="stats-grid">
+
+        <!-- Next Appointment -->
+        <div class="stat-card">
+            <div class="stat-title">Next Appointment</div>
+            <div class="stat-value">
+                @if (Model.NextAppointment != null)
+                {
+                    @Model.NextAppointment.AppointmentDate?.ToString("dd MMM yyyy")
+                }
+                else
+                {
+                    <span>No upcoming appointment</span>
+                }
+            </div>
+        </div>
+
+        <!-- Total Prescriptions -->
+        <div class="stat-card">
+            <div class="stat-title">Total Prescriptions</div>
+            <div class="stat-value">
+                @Model.TotalPrescriptions
+            </div>
+        </div>
+
+        <!-- Book Appointment -->
+        <div class="stat-card text-center">
+            <div class="stat-title">Book Appointment</div>
+            <a asp-controller="Appointments"
+               asp-action="Create"
+               class="btn-book-large">
+                <i class="fas fa-calendar-plus"></i>
+                Book Appointment
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Upcoming Appointment Details -->
+    @if (Model.NextAppointment != null)
+    {
+        <div class="appointment-box">
+            <h5 style="font-weight:600;">Upcoming Appointment Details</h5>
+            <hr />
+
+        @if (Model.NextAppointment != null)
+        {
+            <p><strong>Date:</strong> @Model.NextAppointment.AppointmentDate?.ToString("dd MMM yyyy")</p>
+            <p><strong>Time:</strong> @Model.NextAppointment.AppointmentDate?.ToString("hh:mm tt")</p>
+            <p><strong>Status:</strong> @Model.NextAppointment.ScheduleStatus</p>
+            <p><strong>Reason:</strong> @Model.NextAppointment.Reason</p>
+
+            <a asp-controller="Appointments"
+               asp-action="Details"
+               asp-route-id="@Model.NextAppointment.AppointmentId"
+               class="btn-view">
+                View Appointment
+            </a>
+        }
+        else
+        {
+            <p>No upcoming appointment.</p>
+        }
+
+        <a asp-controller="Patients"
+           asp-action="BookAppointment"
+           class="btn btn-teal mt-2">
+            Book Appointment
+        </a>
+    </div>
+
+
+</div>

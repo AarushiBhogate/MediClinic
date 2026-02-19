@@ -37,13 +37,13 @@
 
                 <dt class="col-sm-3">Status</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.PatientStatus)</dd>
-            </dl>
-
+    </dl>
+    
             <form asp-action="DeletePatients" class="d-flex gap-2">
-                <input type="hidden" asp-for="PatientId" />
+        <input type="hidden" asp-for="PatientId" />
                 <button type="submit" class="btn btn-danger">Delete</button>
                 <a asp-action="GetPatients" class="btn btn-secondary">Back to List</a>
-            </form>
+    </form>
 
         </div>
     </div>

@@ -68,6 +68,154 @@ namespace Medi_Clinic.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePatients(Patient patient)
+        {
+            if (!ModelState.IsValid) return View(patient);
+
+            _context.Add(patient);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> EditPatients(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient == null) return NotFound();
+
+            return View(patient);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPatients(int id, Patient patient)
+        {
+            if (id != patient.PatientId) return NotFound();
+            if (!ModelState.IsValid) return View(patient);
+
+            _context.Update(patient);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> DeletePatients(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(p => p.PatientId == id);
+
+            if (patient == null) return NotFound();
+
+            return View(patient);
+        }
+
+        [HttpPost, ActionName("DeletePatients")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePatientsConfirmed(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient != null)
+            {
+                patient.PatientStatus = "Inactive";
+                _context.Update(patient);
+
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == patient.Email);
+
+                if (user != null)
+                    user.Status = "Inactive";
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+        // ================= ASSIGN APPOINTMENT (GET) =================
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            return role == "Admin";
+        }
+        public IActionResult AssignAppointment(int id)
+        {
+            if (!IsAdmin())
+                return RedirectToAction("AccessDenied", "User");
+
+            var appointment = _context.Appointments
+                .FirstOrDefault(a => a.AppointmentId == id);
+
+            if (appointment == null)
+                return NotFound();
+
+            var doctors = _context.Physicians
+                .Where(p => p.Specialization == appointment.RequiredSpecialization)
+                .ToList();
+
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == appointment.PatientId);
+
+            var vm = new AssignAppointmentVM
+            {
+                AppointmentId = appointment.AppointmentId,
+                PatientName = patient?.PatientName,
+                RequestedDate = appointment.AppointmentDate,
+                RequiredSpecialization = appointment.RequiredSpecialization,
+                AvailableDoctors = doctors,
+                ConfirmedDate = appointment.AppointmentDate.HasValue
+                    ? DateOnly.FromDateTime(appointment.AppointmentDate.Value)
+                    : DateOnly.FromDateTime(DateTime.Today),
+                ConfirmedTime = appointment.AppointmentDate.HasValue
+                    ? appointment.AppointmentDate.Value.ToString("HH:mm")
+                    : DateTime.Now.ToString("HH:mm")
+            };
+
+            return View(vm);
+        }
+        // ================= ASSIGN APPOINTMENT (POST) =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AssignAppointment(AssignAppointmentVM vm)
+        {
+            if (!IsAdmin())
+                return RedirectToAction("AccessDenied", "User");
+
+            var appointment = _context.Appointments
+                .FirstOrDefault(a => a.AppointmentId == vm.AppointmentId);
+
+            if (appointment == null)
+                return NotFound();
+
+            if (appointment.ScheduleStatus != "Pending")
+                return BadRequest("Appointment already scheduled.");
+
+            var doctor = _context.Physicians
+                .FirstOrDefault(p => p.PhysicianId == vm.SelectedPhysicianId);
+
+            if (doctor == null || doctor.Specialization != appointment.RequiredSpecialization)
+                return BadRequest("Invalid doctor selection.");
+
+            // 🔎 CHECK DOCTOR AVAILABILITY
+            var alreadyBooked = _context.Schedules.Any(s =>
+                s.PhysicianId == vm.SelectedPhysicianId &&
+                s.ScheduleDate == vm.ConfirmedDate &&
+                s.ScheduleTime == vm.ConfirmedTime &&
+                s.ScheduleStatus == "Confirmed");
+
+            if (alreadyBooked)
+            {
+                ModelState.AddModelError("", "Doctor not available at selected time.");
+
+                vm.AvailableDoctors = _context.Physicians
+                    .Where(p => p.Specialization == appointment.RequiredSpecialization)
+                    .ToList();
+
+                return View(vm);
+            }
+
         // POST: AdminPatient/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

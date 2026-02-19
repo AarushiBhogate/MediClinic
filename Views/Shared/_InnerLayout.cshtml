@@ -1,0 +1,121 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - MediClinic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --light-bg: #f3f6fb;
+        }
+
+        body {
+            background: linear-gradient(rgba(243,246,251,0.92), rgba(243,246,251,0.92)), url('/images/doctorbackgroundimage.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .brand {
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .nav-icons i {
+            margin-left: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-top: 80px;
+            padding: 30px;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* FOOTER */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            text-align: center;
+            padding: 12px;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="brand-section">
+            <a href="/Patients/Dashboard" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="brand">MediClinic</div>
+        </div>
+
+        <div class="nav-icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        @RenderBody()
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        © 2026 MediClinic | All Rights Reserved
+    </div>
+
+</body>
+</html>
+

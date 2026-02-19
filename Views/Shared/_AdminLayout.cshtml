@@ -124,6 +124,92 @@
             <!-- TOP NAVBAR -->
             <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
 
+<<<<<<< HEAD
+=======
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Physicians" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-user-md"></i>
+                                <p>Physicians</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Patients" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-procedures"></i>
+                                <p>Patients</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Suppliers" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-truck"></i>
+                                <p>Suppliers</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Chemists" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-pills"></i>
+                                <p>Chemists</p>
+                            </a>
+                        </li>
+
+                       
+
+                        <li class="nav-item">
+                            <a asp-controller="Schedules" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-alt"></i>
+                                <p>Schedules</p>
+                            </a>
+                        </li>
+
+                        
+
+                     
+                    
+
+                        
+
+                        
+                        <li class="nav-item">
+                            <a asp-controller="Admin"
+                               asp-action="PendingPatients"
+                               class="nav-link">
+                                <i class="nav-icon fas fa-user-clock text-warning"></i>
+                                <p>
+                                    Pending Patients
+                                    <span class="badge badge-warning right">
+                                        @ViewBag.PendingPatientCount
+                                    </span>
+                                </p>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Appointments" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check"></i>
+                                <p>Appointments</p>
+                            </a>
+
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="content-wrapper">
+            <section class="content pt-3">
+>>>>>>> 802f68c923389e19f4316a6b7cb7ea79f092ee9d
                 <div class="container-fluid">
 
                     <!-- Toggle Button -->

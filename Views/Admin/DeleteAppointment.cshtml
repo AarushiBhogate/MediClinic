@@ -31,13 +31,13 @@
 
                 <dt class="col-sm-3">Patient ID</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.Patient.PatientId)</dd>
-            </dl>
-
+    </dl>
+    
             <form asp-action="DeleteAppointment" class="d-flex gap-2">
-                <input type="hidden" asp-for="AppointmentId" />
+        <input type="hidden" asp-for="AppointmentId" />
                 <button type="submit" class="btn btn-danger">Delete</button>
                 <a asp-action="GetAppointment" class="btn btn-secondary">Back to List</a>
-            </form>
+    </form>
 
         </div>
     </div>

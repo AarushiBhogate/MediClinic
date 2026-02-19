@@ -1,0 +1,182 @@
+﻿@model IEnumerable<MediClinic.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Appointments";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
+}
+
+<style>
+    body {
+        background: linear-gradient(rgba(243,246,251,0.92), rgba(243,246,251,0.92)), url('/images/doctorbackgroundimage.jpg');
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        background-size: 500px;
+        background-attachment: fixed;
+    }
+
+
+
+    /* Main Card */
+    .appointment-card {
+        background: white;
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    /* Table Layout */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        text-align: left;
+        padding-bottom: 15px;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    tbody tr {
+        border-top: 1px solid #e5e7eb;
+    }
+
+    td {
+        padding: 18px 0;
+        vertical-align: middle;
+    }
+
+    /* Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* View Button */
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .btn-view:hover {
+            background: #1e40af;
+        }
+
+    /* Cancel Button */
+    .btn-cancel {
+        background: transparent;
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .btn-cancel:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+</style>
+
+<div class="appointment-card">
+
+    <h4 class="mb-4" style="color:#1e3a8a;">My Appointments</h4>
+
+    <table class="table appointment-table">
+
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Criticality</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <strong>@item.AppointmentDate?.ToString("dd MMM yyyy")</strong><br />
+                        <small class="text-muted">
+                            @item.AppointmentDate?.ToString("hh:mm tt")
+                        </small>
+                    </td>
+
+                    <td>@item.Reason</td>
+
+                    <td>
+                        <span class="status-badge"
+                              style="background:#f3f4f6; color:#374151;">
+                            @item.Criticality
+                        </span>
+                    </td>
+
+                    <td>
+                        @if (item.ScheduleStatus == "Scheduled")
+                        {
+                            <span class="status-badge status-scheduled">
+                                Scheduled
+                            </span>
+                        }
+                        else if (item.ScheduleStatus == "Pending")
+                        {
+                            <span class="status-badge status-pending">
+                                Pending
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-cancelled">
+                                Cancelled
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <div class="action-buttons">
+                            
+
+                        <a asp-action="Details"
+   asp-route-id="@item.AppointmentId"
+   class="btn-view">
+    View
+</a>
+
+@if (item.ScheduleStatus == "Scheduled")
+{
+    <a asp-action="Cancel"
+       asp-route-id="@item.AppointmentId"
+       class="btn-cancel">
+        Cancel
+    </a>
+}
+
+                        </div>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>
+
+
+

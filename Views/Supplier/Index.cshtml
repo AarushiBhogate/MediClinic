@@ -89,7 +89,7 @@
             <p class="dashboard-subtitle">
                 Manage your supply operations with style and efficiency
             </p>
-        </div>
+    </div>
 
         <div class="row g-4">
 
@@ -107,8 +107,11 @@
                         Monitor orders, manage profile,
                         and track supply history seamlessly.
                     </p>
-                </div>
-            </div>
+        </div>
+
+        <div class="profile-item">
+            <span class="profile-label">📞 Phone:</span> @Model.Phone
+        </div>
 
             <!-- ACTION CARDS -->
             <div class="col-lg-8">
@@ -124,8 +127,9 @@
                                class="dashboard-btn">
                                 Edit Profile
                             </a>
-                        </div>
-                    </div>
+        </div>
+
+    </div>
 
                     <!-- PENDING ORDERS -->
                     <div class="col-md-6">
@@ -133,10 +137,10 @@
                             <div class="icon">📦</div>
                             <h5>Pending Orders</h5>
                             <p>View and manage pending supply requests</p>
-                            <a asp-action="PendingOrders"
+        <a asp-action="PendingOrders"
                                class="dashboard-btn">
                                 View Pending
-                            </a>
+        </a>
                         </div>
                     </div>
 
@@ -146,16 +150,16 @@
                             <div class="icon">📋</div>
                             <h5>Order History</h5>
                             <p>Track completed supply transactions</p>
-                            <a asp-action="OrderHistory"
+        <a asp-action="OrderHistory"
                                class="dashboard-btn-outline">
                                 View History
-                            </a>
-                        </div>
+        </a>
+    </div>
                     </div>
 
                 </div>
             </div>
 
-        </div>
+</div>
     </div>
 </div>

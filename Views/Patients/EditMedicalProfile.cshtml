@@ -1,0 +1,112 @@
+﻿@model MediClinic.Models.PatientMedicalProfile
+@{
+    Layout = "~/Views/Shared/_PatientLayout.cshtml";
+    ViewData["Title"] = "Edit Medical Profile";
+}
+
+<style>
+    .medical-wrapper {
+        max-width: 850px;
+        margin: auto;
+    }
+
+    .medical-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+    }
+
+    .medical-card h4 {
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        transition: 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    textarea.form-control {
+        min-height: 110px;
+        resize: none;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg,#0f766e,#2563eb);
+        border: none;
+        padding: 10px 28px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        transition: 0.3s ease;
+    }
+
+    .btn-save:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    .section-subtitle {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+</style>
+
+<div class="medical-wrapper">
+
+    <div class="medical-card">
+
+        <h4>Edit Medical Information</h4>
+        <p class="section-subtitle">
+            Keep your medical records updated for better treatment.
+        </p>
+
+        <form method="post">
+
+            <div class="mb-4">
+                <label class="form-label">Allergies</label>
+                <input asp-for="MedicalAllergies" class="form-control" placeholder="e.g. Dust, Pollen, Peanuts" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Chronic Diseases</label>
+                <input asp-for="MedicalChronicDiseases" class="form-control" placeholder="e.g. Diabetes, Hypertension" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Past Illness</label>
+                <input asp-for="MedicalPastIllness" class="form-control" placeholder="e.g. Asthma, Migraine" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Additional Notes</label>
+                <textarea asp-for="MedicalNotes" class="form-control"
+                          placeholder="Any important health information your doctor should know...">
+                </textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn-save">
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

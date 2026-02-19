@@ -1,6 +1,7 @@
 ﻿@model MediClinic.Models.Schedule
 
 @{
+<<<<<<< HEAD
     ViewData["Title"] = "Create Schedule";
 }
 
@@ -92,3 +93,50 @@
         border-radius: 10px;
     }
 </style>
+=======
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Schedule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateSchedule">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PhysicianId" class="control-label"></label>
+                <select asp-for="PhysicianId" class ="form-control" asp-items="ViewBag.PhysicianId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AppointmentId" class="control-label"></label>
+                <select asp-for="AppointmentId" class ="form-control" asp-items="ViewBag.AppointmentId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScheduleDate" class="control-label"></label>
+                <input asp-for="ScheduleDate" class="form-control" />
+                <span asp-validation-for="ScheduleDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScheduleTime" class="control-label"></label>
+                <input asp-for="ScheduleTime" class="form-control" />
+                <span asp-validation-for="ScheduleTime" class="text-danger"></span>
+            </div>
+            @* <div class="form-group">
+                <label asp-for="ScheduleStatus" class="control-label"></label>
+                <input asp-for="ScheduleStatus" class="form-control" />
+                <span asp-validation-for="ScheduleStatus" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="GetSchedule">Back to List</a>
+</div>
+
+>>>>>>> 802f68c923389e19f4316a6b7cb7ea79f092ee9d

@@ -13,33 +13,33 @@
             <form asp-action="CreateChemist" class="row g-3">
                 <div class="col-md-6">
                     <label asp-for="ChemistName" class="form-label">Chemist Name</label>
-                    <input asp-for="ChemistName" class="form-control" />
-                    <span asp-validation-for="ChemistName" class="text-danger"></span>
-                </div>
+                <input asp-for="ChemistName" class="form-control" />
+                <span asp-validation-for="ChemistName" class="text-danger"></span>
+            </div>
 
                 <div class="col-md-12">
                     <label asp-for="Address" class="form-label">Address</label>
-                    <input asp-for="Address" class="form-control" />
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
 
                 <div class="col-md-6">
                     <label asp-for="Phone" class="form-label">Phone</label>
-                    <input asp-for="Phone" class="form-control" />
-                    <span asp-validation-for="Phone" class="text-danger"></span>
-                </div>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
 
                 <div class="col-md-6">
                     <label asp-for="Email" class="form-label">Email</label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
 
                 <div class="col-md-12">
                     <label asp-for="Summary" class="form-label">Summary</label>
                     <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Summary" class="text-danger"></span>
-                </div>
+                <span asp-validation-for="Summary" class="text-danger"></span>
+            </div>
 
                 @* Uncomment if you want Status dropdown *@
                 @* 
@@ -50,17 +50,17 @@
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
-                    <span asp-validation-for="ChemistStatus" class="text-danger"></span>
+                <span asp-validation-for="ChemistStatus" class="text-danger"></span>
                 </div>
                 *@
 
                 <div class="col-12 d-flex justify-content-start mt-3">
                     <button type="submit" class="btn btn-lightblue me-2">Create</button>
                     <a asp-action="Getchemist" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 </div>
 
 <style>

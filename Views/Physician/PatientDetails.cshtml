@@ -1,0 +1,95 @@
+﻿@model MediClinic.Models.ModelViews.PatientDetailsVM
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Patient Details";
+}
+
+<div class="phys-container">
+
+    <!-- Standard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="phys-title mb-1">Patient Details</h2>
+            <p class="phys-subtitle">Complete medical overview</p>
+        </div>
+
+        <a class="btn btn-outline-teal" href="javascript:history.back()">
+            ← Back
+        </a>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="phys-card">
+        <h5 class="fw-bold mb-4">Basic Information</h5>
+
+        <div class="phys-info-grid">
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Name</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.PatientName) ? "N/A" : Model.PatientName)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Gender</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.Gender) ? "N/A" : Model.Gender)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Phone</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.Phone) ? "N/A" : Model.Phone)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Email</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.Email) ? "N/A" : Model.Email)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Medical Profile -->
+    <div class="phys-card">
+        <h5 class="fw-bold mb-4">Medical Profile</h5>
+
+        <div class="phys-info-grid">
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Allergies</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.Allergies) ? "Not Provided" : Model.Allergies)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Past Illness</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.PastIllness) ? "Not Provided" : Model.PastIllness)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Chronic Diseases</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.ChronicDiseases) ? "Not Provided" : Model.ChronicDiseases)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Notes</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(Model.Notes) ? "Not Provided" : Model.Notes)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

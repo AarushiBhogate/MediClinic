@@ -1,0 +1,116 @@
+﻿@model MediClinic.Models.PhysicianAdvice
+
+@{
+    ViewData["Title"] = "Prescription Details";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
+
+    var medicines = ViewBag.Medicines as List<MediClinic.Models.PhysicianPrescrip>;
+}
+
+<style>
+    .prescription-details-card {
+        background: white;
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .info-grid {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 30px;
+    }
+
+    .info-item {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #1e3a8a;
+        margin-top: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        text-align: left;
+        padding-bottom: 12px;
+        color: #1e3a8a;
+    }
+
+    tbody tr {
+        border-top: 1px solid #e5e7eb;
+    }
+
+    td {
+        padding: 16px 0;
+    }
+</style>
+
+<div class="prescription-details-card">
+
+    <h4 style="color:#1e3a8a; margin-bottom:30px;">
+        Prescription Details
+    </h4>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-label">Doctor</div>
+            <div class="info-value">
+                Dr. @Model.Schedule?.Physician?.PhysicianName
+
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-label">Date</div>
+            <div class="info-value">
+                @Model.Schedule.Appointment.AppointmentDate?.ToString("dd MMM yyyy")
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Drug</th>
+                <th>Dosage</th>
+                <th>Instructions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (medicines != null && medicines.Count > 0)
+            {
+                foreach (var item in medicines)
+                {
+                    <tr>
+                        <td>@item.Drug?.DrugTitle</td>
+                        <td>@item.Dosage</td>
+                        <td>@item.Prescription</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" style="text-align:center; padding:20px;">
+                        No medicines prescribed.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
