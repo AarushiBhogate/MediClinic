@@ -1,0 +1,68 @@
+﻿@model IEnumerable<MediClinic.Models.Schedule>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Schedules";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Schedule List</h4>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Schedule Date</th>
+                    <th>Schedule Time</th>
+                    <th>Patient Name</th>
+                    <th>Schedule Status</th>
+                    <th>Physician</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- Schedule Date -->
+                        <td>
+                            @item.ScheduleDate
+                        </td>
+
+                        <!-- Schedule Time -->
+                        <td>
+                            @item.ScheduleTime
+                        </td>
+
+                        <!-- Patient Name -->
+                        <td>
+                            @item.Appointment?.Patient?.PatientName
+                        </td>
+
+                        <!-- Schedule Status -->
+                        <td class="text-center">
+                            @if (item.ScheduleStatus?.ToLower() == "scheduled")
+                            {
+                                <span class="badge bg-primary">Scheduled</span>
+                            }
+                            else if (item.ScheduleStatus?.ToLower() == "completed")
+                            {
+                                <span class="badge bg-success">Completed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Not Scheduled</span>
+                            }
+                        </td>
+
+                        <!-- Physician Name -->
+                        <td>
+                            @item.Physician?.PhysicianName
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

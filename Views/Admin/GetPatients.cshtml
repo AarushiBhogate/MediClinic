@@ -1,0 +1,87 @@
+﻿@model IEnumerable<MediClinic.Models.Patient>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Patients";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Patient List</h4>
+        <a asp-action="CreatPatients" class="btn btn-primary">
+            + Add Patient
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    @* <th>Summary</th> *@
+                    <th>Status</th>
+                    <th style="width:150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PatientName</td>
+                        <td>@item.Dob</td>
+                        <td>@item.Gender</td>
+                        <td>@item.Address</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        @* <td>@item.Summary</td> *@
+
+                        <td class="text-center">
+                            @if (item.PatientStatus == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (item.PatientStatus == "Inactive")
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                            else if (item.PatientStatus == "Pending")
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Unknown</span>
+                            }
+                        </td>
+
+
+                        <td class="text-center">
+                            <a asp-action="EditPatients"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            <a asp-action="GetPatientById"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <a asp-action="DeletePatients"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -15,6 +15,7 @@ public partial class Schedule
 
     public string? ScheduleTime { get; set; }
 
+
     public string? ScheduleStatus { get; set; }
 
     public virtual Appointment? Appointment { get; set; }

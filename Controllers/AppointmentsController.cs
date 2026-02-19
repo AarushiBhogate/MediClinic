@@ -1,11 +1,13 @@
 ﻿using MediClinic.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 
 namespace MediClinic.Controllers
 {
-    public class AppointmentsController : PatientBaseController
+    public class AppointmentsController : Controller
     {
         private readonly MediClinicDbContext _context;
 
@@ -28,10 +30,7 @@ namespace MediClinic.Controllers
                 .Where(a => a.PatientId == patientId);
 
             if (!string.IsNullOrEmpty(status))
-            {
-                appointments = appointments
-                    .Where(a => a.ScheduleStatus == status);
-            }
+                appointments = appointments.Where(a => a.ScheduleStatus == status);
 
             var list = appointments
                 .OrderByDescending(a => a.AppointmentDate)
@@ -102,8 +101,6 @@ namespace MediClinic.Controllers
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("Index");
-        }
 
         // ============================================
         // VIEW APPOINTMENT DETAILS

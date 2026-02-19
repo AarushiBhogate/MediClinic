@@ -1,0 +1,29 @@
+﻿@model IEnumerable<MediClinic.Models.Appointment>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Date</th>
+            <th>Reason</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Patient?.PatientName</td>
+                <td>@item.AppointmentDate</td>
+                <td>@item.Reason</td>
+                <td>
+                    <a asp-action="AssignDoctor"
+                       asp-route-id="@item.AppointmentId"
+                       class="btn btn-primary btn-sm">
+                        Schedule
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

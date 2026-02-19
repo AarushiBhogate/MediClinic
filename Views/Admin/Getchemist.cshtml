@@ -1,0 +1,79 @@
+﻿@model IEnumerable<MediClinic.Models.Chemist>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chemists";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Chemist List</h4>
+        <a asp-action="CreateChemist" class="btn btn-primary">
+            + Add Chemist
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Summary</th>
+                    <th>Status</th>
+                    <th style="width:150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ChemistName</td>
+                        <td>@item.Address</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        <td>@item.Summary</td>
+
+                        <td class="text-center">
+                            @if (item.ChemistStatus?.ToLower() == "active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (item.ChemistStatus?.ToLower() == "inactive")
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Unknown</span>
+                            }
+                        </td>
+
+                        <td class="text-center">
+                            <a asp-action="EditChemist"
+                               asp-route-id="@item.ChemistId"
+                               class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            <a asp-action="GetChemistDetails"
+                               asp-route-id="@item.ChemistId"
+                               class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <a asp-action="DeleteChemist"
+                               asp-route-id="@item.ChemistId"
+                               class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+s

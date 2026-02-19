@@ -2,7 +2,10 @@
 using MediClinic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.IO;
+using System;
 using System.Threading.Tasks;
 
 namespace MediClinic.Controllers
@@ -35,6 +38,8 @@ namespace MediClinic.Controllers
 
             var patient = _context.Patients
                 .FirstOrDefault(p => p.PatientId == patientId);
+
+
 
             var nextAppointment = _context.Appointments
     .Where(a => a.PatientId == patientId &&
@@ -69,6 +74,65 @@ namespace MediClinic.Controllers
             ViewBag.TotalAppointments = totalAppointments;
 
             return View(vm);
+        }
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(m => m.PatientId == id);
+
+            if (patient == null) return NotFound();
+
+            return View(patient);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient != null)
+            {
+                patient.PatientStatus = "Inactive";
+                _context.Update(patient);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        // ================= BOOK APPOINTMENT =================
+
+        public IActionResult BookAppointment()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult BookAppointment(Appointment model)
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            model.PatientId = PatientId.Value;
+            model.ScheduleStatus = "Pending";
+            if (model.AppointmentDate.HasValue)
+            {
+                model.AppointmentDate = model.AppointmentDate.Value.Date;
+            }
+
+
+            _context.Appointments.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("Dashboard");
         }
 
         // ================= PROFILE =================
@@ -167,10 +231,11 @@ namespace MediClinic.Controllers
                                         "wwwroot/images",
                                         fileName);
 
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await profileImage.CopyToAsync(stream);
-                }
+        // ================= MEDICAL PROFILE =================
+        public IActionResult EditMedicalProfile()
+        {
+            var check = RequireLogin();
+            if (check != null) return check;
 
                 var patient = _context.Patients
                     .FirstOrDefault(p => p.PatientId == PatientId);
