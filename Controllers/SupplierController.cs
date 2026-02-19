@@ -1,4 +1,5 @@
 ﻿using MediClinic.Models;
+using MediClinic.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace CAS.Controllers
 {
-    //[Authorize(Roles = "Supplier")]
+    [Authorize(Roles = "Supplier")]
     public class SupplierController : Controller
     {
         private readonly MediClinicDbContext _context;
@@ -59,7 +60,7 @@ namespace CAS.Controllers
 
             var orders = _context.PurchaseOrderHeaders
                 .Where(o => o.SupplierId == user.RoleReferenceId
-                         && o.PurchaseOrderStatus == "Pending")
+                         && o.PoStatus == "Pending")
                 .Include(o => o.PurchaseProductLines)
                     .ThenInclude(p => p.Drug)
                 .ToList();
@@ -78,7 +79,7 @@ namespace CAS.Controllers
                 .FirstOrDefault(u => u.UserName == username);
             var orders = _context.PurchaseOrderHeaders
                 .Where(o => o.SupplierId == user.RoleReferenceId
-                && o.PurchaseOrderStatus != "Pending")
+                && o.PoStatus != "Pending")
                 .Include(o => o.PurchaseProductLines)
                 .ThenInclude(p => p.Drug)
                 .ToList();
@@ -97,7 +98,7 @@ namespace CAS.Controllers
 
             if (order != null)
             {
-                order.PurchaseOrderStatus = "Approved";
+                order.PoStatus = "Approved";
                 _context.SaveChanges();
             }
 
@@ -111,7 +112,7 @@ namespace CAS.Controllers
 
             if (order != null)
             {
-                order.PurchaseOrderStatus = "Rejected";
+                order.PoStatus = "Rejected";
                 _context.SaveChanges();
             }
 
