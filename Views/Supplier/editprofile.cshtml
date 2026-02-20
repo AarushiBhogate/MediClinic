@@ -1,0 +1,76 @@
+﻿@model MediClinic.Models.Supplier
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
+}
+
+
+
+<div class="edit-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <div class="edit-card">
+
+                    <h2 class="text-center">Edit Profile</h2>
+
+                    <form asp-action="EditProfile" method="post">
+
+                        <input type="hidden" asp-for="SupplierId" />
+
+                        <div class="row g-4">
+
+                            <!-- Supplier Name (Readonly) -->
+                            <div class="col-md-6">
+                                <label class="form-label">Supplier Name</label>
+                                <input asp-for="SupplierName"
+                                       class="form-control"
+                                       readonly />
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input asp-for="Email"
+                                       class="form-control" />
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input asp-for="Phone"
+                                       class="form-control" />
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-md-12">
+                                <label class="form-label">Address</label>
+                                <textarea asp-for="Address"
+                                          rows="3"
+                                          class="form-control"></textarea>
+                            </div>
+
+                            <div class="col-md-12 text-center mt-4">
+                                <button type="submit"
+                                        class="btn btn-update me-3">
+                                    Update Profile
+                                </button>
+
+                                <a asp-action="Index"
+                                   class="btn btn-cancel">
+                                    Cancel
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

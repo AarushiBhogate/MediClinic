@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Register";
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -7,12 +7,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h3 class="text-center">Login</h3>
-
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger">@ViewBag.Error</div>
-            }
+            <h3 class="text-center">Register</h3>
 
             <form method="post">
                 <div class="mb-3">
@@ -25,8 +20,19 @@
                     <input type="password" name="Password" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-success w-100">
-                    Login
+                <div class="mb-3">
+                    <label>Role</label>
+                    <select name="Role" class="form-control">
+                        <option>Admin</option>
+                        <option>Doctor</option>
+                        <option>Physician</option>
+                        <option>Patient</option>
+                        <option>Supplier</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Register
                 </button>
             </form>
         </div>

@@ -1,48 +1,94 @@
 ﻿@model MediClinic.Models.Schedule
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Schedule";
 }
 
-<h1>Create</h1>
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-lightblue text-dark fw-bold fs-4">
+            Create Schedule
+        </div>
+        <div class="card-body bg-white">
+            <form asp-action="CreateSchedule" class="row g-3">
 
-<h4>Schedule</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateSchedule">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PhysicianId" class="control-label"></label>
-                <select asp-for="PhysicianId" class ="form-control" asp-items="ViewBag.PhysicianId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AppointmentId" class="control-label"></label>
-                <select asp-for="AppointmentId" class ="form-control" asp-items="ViewBag.AppointmentId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ScheduleDate" class="control-label"></label>
-                <input asp-for="ScheduleDate" class="form-control" />
-                <span asp-validation-for="ScheduleDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ScheduleTime" class="control-label"></label>
-                <input asp-for="ScheduleTime" class="form-control" />
-                <span asp-validation-for="ScheduleTime" class="text-danger"></span>
-            </div>
-            @* <div class="form-group">
-                <label asp-for="ScheduleStatus" class="control-label"></label>
-                <input asp-for="ScheduleStatus" class="form-control" />
-                <span asp-validation-for="ScheduleStatus" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="col-md-6">
+                    <label asp-for="PhysicianId" class="form-label">Physician</label>
+                    <select asp-for="PhysicianId" class="form-select" asp-items="ViewBag.PhysicianId">
+                        <option value="">--Select Physician--</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="AppointmentId" class="form-label">Appointment</label>
+                    <select asp-for="AppointmentId" class="form-select" asp-items="ViewBag.AppointmentId">
+                        <option value="">--Select Appointment--</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ScheduleDate" class="form-label">Schedule Date</label>
+                    <input asp-for="ScheduleDate" type="date" class="form-control" />
+                    <span asp-validation-for="ScheduleDate" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ScheduleTime" class="form-label">Schedule Time</label>
+                    <input asp-for="ScheduleTime" type="time" class="form-control" />
+                    <span asp-validation-for="ScheduleTime" class="text-danger"></span>
+                </div>
+
+                @* Uncomment if you want ScheduleStatus dropdown *@
+                @*
+                <div class="col-md-6">
+                    <label asp-for="ScheduleStatus" class="form-label">Status</label>
+                    <select asp-for="ScheduleStatus" class="form-select">
+                        <option value="">--Select--</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    <span asp-validation-for="ScheduleStatus" class="text-danger"></span>
+                </div>
+                *@
+
+                <div class="col-12 d-flex justify-content-start mt-3">
+                    <button type="submit" class="btn btn-lightblue me-2">Create</button>
+                    <a asp-action="GetSchedule" class="btn btn-secondary">Back to List</a>
+                </div>
+
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="GetSchedule">Back to List</a>
-</div>
+<style>
+    body {
+        background-color: #f0f8ff; /* very light blue background */
+        font-family: Arial, sans-serif;
+    }
 
+    .bg-lightblue {
+        background-color: #cce7ff !important; /* soft light blue header */
+    }
+
+    .btn-lightblue {
+        background-color: #5dade2;
+        color: white;
+        border: none;
+    }
+
+        .btn-lightblue:hover {
+            background-color: #4a9edc;
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+
+    .card {
+        max-width: 900px;
+        margin: auto;
+        border-radius: 10px;
+    }
+</style>

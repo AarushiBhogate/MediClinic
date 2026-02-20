@@ -1,0 +1,102 @@
+﻿@model List<MediClinic.Models.DrugRequest>
+
+@{
+    ViewData["Title"] = "Physician Drug Requests";
+    // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
+}
+
+
+
+<div class="requests-page">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="page-title">Physician Drug Requests</h2>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="custom-alert">
+                <h5 class="mb-3">No requests available</h5>
+                <p>No physician drug requests found at this time.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+
+                @foreach (var req in Model)
+                {
+                    string statusClass = req.RequestStatus == "Approved" ? "status-approved"
+                    : req.RequestStatus == "Rejected" ? "status-rejected"
+                    : "status-pending";
+
+                    <div class="col-lg-6 col-md-6">
+
+                        <div class="request-card h-100">
+
+                            <div class="mb-3">
+                                <span class="info-label">Request ID:</span>
+                                <div class="info-value">
+                                    @req.DrugRequestId
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="info-label">Physician ID:</span>
+                                <div class="info-value">
+                                    @req.PhysicianId
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="info-label">Request Date:</span>
+                                <div class="info-value">
+                                    @req.RequestDate
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="info-label">Drug Details:</span>
+                                <div class="info-value">
+                                    @req.DrugsInfoText
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+
+                                <span class="status-badge @statusClass">
+                                    @req.RequestStatus
+                                </span>
+
+                                @if (req.RequestStatus == "Pending")
+                                {
+                                    <div class="mt-3">
+                                        <a asp-action="Approve"
+                                           asp-route-id="@req.DrugRequestId"
+                                           class="action-btn btn-approve">
+                                            Approve
+                                        </a>
+
+                                        <a asp-action="Reject"
+                                           asp-route-id="@req.DrugRequestId"
+                                           class="action-btn btn-reject">
+                                            Reject
+                                        </a>
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

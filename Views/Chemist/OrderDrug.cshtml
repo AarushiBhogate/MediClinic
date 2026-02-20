@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "Place Purchase Order";
+    // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
+}
+
+
+
+<div class="appointment-page">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="page-title">Place Purchase Order</h2>
+            <p class="text-white-50">
+                Submit supplier purchase request easily
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+
+                <div class="appointment-card">
+
+                    <form asp-action="OrderDrug" method="post">
+
+                        <!-- Supplier -->
+                        <div class="mb-4">
+                            <label class="form-label">Select Supplier</label>
+                            <select name="SupplierId" class="form-control" required>
+                                <option value="">-- Select Supplier --</option>
+                                @foreach (var s in ViewBag.Suppliers)
+                                {
+                                    <option value="@s.SupplierId">@s.SupplierName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr class="mb-4" />
+
+                        <h5 class="mb-4 fw-bold text-dark">
+                            Add Medicines
+                        </h5>
+
+                        <div id="items-container">
+
+                            <div class="row mb-4 item-row align-items-end">
+
+                                <div class="col-md-6">
+                                    <select name="DrugIds"
+                                            class="form-control"
+                                            required>
+                                        <option value="">-- Select Drug --</option>
+                                        @foreach (var d in ViewBag.Drugs)
+                                        {
+                                            <option value="@d.DrugId">
+                                                @d.DrugTitle
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input type="number"
+                                           name="Quantities"
+                                           class="form-control"
+                                           placeholder="Quantity"
+                                           min="1"
+                                           required />
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="button"
+                                            class="btn remove-btn w-100">
+                                        Remove
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <button type="button"
+                                    class="btn btn-outline-premium"
+                                    id="add-item">
+                                + Add Another Medicine
+                            </button>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-premium w-100">
+                            Submit Order
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("add-item").addEventListener("click", function () {
+
+        var container = document.getElementById("items-container");
+        var firstRow = document.querySelector(".item-row");
+        var newRow = firstRow.cloneNode(true);
+
+        newRow.querySelectorAll("input").forEach(input => input.value = "");
+        newRow.querySelectorAll("select").forEach(select => select.selectedIndex = 0);
+
+        container.appendChild(newRow);
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-btn")) {
+            var rows = document.querySelectorAll(".item-row");
+            if (rows.length > 1) {
+                e.target.closest(".item-row").remove();
+            }
+        }
+    });
+</script>

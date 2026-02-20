@@ -1,56 +1,93 @@
 ﻿@model MediClinic.Models.Chemist
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Chemist";
 }
 
-<h1>Edit</h1>
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-lightblue text-dark fw-bold fs-4">
+            Edit Chemist
+        </div>
+        <div class="card-body bg-white">
 
-<h4>Chemist</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditChemist">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ChemistId" />
-            <div class="form-group">
-                <label asp-for="ChemistName" class="control-label"></label>
-                <input asp-for="ChemistName" class="form-control" />
-                <span asp-validation-for="ChemistName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Summary" class="control-label"></label>
-                <input asp-for="Summary" class="form-control" />
-                <span asp-validation-for="Summary" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChemistStatus" class="control-label"></label>
-                <input asp-for="ChemistStatus" class="form-control" />
-                <span asp-validation-for="ChemistStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="EditChemist">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="ChemistId" />
+
+                <div class="mb-3">
+                    <label asp-for="ChemistName" class="form-label"></label>
+                    <input asp-for="ChemistName" class="form-control" />
+                    <span asp-validation-for="ChemistName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Summary" class="form-label"></label>
+                    <input asp-for="Summary" class="form-control" />
+                    <span asp-validation-for="Summary" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ChemistStatus" class="form-label"></label>
+                    <input asp-for="ChemistStatus" class="form-control" />
+                    <span asp-validation-for="ChemistStatus" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-lightblue">Save</button>
+                    <a asp-action="Getchemist" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Getchemist">BaGk to List</a>
-</div>
+<style>
+    body {
+        background-color: #f0f8ff; /* very light blue background */
+        font-family: Arial, sans-serif;
+    }
 
+    .bg-lightblue {
+        background-color: #cce7ff !important; /* soft light blue header */
+    }
+
+    .btn-lightblue {
+        background-color: #5dade2;
+        color: white;
+        border: none;
+    }
+
+        .btn-lightblue:hover {
+            background-color: #4a9edc;
+        }
+
+    .card {
+        max-width: 700px;
+        margin: auto;
+        border-radius: 10px;
+    }
+
+    label {
+        font-weight: 500;
+    }
+</style>
