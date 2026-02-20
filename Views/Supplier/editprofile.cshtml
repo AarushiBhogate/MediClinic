@@ -5,72 +5,89 @@
     // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
 }
 
+<style>
+    .edit-card {
+        max-width: 650px;
+        margin: 50px auto;
+        padding: 35px;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
 
+    .edit-header {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
 
 <div class="edit-page">
-    <div class="container">
+<div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
-                <div class="edit-card">
+    <div class="edit-card">
 
                     <h2 class="text-center">Edit Profile</h2>
 
-                    <form asp-action="EditProfile" method="post">
+        <form asp-action="EditProfile" method="post">
 
-                        <input type="hidden" asp-for="SupplierId" />
+            <input type="hidden" asp-for="SupplierId" />
 
                         <div class="row g-4">
 
-                            <!-- Supplier Name (Readonly) -->
+            <!-- Supplier Name (Readonly) -->
                             <div class="col-md-6">
                                 <label class="form-label">Supplier Name</label>
                                 <input asp-for="SupplierName"
                                        class="form-control"
                                        readonly />
-                            </div>
+            </div>
 
-                            <!-- Email -->
+            <!-- Email -->
                             <div class="col-md-6">
                                 <label class="form-label">Email</label>
                                 <input asp-for="Email"
                                        class="form-control" />
-                            </div>
+            </div>
 
-                            <!-- Phone -->
+            <!-- Phone -->
                             <div class="col-md-6">
                                 <label class="form-label">Phone</label>
                                 <input asp-for="Phone"
                                        class="form-control" />
-                            </div>
+            </div>
 
-                            <!-- Address -->
+            <!-- Address -->
                             <div class="col-md-12">
                                 <label class="form-label">Address</label>
                                 <textarea asp-for="Address"
                                           rows="3"
                                           class="form-control"></textarea>
-                            </div>
+            </div>
 
                             <div class="col-md-12 text-center mt-4">
                                 <button type="submit"
                                         class="btn btn-update me-3">
                                     Update Profile
-                                </button>
+                </button>
 
                                 <a asp-action="Index"
                                    class="btn btn-cancel">
-                                    Cancel
-                                </a>
-                            </div>
+                    Cancel
+                </a>
+            </div>
 
                         </div>
 
-                    </form>
+        </form>
 
-                </div>
+    </div>
 
-            </div>
+</div>
         </div>
     </div>
 </div>

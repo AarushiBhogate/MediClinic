@@ -1,16 +1,322 @@
-﻿@* <!DOCTYPE html>
+@* <!DOCTYPE html>
+>>>>>>> 802f68c923389e19f4316a6b7cb7ea79f092ee9d
 <html>
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - MediClinic</title>
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --light-bg: #f3f6fb;
+        }
+
+        html, body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--light-bg);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .brand {
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-icon {
+            font-size: 32px;
+            color: #555;
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            width: 170px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: none;
+            padding: 8px 0;
+            z-index: 2000;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+            .dropdown-item:hover {
+                background: #f3f4f6;
+            }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 70px;
+            height: calc(100% - 60px);
+            background: var(--primary);
+            transition: width 0.4s ease;
+            overflow-x: hidden;
+        }
+
+            .sidebar:hover {
+                width: 230px;
+            }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+                .sidebar ul li {
+                    padding: 15px 20px;
+                }
+
+                    .sidebar ul li a {
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none;
+                        color: white;
+                        font-size: 15px;
+                    }
+
+                    .sidebar ul li i {
+                        width: 30px;
+                        font-size: 18px;
+                    }
+
+                    .sidebar ul li span {
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                        white-space: nowrap;
+                    }
+
+            .sidebar:hover ul li span {
+                opacity: 1;
+            }
+
+            .sidebar ul li:hover {
+                background: rgba(255,255,255,0.1);
+                border-radius: 8px;
+            }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            margin-top: 60px;
+            margin-left: 70px;
+            padding: 30px;
+            padding-bottom: 70px; /* important */
+            transition: margin-left 0.4s ease;
+        }
+
+
+        .sidebar:hover ~ .main-content {
+            margin-left: 230px;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            text-align: center;
+            padding: 12px;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+
+    </style>
 </head>
+
 <body>
 
-    <div class="dashboard-wrapper">
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="fas fa-bars"></i>
+            <div class="brand">MediClinic</div>
+        </div>
+
+        <div class="nav-right">
+            <i class="fas fa-bell"></i>
+
+            <div class="nav-profile" onclick="toggleProfileMenu()">
+
+                @if (Context.Session.GetString("ProfileImage") == null)
+                {
+                    <i class="fas fa-user-circle profile-icon"></i>
+                }
+                else
+                {
+                    <img src="@Context.Session.GetString("ProfileImage")"
+                         class="profile-img" />
+                }
+
+                <div class="profile-dropdown" id="profileDropdown">
+
+                    <form asp-controller="Patients"
+                          asp-action="UploadProfileImage"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        <label for="profileUpload" class="dropdown-item">
+                            Change Image
+                        </label>
+
+                        <input type="file"
+                               id="profileUpload"
+                               name="profileImage"
+                               style="display:none;"
+                               onchange="this.form.submit();" />
+                    </form>
+
+                    @if (Context.Session.GetString("ProfileImage") != null)
+                    {
+                        <form asp-controller="Patients"
+                              asp-action="RemoveProfileImage"
+                              method="post">
+                            <button type="submit" class="dropdown-item">
+                                Remove Image
+                            </button>
+                        </form>
+                    }
+
+                    <a asp-controller="Patients"
+                       asp-action="Profile"
+                       class="dropdown-item">
+                        View Profile
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="/Patients/Dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a asp-controller="Appointments" asp-action="Index">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+            </li>
+<li>
+    <a asp-controller="Prescriptions" asp-action="Index">
+        <i class="fas fa-pills"></i>
+        <span>Prescriptions</span>
+    </a>
+</li>
+
+
+            
+
+            <li>
+                <a asp-controller="Patients" asp-action="Profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/User/Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
         @RenderBody()
     </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        © 2026 MediClinic | All Rights Reserved
+    </div>
+
+    <script>
+        function toggleProfileMenu() {
+            var menu = document.getElementById("profileDropdown");
+            if (menu) {
+                menu.style.display =
+                    menu.style.display === "block" ? "none" : "block";
+            }
+        }
+
+        document.addEventListener("click", function (e) {
+            var profile = document.querySelector(".nav-profile");
+            var menu = document.getElementById("profileDropdown");
+
+            if (profile && menu && !profile.contains(e.target)) {
+                menu.style.display = "none";
+            }
+        });
+    </script>
+
 
 </body>
 </html> *@

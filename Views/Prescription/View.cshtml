@@ -1,0 +1,112 @@
+﻿@{
+    Layout = "~/Views/Shared/_PhysicianDashboardLayout.cshtml";
+}
+@{
+  
+    ViewData["Title"] = "Prescription";
+
+    var patientName = ViewBag.PatientName as string;
+    var date = ViewBag.Date;
+    var time = ViewBag.Time;
+    var list = ViewBag.Prescriptions as List<MediClinic.Models.PhysicianPrescrip>;
+    var adviceId = Convert.ToInt32(Context.Request.Query["physicianAdviceId"]);
+}
+
+<div class="phys-container">
+    
+    <!-- Standard Header -->
+    <div class="phys-header-fixed">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="phys-title mb-1">Prescription</h2>
+                <p class="phys-subtitle mb-0">
+                    View medicines prescribed for the patient
+                </p>
+            </div>
+
+            <a class="btn btn-outline-teal"
+               href="/PhysicianAdvice/Index">
+                ← Back
+            </a>
+        </div>
+    </div>
+
+
+    <div class="phys-card">
+
+        <!-- Appointment Info -->
+        <div class="phys-info-grid mb-4">
+            <div class="phys-info-item">
+                <div class="phys-info-label">Patient</div>
+                <div class="phys-info-value">
+                    @(string.IsNullOrEmpty(patientName) ? "N/A" : patientName)
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Date</div>
+                <div class="phys-info-value">
+                    @(date ?? "N/A")
+                </div>
+            </div>
+
+            <div class="phys-info-item">
+                <div class="phys-info-label">Time</div>
+                <div class="phys-info-value">
+                    @(time ?? "N/A")
+                </div>
+            </div>
+        </div>
+
+        <div class="phys-divider"></div>
+
+        <!-- Prescription Table -->
+        <div class="phys-table-wrap">
+            <table class="table phys-table">
+                <thead>
+                    <tr>
+                        <th>Drug</th>
+                        <th>Dosage</th>
+                        <th>Prescription</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (list != null && list.Count > 0)
+                    {
+                        foreach (var item in list)
+                        {
+                            <tr>
+                                <td>@(item.Drug?.DrugTitle ?? "N/A")</td>
+                                <td>@(item.Dosage ?? "N/A")</td>
+                                <td>@(item.Prescription ?? "N/A")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">
+                                No medicines added.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2 mt-4">
+            <a class="btn btn-teal"
+               href="/Prescription/Create?physicianAdviceId=@adviceId">
+                Add More Medicines
+            </a>
+
+            <a class="btn btn-outline-teal"
+               href="/PhysicianAdvice/Index">
+                Cancel
+            </a>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,113 @@
+﻿@model IEnumerable<MediClinic.Models.PhysicianAdvice>
+
+@{
+    ViewData["Title"] = "Prescriptions";
+    Layout = "~/Views/Shared/_InnerLayout.cshtml";
+}
+
+<style>
+    .prescription-card {
+        background: white;
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        text-align: left;
+        padding-bottom: 15px;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    tbody tr {
+        border-top: 1px solid #e5e7eb;
+        transition: 0.2s ease;
+    }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+    td {
+        padding: 18px 0;
+    }
+
+    .btn-view {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+        .btn-view:hover {
+            background: #1e40af;
+        }
+
+    .date-small {
+        color: #6b7280;
+        font-size: 13px;
+    }
+</style>
+
+<div class="prescription-card">
+
+    <h4 style="color:#1e3a8a; margin-bottom:30px;">
+        My Prescriptions
+    </h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Diagnosis</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <strong>
+                            @item.Schedule.Appointment.AppointmentDate?.ToString("dd MMM yyyy")
+                        </strong><br />
+                        <span class="date-small">
+                            @item.Schedule.Appointment.AppointmentDate?.ToString("hh:mm tt")
+                        </span>
+                    </td>
+
+                    <td>
+                        @item.Schedule?.Physician?.PhysicianName
+                    </td>
+
+
+                    <td>
+                        @item.Advice
+                    </td>
+
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@item.PhysicianAdviceId"
+                           class="btn-view">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

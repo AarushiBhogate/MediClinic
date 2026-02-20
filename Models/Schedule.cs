@@ -15,6 +15,7 @@ public partial class Schedule
 
     public string? ScheduleTime { get; set; }
 
+
     public string? ScheduleStatus { get; set; }
 
     public virtual Appointment? Appointment { get; set; }
@@ -22,4 +23,5 @@ public partial class Schedule
     public virtual Physician? Physician { get; set; }
 
     public virtual ICollection<PhysicianAdvice> PhysicianAdvices { get; set; } = new List<PhysicianAdvice>();
+
 }
