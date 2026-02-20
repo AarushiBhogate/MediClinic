@@ -4,6 +4,103 @@
     ViewData["Title"] = "Edit Physician";
 }
 
+<<<<<<< HEAD
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-lightblue text-dark fw-bold fs-4">
+            Edit Physician
+        </div>
+        <div class="card-body bg-white">
+            <form asp-action="EditPhysicians" class="row g-3">
+                <input type="hidden" asp-for="PhysicianId" />
+
+                <div class="col-md-6">
+                    <label asp-for="PhysicianName" class="form-label">Physician Name</label>
+                    <input asp-for="PhysicianName" class="form-control" />
+                    <span asp-validation-for="PhysicianName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Specialization" class="form-label">Specialization</label>
+                    <input asp-for="Specialization" class="form-control" />
+                    <span asp-validation-for="Specialization" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label">Phone</label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Summary" class="form-label">Summary</label>
+                    <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Summary" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="PhysicianStatus" class="form-label">Status</label>
+                    <select asp-for="PhysicianStatus" class="form-select">
+                        <option value="">--Select--</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    <span asp-validation-for="PhysicianStatus" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 d-flex justify-content-start mt-3">
+                    <button type="submit" class="btn btn-lightblue me-2">Save</button>
+                    <a asp-action="GetPhysicians" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f8ff; /* very light blue background */
+        font-family: Arial, sans-serif;
+    }
+
+    .bg-lightblue {
+        background-color: #cce7ff !important; /* soft light blue */
+    }
+
+    .btn-lightblue {
+        background-color: #5dade2;
+        color: white;
+        border: none;
+    }
+
+        .btn-lightblue:hover {
+            background-color: #4a9edc;
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+
+    .card {
+        max-width: 900px;
+        margin: auto;
+        border-radius: 10px;
+    }
+</style>
+=======
 <h1>Edit</h1>
 
 <h4>Physician</h4>
@@ -59,3 +156,4 @@
     <a asp-action="GetPhysicians">Back to List</a>
 </div>
 
+>>>>>>> 802f68c923389e19f4316a6b7cb7ea79f092ee9d

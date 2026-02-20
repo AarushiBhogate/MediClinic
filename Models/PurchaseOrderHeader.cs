@@ -13,7 +13,8 @@ public partial class PurchaseOrderHeader
 
     public int? SupplierId { get; set; }
 
-    public string ? PoStatus { get; set; } 
+    public string? PurchaseOrderStatus { get; set; }
+
 
     public virtual ICollection<PurchaseProductLine> PurchaseProductLines { get; set; } = new List<PurchaseProductLine>();
 

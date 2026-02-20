@@ -1,68 +1,69 @@
-﻿using MediClinic.Models;
-using MediClinic.Models.ModelViews;
+﻿
+using MediClinic.Models;
+using MediClinic.Models.ViewModel;
+using MediClinic.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
-
-namespace MediClinic.Controllers
+namespace Medi_Clinic.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly MediClinicDbContext _context;
 
+        private readonly MediClinicDbContext _context;
         public AdminController(MediClinicDbContext context)
         {
             _context = context;
         }
-        private bool IsAdmin()
+        public async Task<IActionResult> Index()
         {
-            var role = HttpContext.Session.GetString("Role");
-            return role == "Admin";
+            var model = new AdminDashboardViewModel
+            {
+                TotalPatients = await _context.Patients.CountAsync(),
+                TotalPhysicians = await _context.Physicians.CountAsync(),
+                TotalChemists = await _context.Chemists.CountAsync(),
+                TotalSuppliers = await _context.Suppliers.CountAsync(),
+                TodayAppointments = await _context.Appointments.CountAsync(),
+
+                PendingPatients = await _context.Patients.CountAsync(p => p.PatientStatus == "Pending"),
+
+                PendingAppointments = await _context.Appointments.CountAsync(a => a.ScheduleStatus == "Pending"),
+
+                TotalAppointments = await _context.Schedules.CountAsync(s => s.ScheduleDate == DateOnly.FromDateTime(DateTime.Today))
+
+            };
+            return View(model);
         }
 
-        // ====================== DASHBOARD ======================
-        public IActionResult Index()
+        //  GET: AdminPatient
+        public async Task<IActionResult> GetPatientsDetail()
         {
-            ViewBag.TotalPhysicians = _context.Physicians.Count();
-            ViewBag.TotalPatients = _context.Patients.Count();
-            ViewBag.TotalSuppliers = _context.Suppliers.Count();
-            ViewBag.ChemistCount = _context.Chemists.Count();
-            ViewBag.ScheduleCount = _context.Schedules.Count();
-            ViewBag.TotalAppointments = _context.Appointments.Count();
-            ViewBag.TotalUsers = _context.Users.Count();
-            ViewBag.PendingPatientCount = _context.Patients.Count(p => p.PatientStatus == "Pending");
-            ViewBag.UserName = User.Identity?.Name;
-
-            return View();
+            return View(await _context.Patients.ToListAsync());
         }
 
-        // ====================== PATIENTS ======================
-        public async Task<IActionResult> GetPatients()
+        // GET: AdminPatient/Details/5
+        public async Task<IActionResult> GetPatientDetails(int? id)
         {
-            var patients = await _context.Patients
-                .Where(p => p.PatientStatus != "Pending")
-                .ToListAsync();
-
-            return View(patients);
-        }
-
-        public async Task<IActionResult> GetPatientById(int? id)
-        {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
             var patient = await _context.Patients
-                .FirstOrDefaultAsync(p => p.PatientId == id);
-
-            if (patient == null) return NotFound();
+                .FirstOrDefaultAsync(m => m.PatientId == id);
+            if (patient == null)
+            {
+                return NotFound();
+            }
 
             return View(patient);
         }
 
-        public IActionResult CreatPatients()
+        // GET: AdminPatient/Create
+        public IActionResult CreatePatient()
         {
             return View();
         }
@@ -133,6 +134,12 @@ namespace MediClinic.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        // ================= ASSIGN APPOINTMENT (GET) =================
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            return role == "Admin";
+        }
         public IActionResult AssignAppointment(int id)
         {
             if (!IsAdmin())
@@ -144,36 +151,12 @@ namespace MediClinic.Controllers
             if (appointment == null)
                 return NotFound();
 
-            var patient = _context.Patients
-                .FirstOrDefault(p => p.PatientId == appointment.PatientId);
-
             var doctors = _context.Physicians
                 .Where(p => p.Specialization == appointment.RequiredSpecialization)
                 .ToList();
 
-            if (appointment.AppointmentDate.HasValue)
-            {
-                var requestedDateTime = appointment.AppointmentDate.Value;
-                var requestedDate = DateOnly.FromDateTime(requestedDateTime);
-
-                doctors = doctors.Where(doc =>
-                {
-                    var schedules = _context.Schedules
-                        .Where(s => s.PhysicianId == doc.PhysicianId &&
-                                    s.ScheduleDate == requestedDate &&
-                                    s.ScheduleStatus == "Confirmed")
-                        .ToList();
-
-                    return !schedules.Any(s =>
-                    {
-                        var existingDateTime = DateTime.Parse(
-                            s.ScheduleDate.ToString() + " " + s.ScheduleTime);
-
-                        return Math.Abs((existingDateTime - requestedDateTime).TotalMinutes) < 60;
-                    });
-
-                }).ToList();
-            }
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == appointment.PatientId);
 
             var vm = new AssignAppointmentVM
             {
@@ -187,11 +170,12 @@ namespace MediClinic.Controllers
                     : DateOnly.FromDateTime(DateTime.Today),
                 ConfirmedTime = appointment.AppointmentDate.HasValue
                     ? appointment.AppointmentDate.Value.ToString("HH:mm")
-                    : "09:00"
+                    : DateTime.Now.ToString("HH:mm")
             };
 
             return View(vm);
         }
+        // ================= ASSIGN APPOINTMENT (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AssignAppointment(AssignAppointmentVM vm)
@@ -214,59 +198,16 @@ namespace MediClinic.Controllers
             if (doctor == null || doctor.Specialization != appointment.RequiredSpecialization)
                 return BadRequest("Invalid doctor selection.");
 
-            // 🔥 Validate Working Hours (9 AM – 5 PM)
-            var selectedTime = TimeSpan.Parse(vm.ConfirmedTime);
-            var workStart = new TimeSpan(9, 0, 0);
-            var workEnd = new TimeSpan(17, 0, 0);
+            // 🔎 CHECK DOCTOR AVAILABILITY
+            var alreadyBooked = _context.Schedules.Any(s =>
+                s.PhysicianId == vm.SelectedPhysicianId &&
+                s.ScheduleDate == vm.ConfirmedDate &&
+                s.ScheduleTime == vm.ConfirmedTime &&
+                s.ScheduleStatus == "Confirmed");
 
-            if (selectedTime < workStart || selectedTime >= workEnd)
+            if (alreadyBooked)
             {
-                ModelState.AddModelError("", "Doctor works between 9 AM and 5 PM only.");
-                vm.AvailableDoctors = _context.Physicians
-                    .Where(p => p.Specialization == appointment.RequiredSpecialization)
-                    .ToList();
-                return View(vm);
-            }
-
-            // 🔥 Only 30-minute intervals allowed
-            if (selectedTime.Minutes % 30 != 0)
-            {
-                ModelState.AddModelError("", "Appointments must be in 30-minute intervals.");
-                vm.AvailableDoctors = _context.Physicians
-                    .Where(p => p.Specialization == appointment.RequiredSpecialization)
-                    .ToList();
-                return View(vm);
-            }
-
-            var confirmedDateTime = DateTime.Parse(
-                vm.ConfirmedDate.ToString() + " " + vm.ConfirmedTime);
-
-            // 🔥 Check 1-hour gap conflict
-            var doctorSchedules = _context.Schedules
-                .Where(s => s.PhysicianId == vm.SelectedPhysicianId &&
-                            s.ScheduleDate == vm.ConfirmedDate &&
-                            s.ScheduleStatus == "Confirmed")
-                .ToList();
-
-            bool hasConflict = doctorSchedules.Any(s =>
-            {
-                var existingDateTime = DateTime.Parse(
-                    s.ScheduleDate.ToString() + " " + s.ScheduleTime);
-
-                return Math.Abs((existingDateTime - confirmedDateTime).TotalMinutes) < 60;
-            });
-
-            if (hasConflict)
-            {
-                var nextAvailable = doctorSchedules
-                    .Select(s => DateTime.Parse(
-                        s.ScheduleDate.ToString() + " " + s.ScheduleTime))
-                    .OrderBy(t => t)
-                    .Last()
-                    .AddMinutes(60);
-
-                ModelState.AddModelError("",
-                    $"Doctor not available. Next available slot: {nextAvailable:hh:mm tt}");
+                ModelState.AddModelError("", "Doctor not available at selected time.");
 
                 vm.AvailableDoctors = _context.Physicians
                     .Where(p => p.Specialization == appointment.RequiredSpecialization)
@@ -275,107 +216,1030 @@ namespace MediClinic.Controllers
                 return View(vm);
             }
 
-            // 🔥 Reschedule note
-            if (appointment.AppointmentDate.HasValue &&
-                appointment.AppointmentDate.Value != confirmedDateTime)
+        // POST: AdminPatient/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePatient([Bind("PatientId,PatientName,Dob,Gender,Address,Phone,Email,Summary")] Patient patient)
+        {
+            if (ModelState.IsValid)
             {
-                appointment.AdminNote =
-                    "Requested time unavailable. Rescheduled to " +
-                    confirmedDateTime.ToString("dd MMM yyyy hh:mm tt");
+                patient.PatientStatus = "Pending";
+                _context.Add(patient);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(GetPatientsDetail));
+            }
+            return View(patient);
+        }
+
+        public async Task<IActionResult> PendingPatients()
+        {
+            var pendingPatients = await _context.Patients
+                .Where(p => p.PatientStatus == "Pending")
+                .ToListAsync();
+
+            return View(pendingPatients);
+        }
+        public async Task<IActionResult> Approve(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+
+            if (patient == null)
+                return NotFound();
+
+            // Change status
+            patient.PatientStatus = "Active";
+
+            // Generate password
+            string lastFour = patient.Phone!.Substring(patient.Phone.Length - 4);
+            string generatedPassword = patient.PatientName + "@" + lastFour;
+
+            // Check if user already exists
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == patient.Email);
+
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    UserName = patient.Email!,
+                    Password = generatedPassword,
+                    Role = "Patient",
+                    RoleReferenceId = patient.PatientId,
+                    Status = patient.PatientStatus
+
+                };
+
+                _context.Users.Add(user);
             }
 
-            appointment.AppointmentDate = confirmedDateTime;
-            appointment.ScheduleStatus = "Scheduled";
+            await _context.SaveChangesAsync();
 
+            return RedirectToAction(nameof(PendingPatients));
+        }
+        public async Task<IActionResult> Deny(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+
+            if (patient == null)
+                return NotFound();
+
+            patient.PatientStatus = "Inactive";
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(PendingPatients));
+        }
+
+
+
+        // GET: AdminPatient/Edit/5
+        public async Task<IActionResult> EditPatient(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+            return View(patient);
+        }
+
+        // POST: AdminPatient/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPatient(
+    int id,
+    [Bind("PatientId,PatientName,Dob,Gender,Address,Phone,Email,Summary,PatientStatus")] Patient patient)
+        {
+            if (id != patient.PatientId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Get existing patient from DB
+                    var existingPatient = await _context.Patients
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(p => p.PatientId == id);
+
+                    if (existingPatient == null)
+                        return NotFound();
+
+                    // Check if Email changed
+                    if (existingPatient.Email != patient.Email)
+                    {
+                        var user = await _context.Users
+                            .FirstOrDefaultAsync(u => u.UserName == existingPatient.Email);
+
+                        if (user != null)
+                        {
+                            user.UserName = patient.Email!;
+                        }
+                    }
+
+                    _context.Update(patient);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PatientExists(patient.PatientId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(GetPatientsDetail));
+            }
+
+            return View(patient);
+        }
+
+
+        // GET: AdminPatient/Delete/5
+        public async Task<IActionResult> DeletePatient(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(m => m.PatientId == id);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            return View(patient);
+        }
+
+        // POST: AdminPatient/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePatient(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+
+            if (patient != null)
+            {
+                patient.PatientStatus = "Inactive";   // or false if bool
+                _context.Patients.Update(patient);
+                await _context.SaveChangesAsync();
+                var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.UserName == patient.Email);
+
+                if (user != null)
+                {
+                    user.Status = "Inactive";
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(GetPatientsDetail));
+
+        }
+
+        private bool PatientExists(int id)
+        {
+            return _context.Patients.Any(e => e.PatientId == id);
+        }
+
+        // GET: AdminPhysician
+        public async Task<IActionResult> GetPhysiciansDetail()
+        {
+            return View(await _context.Physicians.ToListAsync());
+        }
+
+        // GET: AdminPhysician/Details/5
+        public async Task<IActionResult> GetPhysicianDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var physician = await _context.Physicians
+                .FirstOrDefaultAsync(m => m.PhysicianId == id);
+            if (physician == null)
+            {
+                return NotFound();
+            }
+
+            return View(physician);
+        }
+
+        // GET: AdminPhysician/Create
+        public IActionResult CreatePhysician()
+        {
+            return View();
+        }
+
+        // POST: AdminPhysician/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePhysician([Bind("PhysicianId,PhysicianName,Specialization,Address,Phone,Email,Summary")] Physician physician)
+        {
+            if (ModelState.IsValid)
+            {
+                // Change status
+                physician.PhysicianStatus = "Active";
+                _context.Add(physician);
+                await _context.SaveChangesAsync();
+                // Generate password
+                string lastFour = physician.Phone!.Substring(physician.Phone.Length - 4);
+                string generatedPassword = physician.PhysicianName + "@" + lastFour;
+
+                // Check if user already exists
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == physician.Email);
+
+                if (existingUser == null)
+                {
+                    var user = new User
+                    {
+                        UserName = physician.Email!,
+                        Password = generatedPassword,
+                        Role = "Physician",
+                        RoleReferenceId = physician.PhysicianId,
+                        Status = physician.PhysicianStatus
+
+                    };
+
+                    _context.Users.Add(user);
+                }
+
+
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(GetPhysiciansDetail));
+            }
+            return View(physician);
+        }
+
+        // GET: AdminPhysician/Edit/5
+        public async Task<IActionResult> EditPhysician(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var physician = await _context.Physicians.FindAsync(id);
+            if (physician == null)
+            {
+                return NotFound();
+            }
+            return View(physician);
+        }
+
+        // POST: AdminPhysician/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPhysician(
+    int id,
+    [Bind("PhysicianId,PhysicianName,Specialization,Address,Phone,Email,Summary,PhysicianStatus")] Physician physician)
+        {
+            if (id != physician.PhysicianId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 1️⃣ Get existing physician (no tracking)
+                    var existingPhysician = await _context.Physicians
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(p => p.PhysicianId == id);
+
+                    if (existingPhysician == null)
+                        return NotFound();
+
+                    // 2️⃣ If Email changed → update User table
+                    if (existingPhysician.Email != physician.Email)
+                    {
+                        var user = await _context.Users
+                            .FirstOrDefaultAsync(u =>
+                                u.Role == "Physician" &&
+                                u.RoleReferenceId == physician.PhysicianId);
+
+                        if (user != null)
+                        {
+                            user.UserName = physician.Email!;
+                        }
+                    }
+
+                    // 3️⃣ Update Physician
+                    _context.Update(physician);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PhysicianExists(physician.PhysicianId))
+                        return NotFound();
+                    else
+                        throw;
+                }
+
+                return RedirectToAction(nameof(GetPhysiciansDetail));
+            }
+
+            return View(physician);
+        }
+
+
+        // GET: AdminPhysician/Delete/5
+        public async Task<IActionResult> DeletePhysician(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var physician = await _context.Physicians
+                .FirstOrDefaultAsync(m => m.PhysicianId == id);
+            if (physician == null)
+            {
+                return NotFound();
+            }
+
+            return View(physician);
+        }
+
+        // POST: AdminPhysician/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePhysician(int id)
+        {
+            var physician = await _context.Physicians.FindAsync(id);
+            if (physician != null)
+            {
+                physician.PhysicianStatus = "Inactive";
+                _context.Physicians.Update(physician);
+                await _context.SaveChangesAsync();
+                var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.UserName == physician.Email);
+
+                if (user != null)
+                {
+                    user.Status = "Inactive";
+                }
+                await _context.SaveChangesAsync();
+            }
+
+
+            return RedirectToAction(nameof(GetPhysiciansDetail));
+        }
+
+        private bool PhysicianExists(int id)
+        {
+            return _context.Physicians.Any(e => e.PhysicianId == id);
+        }
+
+        // GET: AdminChemist
+        public async Task<IActionResult> GetChemistsDetail()
+        {
+            return View(await _context.Chemists.ToListAsync());
+        }
+
+        // GET: AdminChemist/Details/5
+        public async Task<IActionResult> GetChemistDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var chemist = await _context.Chemists
+                .FirstOrDefaultAsync(m => m.ChemistId == id);
+            if (chemist == null)
+            {
+                return NotFound();
+            }
+
+            return View(chemist);
+        }
+
+        // GET: AdminChemist/Create
+        public IActionResult CreateChemist()
+        {
+            return View();
+        }
+
+        // POST: AdminChemist/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateChemist(
+    [Bind("ChemistId,ChemistName,Address,Phone,Email,Summary")] Chemist chemist)
+        {
+            if (ModelState.IsValid)
+            {
+                // 1️⃣ Set Status
+                chemist.ChemistStatus = "Active";
+
+                // 2️⃣ Save Chemist
+                _context.Add(chemist);
+                await _context.SaveChangesAsync();
+
+                // 3️⃣ Generate Password
+                string lastFour = chemist.Phone!.Substring(chemist.Phone.Length - 4);
+                string generatedPassword = chemist.ChemistName + "@" + lastFour;
+
+                // 4️⃣ Check if User already exists
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == chemist.Email);
+
+                if (existingUser == null)
+                {
+                    var user = new User
+                    {
+                        UserName = chemist.Email!,
+                        Password = generatedPassword,
+                        Role = "Chemist",
+                        RoleReferenceId = chemist.ChemistId,
+                        Status = chemist.ChemistStatus
+                    };
+
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(GetChemistsDetail));
+            }
+
+            return View(chemist);
+        }
+        public async Task<IActionResult> EditChemist(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var chemist = await _context.Chemists.FindAsync(id);
+            if (chemist == null)
+            {
+                return NotFound();
+            }
+            return View(chemist);
+        }
+
+        // POST: AdminChemist/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditChemist(
+    int id,
+    [Bind("ChemistId,ChemistName,Address,Phone,Email,Summary,ChemistStatus")] Chemist chemist)
+        {
+            if (id != chemist.ChemistId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 1️⃣ Get existing chemist without tracking
+                    var existingChemist = await _context.Chemists
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.ChemistId == id);
+
+                    if (existingChemist == null)
+                        return NotFound();
+
+                    // 2️⃣ If Email changed → update Users table
+                    if (existingChemist.Email != chemist.Email)
+                    {
+                        var user = await _context.Users
+                            .FirstOrDefaultAsync(u =>
+                                u.Role == "Chemist" &&
+                                u.RoleReferenceId == chemist.ChemistId);
+
+                        if (user != null)
+                        {
+                            user.UserName = chemist.Email!;
+                        }
+                    }
+
+                    // 3️⃣ Update Chemist table
+                    _context.Update(chemist);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ChemistExists(chemist.ChemistId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(GetChemistsDetail));
+            }
+
+            return View(chemist);
+        }
+
+
+        // GET: AdminChemist/Delete/5
+        public async Task<IActionResult> DeleteChemist(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var chemist = await _context.Chemists
+                .FirstOrDefaultAsync(m => m.ChemistId == id);
+            if (chemist == null)
+            {
+                return NotFound();
+            }
+
+            return View(chemist);
+        }
+
+        // POST: AdminChemist/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChemist(int id)
+        {
+            var chemist = await _context.Chemists.FindAsync(id);
+            if (chemist != null)
+            {
+                chemist.ChemistStatus = "Inactive";
+                _context.Chemists.Update(chemist);
+                await _context.SaveChangesAsync();
+                var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.UserName == chemist.Email);
+
+                if (user != null)
+                {
+                    user.Status = "Inactive";
+                }
+                await _context.SaveChangesAsync();
+            }
+
+
+
+            return RedirectToAction(nameof(GetChemistsDetail));
+        }
+
+        private bool ChemistExists(int id)
+        {
+            return _context.Chemists.Any(e => e.ChemistId == id);
+        }
+
+        // GET: AdminSupplier
+        public async Task<IActionResult> GetSuppliersDetail()
+        {
+            return View(await _context.Suppliers.ToListAsync());
+        }
+
+        // GET: AdminSupplier/Details/5
+        public async Task<IActionResult> GetSupplierDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supplier = await _context.Suppliers
+                .FirstOrDefaultAsync(m => m.SupplierId == id);
+            if (supplier == null)
+            {
+                return NotFound();
+            }
+
+            return View(supplier);
+        }
+
+        // GET: AdminSupplier/Create
+        public IActionResult CreateSupplier()
+        {
+            return View();
+        }
+
+        // POST: AdminSupplier/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSupplier(
+    [Bind("SupplierId,SupplierName,Address,Phone,Email")] Supplier supplier)
+        {
+            if (ModelState.IsValid)
+            {
+                // 1️⃣ Set Status
+                supplier.SupplierStatus = "Active";
+
+                // 2️⃣ Save Supplier
+                _context.Add(supplier);
+                await _context.SaveChangesAsync();
+
+                // 3️⃣ Generate Password
+                string lastFour = supplier.Phone!.Substring(supplier.Phone.Length - 4);
+                string generatedPassword = supplier.SupplierName + "@" + lastFour;
+
+                // 4️⃣ Check if User already exists
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == supplier.Email);
+
+                if (existingUser == null)
+                {
+                    var user = new User
+                    {
+                        UserName = supplier.Email!,
+                        Password = generatedPassword,
+                        Role = "Supplier",
+                        RoleReferenceId = supplier.SupplierId,
+                        Status = supplier.SupplierStatus
+                    };
+
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(GetSuppliersDetail));
+            }
+
+            return View(supplier);
+        }
+        public async Task<IActionResult> EditSupplier(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supplier = await _context.Suppliers.FindAsync(id);
+            if (supplier == null)
+            {
+                return NotFound();
+            }
+            return View(supplier);
+        }
+
+        // POST: AdminSupplier/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupplier(
+    int id,
+    [Bind("SupplierId,SupplierName,Address,Phone,Email,SupplierStatus")] Supplier supplier)
+        {
+            if (id != supplier.SupplierId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 1️⃣ Get existing supplier without tracking
+                    var existingSupplier = await _context.Suppliers
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(s => s.SupplierId == id);
+
+                    if (existingSupplier == null)
+                        return NotFound();
+
+                    // 2️⃣ If Email changed → update Users table
+                    if (existingSupplier.Email != supplier.Email)
+                    {
+                        var user = await _context.Users
+                            .FirstOrDefaultAsync(u =>
+                                u.Role == "Supplier" &&
+                                u.RoleReferenceId == supplier.SupplierId);
+
+                        if (user != null)
+                        {
+                            user.UserName = supplier.Email!;
+                        }
+                    }
+
+                    // 3️⃣ Update Supplier table
+                    _context.Update(supplier);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SupplierExists(supplier.SupplierId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(GetSuppliersDetail));
+            }
+
+            return View(supplier);
+        }
+
+
+        // GET: AdminSupplier/Delete/5
+        public async Task<IActionResult> DeleteSupplier(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supplier = await _context.Suppliers
+                .FirstOrDefaultAsync(m => m.SupplierId == id);
+            if (supplier == null)
+            {
+                return NotFound();
+            }
+
+            return View(supplier);
+        }
+
+        // POST: AdminSupplier/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSupplier(int id)
+        {
+            var supplier = await _context.Suppliers.FindAsync(id);
+            if (supplier != null)
+            {
+                supplier.SupplierStatus = "Inactive";   // or false if bool
+                _context.Suppliers.Update(supplier);
+                await _context.SaveChangesAsync();
+                var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.UserName == supplier.Email);
+
+                if (user != null)
+                {
+                    user.Status = "Inactive";
+                }
+                await _context.SaveChangesAsync();
+
+            }
+
+
+            return RedirectToAction(nameof(GetSuppliersDetail));
+        }
+
+        private bool SupplierExists(int id)
+        {
+            return _context.Suppliers.Any(e => e.SupplierId == id);
+        }
+
+
+        // GET: AdminAppointment
+        public async Task<IActionResult> GetAppointmentDetails()
+        {
+            var pendingAppointments = await _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.ScheduleStatus != "Pending")
+                .ToListAsync();
+
+            return View(pendingAppointments);
+        }
+
+
+        // GET: AdminAppointment/Details/5
+        public async Task<IActionResult> GetAppointmentDetailsById(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var appointment = await _context.Appointments
+                .Include(a => a.Patient)
+                .FirstOrDefaultAsync(m => m.AppointmentId == id);
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            return View(appointment);
+        }
+
+        public async Task<IActionResult> PendingAppointments()
+        {
+            var appointments = await _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.ScheduleStatus == "Pending")
+                .ToListAsync();
+
+            return View(appointments);
+        }
+
+
+
+
+        // GET: AdminSchedules
+        public async Task<IActionResult> GetScheduleDetails()
+        {
+            var mediCure1Context = _context.Schedules
+                .Include(s => s.Appointment)
+                    .ThenInclude(a => a.Patient)
+                .Include(s => s.Physician);
+
+            return View(await mediCure1Context.ToListAsync());
+        }
+
+
+        // GET: AdminSchedules/Details/5
+        public async Task<IActionResult> GetScheduleById(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var schedule = await _context.Schedules
+                .Include(s => s.Appointment)
+                .Include(s => s.Physician)
+                .FirstOrDefaultAsync(m => m.ScheduleId == id);
+            if (schedule == null)
+            {
+                return NotFound();
+            }
+
+            return View(schedule);
+        }
+
+        // GET: AdminSchedules/Create
+        public async Task<IActionResult> CreateSchedule(int id)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.Patient)
+                .FirstOrDefaultAsync(a => a.AppointmentId == id);
+
+            if (appointment == null)
+                return NotFound();
+
+            ViewBag.Physicians = new SelectList(
+                _context.Physicians
+                    .Where(p => p.PhysicianStatus == "Active"),
+                "PhysicianId",
+                "PhysicianName");
+
+            return View(appointment);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignDoctorPost(
+    int AppointmentID,
+    int PhysicianID,
+    DateTime ScheduleDate,
+    TimeSpan ScheduleTime)
+        {
+            // 1️⃣ Insert into Schedule table
             var schedule = new Schedule
             {
-                AppointmentId = vm.AppointmentId,
-                PhysicianId = vm.SelectedPhysicianId,
-                ScheduleDate = vm.ConfirmedDate,
-                ScheduleTime = vm.ConfirmedTime,
-                ScheduleStatus = "Confirmed"
+                AppointmentId = AppointmentID,
+                PhysicianId = PhysicianID,
+                ScheduleDate = DateOnly.FromDateTime(ScheduleDate),
+                ScheduleTime = ScheduleTime.ToString(),
+
+                ScheduleStatus = "Scheduled"
             };
 
             _context.Schedules.Add(schedule);
-            _context.SaveChanges();
 
-            return RedirectToAction("Appointments");
+            // 2️⃣ Update Appointment Status
+            var appointment = await _context.Appointments.FindAsync(AppointmentID);
+
+            appointment.ScheduleStatus = "Assigned";
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(PendingAppointments));
         }
 
 
-        // ================= PENDING PATIENTS =================
-        public IActionResult PendingPatients()
+        // GET: AdminSchedules/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            var pendingPatients = _context.Patients
-                .Where(p => p.PatientStatus == "Pending")
-                .ToList();
-            ViewBag.PendingPatientCount = pendingPatients.Count;
-            return View(pendingPatients);
-        }
-
-        public IActionResult ApprovePatient(int id)
-        {
-            var patient = _context.Patients.Find(id);
-            if (patient != null)
+            if (id == null)
             {
-                patient.PatientStatus = "Active";
-                string username = patient.Email;
-                string password = "Patient@123";
+                return NotFound();
+            }
 
-                var existingUser = _context.Users.FirstOrDefault(u => u.UserName == username);
-                if (existingUser == null)
+            var schedule = await _context.Schedules.FindAsync(id);
+            if (schedule == null)
+            {
+                return NotFound();
+            }
+            ViewData["AppointmentId"] = new SelectList(_context.Appointments, "AppointmentId", "AppointmentId", schedule.AppointmentId);
+            ViewData["PhysicianId"] = new SelectList(_context.Physicians, "PhysicianId", "Address", schedule.PhysicianId);
+            return View(schedule);
+        }
+
+        // POST: AdminSchedules/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("ScheduleId,PhysicianId,AppointmentId,ScheduleDate,ScheduleTime,ScheduleStatus")] Schedule schedule)
+        {
+            if (id != schedule.ScheduleId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    _context.Users.Add(new User
-                    {
-                        UserName = username,
-                        Password = password,
-                        Role = "Patient",
-                        Status = "Active"
-                    });
+                    _context.Update(schedule);
+                    await _context.SaveChangesAsync();
                 }
-
-                _context.SaveChanges();
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ScheduleExists(schedule.ScheduleId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(PendingPatients));
+            ViewData["AppointmentId"] = new SelectList(_context.Appointments, "AppointmentId", "AppointmentId", schedule.AppointmentId);
+            ViewData["PhysicianId"] = new SelectList(_context.Physicians, "PhysicianId", "Address", schedule.PhysicianId);
+            return View(schedule);
         }
 
-        public IActionResult DenyPatient(int id)
+        // GET: AdminSchedules/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
-            var patient = _context.Patients.Find(id);
-            if (patient != null)
+            if (id == null)
             {
-                patient.PatientStatus = "Inactive";
-                var user = _context.Users.FirstOrDefault(u => u.UserName == patient.Email);
-                if (user != null) user.Status = "Inactive";
-                _context.SaveChanges();
+                return NotFound();
             }
-            return RedirectToAction(nameof(PendingPatients));
-        }
-        // ====================== APPOINTMENTS ======================
-        public IActionResult Appointments()
-        {
-            var list = (from a in _context.Appointments
-                        join p in _context.Patients
-                        on a.PatientId equals p.PatientId
-                        where a.ScheduleStatus == "Pending"
-                        orderby a.AppointmentDate descending
-                        select new PendingAppointmentVM
-                        {
-                            AppointmentId = a.AppointmentId,
-                            PatientName = p.PatientName,
-                            AppointmentDate = a.AppointmentDate,
-                            RequiredSpecialization = a.RequiredSpecialization,
-                            Criticality = a.Criticality
-                        }).ToList();
 
-            return View(list);
+            var schedule = await _context.Schedules
+                .Include(s => s.Appointment)
+                .Include(s => s.Physician)
+                .FirstOrDefaultAsync(m => m.ScheduleId == id);
+            if (schedule == null)
+            {
+                return NotFound();
+            }
+
+            return View(schedule);
         }
 
-
-        // ====================== LOGOUT ======================
-        public IActionResult Logout()
+        // POST: AdminSchedules/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return RedirectToAction("Logout", "User");
+            var schedule = await _context.Schedules.FindAsync(id);
+            if (schedule != null)
+            {
+                _context.Schedules.Remove(schedule);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ScheduleExists(int id)
+        {
+            return _context.Schedules.Any(e => e.ScheduleId == id);
         }
     }
 }

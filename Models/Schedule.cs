@@ -23,4 +23,5 @@ public partial class Schedule
     public virtual Physician? Physician { get; set; }
 
     public virtual ICollection<PhysicianAdvice> PhysicianAdvices { get; set; } = new List<PhysicianAdvice>();
+
 }

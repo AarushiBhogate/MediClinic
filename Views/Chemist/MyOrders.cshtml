@@ -1,0 +1,97 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "My Orders";
+    // Layout = "~/Views/Shared/_LayoutRoles.cshtml";
+}
+
+
+
+<div class="orders-page">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="page-title">My Orders</h2>
+            <p class="text-white-50">
+                Track your purchase requests and status
+            </p>
+        </div>
+
+        @foreach (var order in Model)
+        {
+            <div class="order-card mb-5">
+
+                <!-- HEADER -->
+                <div class="order-header">
+
+                    <div>
+                        <div><strong>PO No:</strong> @order.Pono</div>
+                        <div class="order-meta">
+                            Date: @order.Podate
+                            |
+                            Supplier: @order.SupplierName
+                        </div>
+                    </div>
+
+                    <div>
+                        @if (order.PurchaseOrderStatus == "Pending")
+                        {
+                            <span class="status-badge status-pending">
+                                Pending
+                            </span>
+                        }
+                        else if (order.PurchaseOrderStatus == "Approved")
+                        {
+                            <span class="status-badge status-approved">
+                                Approved
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-rejected">
+                                Rejected
+                            </span>
+                        }
+                    </div>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="p-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Drug</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in order.Items)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            💊 @item.DrugName
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-approved">
+                                                @item.Qty
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

@@ -9,12 +9,20 @@
   <ItemGroup>
     <Compile Remove="Models\NewFolder1\**" />
     <Compile Remove="Models\NewFolder\**" />
+    <Compile Remove="Views\Billing\**" />
+    <Compile Remove="Views\Profile\**" />
     <Content Remove="Models\NewFolder1\**" />
     <Content Remove="Models\NewFolder\**" />
+    <Content Remove="Views\Billing\**" />
+    <Content Remove="Views\Profile\**" />
     <EmbeddedResource Remove="Models\NewFolder1\**" />
     <EmbeddedResource Remove="Models\NewFolder\**" />
+    <EmbeddedResource Remove="Views\Billing\**" />
+    <EmbeddedResource Remove="Views\Profile\**" />
     <None Remove="Models\NewFolder1\**" />
     <None Remove="Models\NewFolder\**" />
+    <None Remove="Views\Billing\**" />
+    <None Remove="Views\Profile\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,21 +32,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Billing\" />
-    <Folder Include="Views\Profile\" />
-    <Folder Include="wwwroot\uploads\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\images\doctorbackgroundimage.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\Medical prescription-bro.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

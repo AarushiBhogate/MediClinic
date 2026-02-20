@@ -31,8 +31,12 @@ namespace CAS.Controllers
             var supplier = _context.Suppliers
                 .FirstOrDefault(s => s.SupplierId == user.RoleReferenceId);
 
+            if (supplier == null)
+                return RedirectToAction("Login", "CrediMgr"); // or show error page
+
             return View(supplier);
         }
+
         public IActionResult EditProfile()
         {
             var username = User.Identity?.Name;
