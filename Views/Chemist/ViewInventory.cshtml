@@ -1,0 +1,70 @@
+﻿@model IEnumerable<dynamic>
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="page-header-simple inventory-header">
+
+        <div>
+            <a href="/Chemist/Dashboard" class="back-btn">← Back</a>
+
+            <h2>Inventory</h2>
+            <p>Monitor available stock and expiry information</p>
+        </div>
+
+        <form method="get" class="search-form">
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   placeholder="Search drug..."
+                   class="search-input" />
+        </form>
+
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card inventory-card">
+
+        <div class="table-scroll">
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Drug</th>
+                        <th>Dosage</th>
+                        <th>Stock</th>
+                        <th>Expiry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.DrugTitle</td>
+                            <td>@item.Dosage</td>
+                            <td class="stock-cell">@item.StockQuantity</td>
+                            <td>@item.Expiry?.ToString("dd-MM-yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="?page=@i&search=@ViewBag.Search"
+               class="page-number @(ViewBag.CurrentPage == i ? "active" : "")">
+                @i
+            </a>
+        }
+    </div>
+
+</div>

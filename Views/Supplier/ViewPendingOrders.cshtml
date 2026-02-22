@@ -1,0 +1,80 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model IEnumerable<MediClinic.Models.PurchaseOrderHeader>
+
+@{
+    Layout = "~/Views/Shared/_SupplierLayout.cshtml";
+}
+
+<h2>Orders</h2>
+
+<table style="width:100%; border-collapse:collapse; background:white; margin-top:20px;">
+    <thead>
+        <tr style="background:#e2e8f0;">
+            <th style="padding:12px;">PO No</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr style="text-align:center; border-bottom:1px solid #ddd;">
+                <td style="padding:10px;">@item.Pono</td>
+                <td>@item.Podate?.ToString("dd-MM-yyyy")</td>
+                <td>@item.PoStatus</td>
+
+                <td>
+                    @if (item.PoStatus == "Pending")
+                    {
+                        <a href="/Supplier/ApproveOrder/@item.Poid"
+                           style="padding:6px 12px; background:#16a34a; color:white; border-radius:5px; text-decoration:none; margin-right:5px;">
+                            Approve
+                        </a>
+
+                        <a href="/Supplier/RejectOrder/@item.Poid"
+                           style="padding:6px 12px; background:#dc2626; color:white; border-radius:5px; text-decoration:none;">
+                            Reject
+                        </a>
+                    }
+                <td>
+                    @if (item.PoStatus == "Created")
+                    {
+                        <a asp-action="ApproveOrder" asp-route-id="@item.Poid"
+                           class="btn btn-success btn-sm">Approve</a>
+
+                        <a asp-action="RejectOrder" asp-route-id="@item.Poid"
+                           class="btn btn-danger btn-sm">Reject</a>
+                    }
+
+                    @if (item.PoStatus == "Approved")
+                    {
+                        <a asp-action="DispatchOrder" asp-route-id="@item.Poid"
+                           class="btn btn-primary btn-sm">Dispatch</a>
+                    }
+
+                    @if (item.PoStatus == "Dispatched")
+                    {
+                        <span class="badge bg-warning">Waiting for Clinic</span>
+                    }
+
+                    @if (item.PoStatus == "Received")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+
+                    @if (item.PoStatus == "Rejected")
+                    {
+                        <span class="badge bg-danger">Rejected</span>
+                    }
+                </td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,117 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MediClinic - Chemist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/chemist.css" />
+</head>
+<body>
+
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar collapsed">
+
+            @* <div class="logo">
+                <i data-lucide="heart-pulse"></i>
+                <span>MediClinic</span>
+            </div> *@
+
+            <ul class="menu">
+
+                <li>
+                    <a href="/Chemist/Dashboard"
+                       class="@(Context.Request.Path == "/Chemist/Dashboard" ? "active" : "")">
+                        <i data-lucide="layout-dashboard"></i>
+                   
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/Chemist/ViewDrugRequests"
+                       class="@(Context.Request.Path == "/Chemist/ViewDrugRequests" ? "active" : "")">
+                   
+                        <i data-lucide="pill"></i>
+                       
+                        <span class="text">Requests</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/Chemist/CreatePurchaseOrder"
+                       class="@(Context.Request.Path == "/Chemist/CreatePurchaseOrder" ? "active" : "")">
+                 
+                        <i data-lucide="file-plus"></i>
+                       
+                        <span class="text">Place Order</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/Chemist/ViewPurchaseOrders"
+                       class="@(Context.Request.Path == "/Chemist/ViewPurchaseOrders" ? "active" : "")">
+                   
+                        <i data-lucide="package"></i>
+                       
+                        <span class="text">View Orders</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/Chemist/ViewInventory"
+                       class="@(Context.Request.Path == "/Chemist/ViewInventory" ? "active" : "")">
+                        <i data-lucide="archive"></i>
+                      
+                        <span class="text">Inventory</span>
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+
+            <div class="navbar">
+
+                <div class="nav-left">
+                    <button class="menu-btn">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <span class="navbar-brand">MediClinic</span>
+                </div>
+
+                <div class="nav-right">
+                    <div class="profile">
+                        <i data-lucide="user"></i>
+                        <span>@Accessor.HttpContext.Session.GetString("UserName")</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Page Content -->
+            <div class="content">
+                @RenderBody()
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

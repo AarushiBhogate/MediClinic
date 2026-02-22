@@ -13,9 +13,13 @@ public partial class PurchaseOrderHeader
 
     public int? SupplierId { get; set; }
 
-    public string ? PoStatus { get; set; } 
+    public string? PoStatus { get; set; }
 
-    public virtual ICollection<PurchaseProductLine> PurchaseProductLines { get; set; } = new List<PurchaseProductLine>();
+    public int? DrugRequestId { get; set; }   // ✅ ADD THIS
 
     public virtual Supplier? Supplier { get; set; }
+
+    public virtual DrugRequest? DrugRequest { get; set; }  // ✅ ADD THIS
+
+    public virtual ICollection<PurchaseProductLine> PurchaseProductLines { get; set; } = new List<PurchaseProductLine>();
 }

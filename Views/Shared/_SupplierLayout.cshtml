@@ -1,0 +1,69 @@
+﻿@* @page
+@model MediClinic.Views.Shared._SupplierLayoutModel
+@{
+} *@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MediClinic - Supplier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="~/css/supplier.css" />
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+
+        <div class="logo">
+            🚚 Supplier Panel
+        </div>
+
+        <ul class="menu">
+            <li><a href="/Supplier/Dashboard">Dashboard</a></li>
+            <li><a href="/Supplier/ViewPendingOrders">Orders</a></li>
+        </ul>
+
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- Navbar -->
+        <div class="navbar">
+            <button id="toggleBtn">☰</button>
+
+            <div class="nav-right">
+                <span>
+                    @Accessor.HttpContext.Session.GetString("UserName")
+                </span>
+
+                <a href="/User/Logout" class="logout">Logout</a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            @RenderBody()
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("toggleBtn")
+        .addEventListener("click", function () {
+            document.getElementById("sidebar")
+                .classList.toggle("collapsed");
+        });
+</script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

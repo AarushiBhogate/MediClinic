@@ -1,63 +1,68 @@
 ﻿@model MediClinic.Models.Physician
 
 @{
-    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_EditLayout.cshtml";
+    ViewData["Title"] = "Create Physician";
 }
+<form asp-action="Create">
 
-<h1>Create</h1>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>Physician</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PhysicianName" class="control-label"></label>
-                <input asp-for="PhysicianName" class="form-control" />
-                <span asp-validation-for="PhysicianName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Specialization" class="control-label"></label>
-                <input asp-for="Specialization" class="form-control" />
-                <span asp-validation-for="Specialization" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Summary" class="control-label"></label>
-                <input asp-for="Summary" class="form-control" />
-                <span asp-validation-for="Summary" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhysicianStatus" class="control-label"></label>
-                <input asp-for="PhysicianStatus" class="form-control" />
-                <span asp-validation-for="PhysicianStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <label asp-for="PhysicianName" class="form-label"></label>
+            <input asp-for="PhysicianName" class="form-control" />
+            <span asp-validation-for="PhysicianName" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Specialization" class="form-label"></label>
+            <input asp-for="Specialization" class="form-control" />
+            <span asp-validation-for="Specialization" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Summary" class="form-label"></label>
+            <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="PhysicianStatus" class="form-label"></label>
+            <select asp-for="PhysicianStatus" class="form-select">
+                <option value="">Select Status</option>
+                <option>Active</option>
+                <option>Inactive</option>
+            </select>
+        </div>
+
+
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="d-flex justify-content-end gap-2 mt-5">
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">Create</button>
+    </div>
+
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

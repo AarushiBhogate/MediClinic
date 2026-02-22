@@ -1,0 +1,136 @@
+﻿@model MediClinic.Models.PurchaseOrderVM
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <!-- Page Header -->
+    <div class="page-header-simple">
+        <div>
+            <h2>Create Purchase Order</h2>
+            <p>Generate supplier purchase order for requested medicines</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+
+        <form asp-action="SavePurchaseOrder" method="post">
+
+            <div asp-validation-summary="All" class="validation-summary"></div>
+
+            <input type="hidden" asp-for="DrugRequestId" />
+            <input type="hidden" asp-for="Pono" />
+            <input type="hidden" asp-for="Podate" />
+
+            <!-- Supplier -->
+            <div class="form-group">
+                <label>Supplier</label>
+                <select asp-for="SupplierId"
+                        asp-items="Model.Suppliers"
+                        required>
+                    <option value="">-- Select Supplier --</option>
+                </select>
+            </div>
+
+            <!-- Product Lines -->
+            <div class="section-divider"></div>
+
+            <div class="section-title">
+                <h4>Product Lines</h4>
+            </div>
+
+            <div class="product-table-wrapper">
+                <table id="productTable" class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Drug</th>
+                            <th>Quantity</th>
+                            <th>Note</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="button-row">
+                <button type="button" class="btn-outline" onclick="addRow()">
+                    + Add Product
+                </button>
+
+                <button type="submit" class="btn-primary">
+                    Save Purchase Order
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let index = 0;
+
+        function addRow() {
+
+            let tableBody = document.querySelector("#productTable tbody");
+
+            let row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>
+                    <select name="ProductLines[${index}].DrugId"
+                            class="form-control"
+                            required>
+                        ${getDrugOptions()}
+                    </select>
+                </td>
+                <td>
+                    <input type="number"
+                           name="ProductLines[${index}].Qty"
+                           class="form-control"
+                           min="1"
+                           required />
+                </td>
+                <td>
+                    <input type="text"
+                           name="ProductLines[${index}].Note"
+                           class="form-control" />
+                </td>
+                <td>
+                  <button type="button"
+        class="btn-remove"
+        onclick="removeRow(this)">✕</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+            index++;
+        }
+
+        function removeRow(button) {
+            button.closest("tr").remove();
+        }
+
+        function getDrugOptions() {
+            let options = `<option value="">-- Select Drug --</option>`;
+
+            @foreach (var drug in Model.Drugs)
+            {
+                    <text>
+                        options += `<option value="@drug.Value">@drug.Text</option>`;
+                    </text>
+            }
+
+            return options;
+        }
+
+        // ✅ Always start with one row
+        window.onload = function () {
+            addRow();
+        };
+
+    </script>
+}

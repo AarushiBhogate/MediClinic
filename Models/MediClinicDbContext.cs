@@ -52,6 +52,11 @@ public partial class MediClinicDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Drug>()
+      .HasIndex(d => new { d.DrugTitle, d.Dosage })
+      .IsUnique();
+
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Appointment>(entity =>
         {
             entity.HasKey(e => e.AppointmentId).HasName("PK__Appointm__8ECDFCA22DB0FA67");
@@ -144,6 +149,7 @@ public partial class MediClinicDbContext : DbContext
             entity.HasOne(d => d.Physician).WithMany(p => p.DrugRequests)
                 .HasForeignKey(d => d.PhysicianId)
                 .HasConstraintName("FK_DrugRequest_Physician");
+
         });
 
         modelBuilder.Entity<Patient>(entity =>
@@ -254,23 +260,37 @@ public partial class MediClinicDbContext : DbContext
 
         modelBuilder.Entity<PurchaseOrderHeader>(entity =>
         {
-            entity.HasKey(e => e.Poid).HasName("PK__Purchase__5F02A2F47E24C1E8");
+            entity.HasKey(e => e.Poid);
 
             entity.ToTable("PurchaseOrderHeader");
 
             entity.Property(e => e.Poid).HasColumnName("POID");
+
             entity.Property(e => e.Podate)
                 .HasColumnType("datetime")
                 .HasColumnName("PODate");
+
             entity.Property(e => e.Pono)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("PONo");
-            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
 
-            entity.HasOne(d => d.Supplier).WithMany(p => p.PurchaseOrderHeaders)
+            entity.Property(e => e.SupplierId)
+                .HasColumnName("SupplierID");
+
+            // ✅ ADD THIS
+            entity.Property(e => e.DrugRequestId)
+                .HasColumnName("DrugRequestID");
+
+            entity.HasOne(d => d.Supplier)
+                .WithMany(p => p.PurchaseOrderHeaders)
                 .HasForeignKey(d => d.SupplierId)
                 .HasConstraintName("FK_PO_Supplier");
+
+            entity.HasOne(d => d.DrugRequest)
+                .WithMany()
+                .HasForeignKey(d => d.DrugRequestId)
+                .HasConstraintName("FK_PO_DrugRequest");
         });
 
         modelBuilder.Entity<PurchaseProductLine>(entity =>

@@ -1,0 +1,92 @@
+﻿@model List<MediClinic.Models.ModelViews.DrugRequestListVM>
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <!-- Sticky Header -->
+    <div class="sticky-header">
+        <div class="header-left">
+            <a href="/Chemist/Dashboard" class="back-btn">
+                <i data-lucide="arrow-left"></i>
+                Back
+            </a>
+            <div>
+                <h2>Pending Drug Requests</h2>
+                <p>Manage incoming physician requests</p>
+            </div>
+        </div>
+
+        <form method="get" class="search-form">
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   placeholder="Search..." />
+        </form>
+    </div>
+
+    <!-- Scrollable Table -->
+    <div class="table-scroll">
+        <div class="card-table">
+
+            <div class="table-head">
+                <span>Date</span>
+                <span>Drugs Requested</span>
+                <span>Status</span>
+                <span>Action</span>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <div class="table-row">
+                    <span>@item.RequestDate?.ToString("dd-MM-yyyy HH:mm")</span>
+                    <span>@item.DrugsInfoText</span>
+                    <span>
+                        <span class="status pending">
+                            @item.RequestStatus
+                        </span>
+                    </span>
+                    <span>
+                        <a asp-action="CreatePurchaseOrder"
+                           asp-route-drugRequestId="@item.DrugRequestId"
+                           class="btn-action">
+                            Create PO
+                        </a>
+                    </span>
+                </div>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- Card Table -->
+   
+
+    <!-- Pagination -->
+    <div class="pagination">
+
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a href="?page=@(ViewBag.CurrentPage - 1)&search=@ViewBag.Search"
+               class="page-btn">‹</a>
+        }
+
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="?page=@i&search=@ViewBag.Search"
+               class="page-number-btn @(i == ViewBag.CurrentPage ? "active" : "")">
+                @i
+            </a>
+        }
+
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a href="?page=@(ViewBag.CurrentPage + 1)&search=@ViewBag.Search"
+               class="page-btn">›</a>
+        }
+
+    </div>
+
+</div>

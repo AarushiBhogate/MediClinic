@@ -1,13 +1,8 @@
 ﻿using MediClinic.Models;
-using MediClinic.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
-namespace CAS.Controllers
+namespace MediClinic.Controllers
 {
-    [Authorize(Roles = "Supplier")]
     public class SupplierController : Controller
     {
         private readonly MediClinicDbContext _context;
@@ -17,120 +12,155 @@ namespace CAS.Controllers
             _context = context;
         }
 
-        // 🟢 Supplier Profile Page (Like Chemist)
-        public IActionResult Index()
+        private bool IsSupplier()
         {
-            var username = User.Identity?.Name;
-
-            var user = _context.Users
-                .FirstOrDefault(u => u.UserName == username);
-
-            if (user == null)
-                return RedirectToAction("Login", "CrediMgr");
-
-            var supplier = _context.Suppliers
-                .FirstOrDefault(s => s.SupplierId == user.RoleReferenceId);
-
-            return View(supplier);
-        }
-        public IActionResult EditProfile()
-        {
-            var username = User.Identity?.Name;
-
-            var user = _context.Users
-                .FirstOrDefault(u => u.UserName == username);
-
-            var supplier = _context.Suppliers
-                .FirstOrDefault(s => s.SupplierId == user.RoleReferenceId);
-
-            return View(supplier);
+            return HttpContext.Session.GetString("Role") == "Supplier";
         }
 
-
-        public IActionResult PendingOrders()
+        private IActionResult RequireSupplier()
         {
-            var username = User.Identity?.Name;
+            if (!IsSupplier())
+                return RedirectToAction("AccessDenied", "User");
 
-            var user = _context.Users
-                .FirstOrDefault(u => u.UserName == username);
+            return null;
+        }
+
+        // ================= DASHBOARD =================
+        public IActionResult Dashboard()
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            ViewBag.TotalOrders = _context.PurchaseOrderHeaders
+                .Count(p => p.SupplierId == supplierId);
+
+            ViewBag.PendingOrders = _context.PurchaseOrderHeaders
+                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Pending");
+
+            ViewBag.ApprovedOrders = _context.PurchaseOrderHeaders
+                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Approved");
+
+            ViewBag.DispatchedOrders = _context.PurchaseOrderHeaders
+                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Dispatched");
+
+            ViewBag.DeliveredOrders = _context.PurchaseOrderHeaders
+                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Delivered");
+
+            return View();
+        }
+
+        // ================= VIEW ORDERS =================
+        // Keeping your old name
+        public IActionResult ViewPendingOrders()
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
 
             var orders = _context.PurchaseOrderHeaders
-                .Where(o => o.SupplierId == user.RoleReferenceId
-                         && o.PoStatus == "Pending")
-                .Include(o => o.PurchaseProductLines)
-                    .ThenInclude(p => p.Drug)
+                .Where(p => p.SupplierId == supplierId)
                 .ToList();
 
             return View(orders);
         }
 
-
-        // 🟢 Order History (Approved + Rejected)
-
-
-        public IActionResult OrderHistory()
+        // ================= APPROVE =================
+        public IActionResult ApproveOrder(int id)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users
-                .FirstOrDefault(u => u.UserName == username);
-            var orders = _context.PurchaseOrderHeaders
-                .Where(o => o.SupplierId == user.RoleReferenceId
-                && o.PoStatus != "Pending")
-                .Include(o => o.PurchaseProductLines)
-                .ThenInclude(p => p.Drug)
-                .ToList();
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
 
-            return View(orders);
-        }
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
 
+            var po = _context.PurchaseOrderHeaders
+                .FirstOrDefault(p => p.Poid == id && p.SupplierId == supplierId);
 
-
-
-
-        // ✅ Approve
-        public IActionResult Approve(int id)
-        {
-            var order = _context.PurchaseOrderHeaders.Find(id);
-
-            if (order != null)
+            if (po != null && po.PoStatus == "Pending")
             {
-                order.PoStatus = "Approved";
+                po.PoStatus = "Approved";
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("PendingOrders");
+            return RedirectToAction("ViewPendingOrders");
         }
 
-        // ❌ Reject
-        public IActionResult Reject(int id)
+        // ================= REJECT =================
+        public IActionResult RejectOrder(int id)
         {
-            var order = _context.PurchaseOrderHeaders.Find(id);
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
 
-            if (order != null)
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var po = _context.PurchaseOrderHeaders
+                .FirstOrDefault(p => p.Poid == id && p.SupplierId == supplierId);
+
+            if (po != null && po.PoStatus == "Pending")
             {
-                order.PoStatus = "Rejected";
+                po.PoStatus = "Rejected";
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("PendingOrders");
+            return RedirectToAction("ViewPendingOrders");
         }
-        [HttpPost]
-        public IActionResult EditProfile(Supplier model)
-        {
-            var supplier = _context.Suppliers.Find(model.SupplierId);
 
-            if (supplier != null)
+        // ================= DISPATCH =================
+        // DISPATCH
+        public IActionResult DispatchOrder(int id)
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var po = _context.PurchaseOrderHeaders
+                .FirstOrDefault(p => p.Poid == id && p.SupplierId == supplierId);
+
+            if (po != null && po.PoStatus == "Approved")
             {
-                supplier.Email = model.Email;
-                supplier.Phone = model.Phone;
-                supplier.Address = model.Address;
+                po.PoStatus = "Dispatched";
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("ViewPendingOrders");
+        }
+
+        // ================= MARK DELIVERED =================
+        public IActionResult MarkDelivered(int id)
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var po = _context.PurchaseOrderHeaders
+                .FirstOrDefault(p => p.Poid == id && p.SupplierId == supplierId);
+
+            if (po != null && po.PoStatus == "Dispatched")
+            {
+                po.PoStatus = "Delivered";
+
+                // 🔥 Increase stock ONLY when Delivered
+                var lines = _context.PurchaseProductLines
+                    .Where(l => l.Poid == po.Poid)
+                    .ToList();
+
+                foreach (var line in lines)
+                {
+                    var drug = _context.Drugs
+                        .FirstOrDefault(d => d.DrugId == line.DrugId);
+
+                    if (drug != null)
+                        drug.StockQuantity += line.Qty ?? 0;
+                }
 
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("ViewPendingOrders");
         }
-
-
     }
 }

@@ -1,0 +1,74 @@
+﻿@model MediClinic.Models.ModelViews.ChemistDashboardVM
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+<div class="dashboard-container">
+<div class="header-section">
+        <h1 class="page-title">Pharmacy Operations</h1>
+        <p class="page-subtitle">Manage requests, raise purchase orders, and monitor stock levels.</p>
+</div>
+<div class="stats-row">
+
+    <div class="stat-box">
+        <div class="stat-top">
+            <i data-lucide="clipboard-list"></i>
+            <span>Pending Requests</span>
+        </div>
+            <div class="stat-number">@Model.PendingDrugRequests</div>
+    </div>
+
+    <div class="stat-box">
+        <div class="stat-top">
+            <i data-lucide="package"></i>
+            <span>Orders In Progress</span>
+        </div>
+            <div class="stat-number">@Model.OrdersInProgress</div>
+    </div>
+
+    <div class="stat-box">
+        <div class="stat-top">
+            <i data-lucide="alert-triangle"></i>
+            <span>Low Stock Items</span>
+        </div>
+            <div class="stat-number">@Model.LowStockItems</div>
+    </div>
+
+    <div class="stat-box">
+        <div class="stat-top">
+            <i data-lucide="check-circle"></i>
+            <span>Completed Orders</span>
+        </div>
+            <div class="stat-number">@Model.CompletedOrders</div>
+    </div>
+
+</div>
+
+<div class="action-grid">
+
+    <!-- Raise PO From Requests -->
+    <div class="action-card">
+        <img src="~/images/medical prescription-rafiki.svg" class="action-img" />
+        <h3>Raise Purchase Order</h3>
+        <p>Convert doctor drug requests into supplier purchase orders.</p>
+        <a href="/Chemist/ViewDrugRequests" class="action-btn">View Requests</a>
+    </div>
+
+    <!-- Track Orders -->
+    <div class="action-card">
+        <img src="~/images/self checkout-rafiki.svg" class="action-img" />
+        <h3>Track Purchase Orders</h3>
+        <p>Check order status and mark deliveries.</p>
+        <a href="/Chemist/ViewPurchaseOrders" class="action-btn">View Orders</a>
+    </div>
+
+    <!-- Inventory -->
+    
+    <div class="action-card">
+        <img src="~/images/checklist-bro.svg" class="action-img" />
+        <h3>Inventory Management</h3>
+        <p>Monitor and update available stock.</p>
+        <a href="/Chemist/ViewInventory" class="action-btn">View Inventory</a>
+    </div>
+
+</div>
+</div>

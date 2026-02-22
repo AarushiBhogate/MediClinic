@@ -316,26 +316,31 @@ namespace MediClinic.Controllers
         public IActionResult ApprovePatient(int id)
         {
             var patient = _context.Patients.Find(id);
+
             if (patient != null)
             {
                 patient.PatientStatus = "Active";
-                string username = patient.Email;
-                string password = "Patient@123";
 
-                var existingUser = _context.Users.FirstOrDefault(u => u.UserName == username);
+                // Create login account only after approval
+                var existingUser = _context.Users
+                    .FirstOrDefault(u => u.Role == "Patient" &&
+                                         u.RoleReferenceId == patient.PatientId);
+
                 if (existingUser == null)
                 {
                     _context.Users.Add(new User
                     {
-                        UserName = username,
-                        Password = password,
+                        UserName = patient.Email,   // or store original username if needed
+                        Password = "Patient@123",   // demo password
                         Role = "Patient",
+                        RoleReferenceId = patient.PatientId,
                         Status = "Active"
                     });
                 }
 
                 _context.SaveChanges();
             }
+
             return RedirectToAction(nameof(PendingPatients));
         }
 

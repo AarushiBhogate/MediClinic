@@ -1,0 +1,97 @@
+﻿body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f3f6fb;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #1e3a8a;   /* Deep Blue */
+    color: white;
+    transition: 0.3s;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.logo {
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    background: #172554;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    padding: 14px 20px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: #cbd5e1;
+    display: block;
+    font-size: 15px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.menu li a:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Main */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+    height: 60px;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+#toggleBtn {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logout {
+    text-decoration: none;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+/* Content */
+.content {
+    padding: 30px;
+}

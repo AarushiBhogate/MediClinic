@@ -14,6 +14,7 @@ public partial class Drug
     public DateOnly? Expiry { get; set; }
 
     public string? Dosage { get; set; }
+    public int StockQuantity { get; set; }
 
     public string? DrugStatus { get; set; }
 

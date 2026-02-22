@@ -1,0 +1,86 @@
+﻿@model List<MediClinic.Models.ModelViews.PurchaseOrderListVM>
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="page-header-simple">
+        <div class="back-wrapper">
+            <a href="/Chemist/Dashboard" class="back-btn">
+                ← Back
+            </a>
+        </div>
+
+        <div>
+            <h2>Purchase Orders</h2>
+            <p>Manage and track supplier purchase orders</p>
+        </div>
+    </div>
+
+    <div class="table-card">
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>PO No</th>
+                    <th>Supplier</th>
+                    <th>Date</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Pono</td>
+                        <td>@item.SupplierName</td>
+                        <td>@item.Podate?.ToString("dd-MM-yyyy")</td>
+                        <td>@item.LineCount</td>
+                        <td>
+                            @{
+                                var status = (item.Status ?? "Pending").ToLower();
+                            }
+
+                            <span class="status-badge @status">
+                                @(item.Status ?? "Pending")
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="ViewPurchaseOrderDetails"
+                               asp-route-poId="@item.Poid"
+                               class="btn-outline-sm">
+                                View
+                            </a>
+
+                            @if (item.Status == "Dispatched")
+                            {
+                                <a asp-action="ConfirmDelivery"
+                                   asp-route-id="@item.Poid"
+                                   class="btn-success-sm">
+                                    Confirm
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="?page=@i"
+               class="page-number @(ViewBag.CurrentPage == i ? "active" : "")">
+                @i
+            </a>
+        }
+    </div>
+
+</div>

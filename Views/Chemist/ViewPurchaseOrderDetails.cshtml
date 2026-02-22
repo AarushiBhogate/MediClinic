@@ -1,0 +1,78 @@
+﻿@model MediClinic.Models.ModelViews.PurchaseOrderDetailsVM
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="page-header-simple">
+   
+        <div class="header-actions">
+            <a href="/Chemist/ViewPurchaseOrders" class="back-btn">
+                ← Back
+            </a>
+
+            <a asp-action="DownloadInvoice"
+               asp-route-poId="@Model.Poid"
+               class="btn-primary-sm">
+                Download Invoice
+            </a>
+        </div>
+
+        <div>
+            <h2>Purchase Order Details</h2>
+            <p>View supplier order information and product lines</p>
+        </div>
+    </div>
+
+    <!-- PO Info Card -->
+    <div class="info-card">
+        <div class="info-grid">
+            <div>
+                <span class="info-label">PO Number</span>
+                <span class="info-value">@Model.Pono</span>
+            </div>
+
+            <div>
+                <span class="info-label">Date</span>
+                <span class="info-value">@Model.Podate?.ToString("dd-MM-yyyy")</span>
+            </div>
+
+            <div>
+                <span class="info-label">Supplier</span>
+                <span class="info-value">@Model.SupplierName</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Lines -->
+    <div class="table-card">
+
+        <div class="section-title">
+            <h4>Product Lines</h4>
+        </div>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Quantity</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td>@line.DrugName</td>
+                        <td>@line.Qty</td>
+                        <td>@line.Note</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+</div>

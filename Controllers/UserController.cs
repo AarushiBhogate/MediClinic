@@ -1,14 +1,8 @@
 ﻿using MediClinic.Models;
 using MediClinic.Models.ModelViews;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace MediClinic.Controllers
 {
@@ -21,25 +15,24 @@ namespace MediClinic.Controllers
             _context = context;
         }
 
-        // ================= REGISTER =================
-        // ==============================
-        // REGISTER (GET)
-        // ==============================
+        // ================= REGISTER (GET) =================
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // ==============================
-        // REGISTER (POST)
-        // ==============================
+        // ================= REGISTER (POST) =================
         [HttpPost]
         public IActionResult Register(RegisterVM vm)
         {
-            if (vm.Role != "Patient" && vm.Role != "Physician")
+            // Allow all roles
+            if (vm.Role != "Patient" &&
+                vm.Role != "Physician" &&
+                vm.Role != "Chemist" &&
+                vm.Role != "Supplier")
             {
-                ViewBag.Error = "Only Patient and Physician registration allowed.";
+                ViewBag.Error = "Invalid role selected.";
                 return View(vm);
             }
 
@@ -54,6 +47,7 @@ namespace MediClinic.Controllers
 
             int roleReferenceId = 0;
 
+            // ===== PATIENT =====
             if (vm.Role == "Patient")
             {
                 Patient p = new Patient
@@ -65,7 +59,7 @@ namespace MediClinic.Controllers
                     Phone = vm.Phone,
                     Email = vm.Email,
                     Summary = "Registered from website",
-                    PatientStatus = "Active"
+                    PatientStatus = "Pending"
                 };
 
                 _context.Patients.Add(p);
@@ -73,6 +67,8 @@ namespace MediClinic.Controllers
 
                 roleReferenceId = p.PatientId;
             }
+
+            // ===== PHYSICIAN =====
             else if (vm.Role == "Physician")
             {
                 Physician d = new Physician
@@ -92,10 +88,48 @@ namespace MediClinic.Controllers
                 roleReferenceId = d.PhysicianId;
             }
 
+            // ===== CHEMIST =====
+            else if (vm.Role == "Chemist")
+            {
+                Chemist c = new Chemist
+                {
+                    ChemistName = vm.FullName,
+                    Address = vm.Address,
+                    Phone = vm.Phone,
+                    Email = vm.Email,
+                    Summary = "Registered from website",
+                    ChemistStatus = "Active"
+                };
+
+                _context.Chemists.Add(c);
+                _context.SaveChanges();
+
+                roleReferenceId = c.ChemistId;
+            }
+
+            // ===== SUPPLIER =====
+            else if (vm.Role == "Supplier")
+            {
+                Supplier s = new Supplier
+                {
+                    SupplierName = vm.FullName,
+                    Address = vm.Address,
+                    Phone = vm.Phone,
+                    Email = vm.Email,
+                    SupplierStatus = "Active"
+                };
+
+                _context.Suppliers.Add(s);
+                _context.SaveChanges();
+
+                roleReferenceId = s.SupplierId;
+            }
+
+            // ===== CREATE USER =====
             User u = new User
             {
                 UserName = vm.UserName,
-                Password = vm.Password, // demo only
+                Password = vm.Password, // ⚠️ Plain text (not secure)
                 Role = vm.Role,
                 RoleReferenceId = roleReferenceId,
                 Status = "Active"
@@ -107,22 +141,17 @@ namespace MediClinic.Controllers
             return RedirectToAction("Login");
         }
 
-        // ==============================
-        // LOGIN (GET)
-        // ==============================
+        // ================= LOGIN (GET) =================
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // ==============================
-        // LOGIN (POST)
-        // ==============================
+        // ================= LOGIN (POST) =================
         [HttpPost]
         public IActionResult Login(string UserName, string Password)
         {
-            // 1️⃣ Check if user exists & is Active
             var result = _context.Users.FirstOrDefault(x =>
                 x.UserName == UserName &&
                 x.Password == Password &&
@@ -134,7 +163,7 @@ namespace MediClinic.Controllers
                 return View();
             }
 
-            // Store Session (IMPORTANT: consistent naming)
+            // Store session
             HttpContext.Session.SetInt32("UserId", result.UserId);
             HttpContext.Session.SetString("UserName", result.UserName);
             HttpContext.Session.SetString("Role", result.Role);
@@ -142,7 +171,8 @@ namespace MediClinic.Controllers
             if (result.RoleReferenceId != null)
                 HttpContext.Session.SetInt32("RoleReferenceID", result.RoleReferenceId.Value);
 
-            // Role-based redirect
+            // ===== ROLE BASED REDIRECT =====
+
             if (result.Role == "Patient")
             {
                 HttpContext.Session.SetInt32("PatientId", result.RoleReferenceId.Value);
@@ -155,66 +185,31 @@ namespace MediClinic.Controllers
                 return RedirectToAction("Dashboard", "Physician");
             }
 
-            if (result.Role == "Admin")
-                return RedirectToAction("Index", "Admin");
+            if (result.Role == "Chemist")
+            {
+                HttpContext.Session.SetInt32("ChemistId", result.RoleReferenceId.Value);
+                return RedirectToAction("Dashboard", "Chemist");
+            }
 
+            if (result.Role == "Supplier")
+            {
+                HttpContext.Session.SetInt32("SupplierId", result.RoleReferenceId.Value);
+                return RedirectToAction("Dashboard", "Supplier");
+            }
+
+            if (result.Role == "Admin")
+            {
+                return RedirectToAction("Index", "Admin");
+            }
 
             return RedirectToAction("Index", "Home");
         }
-
-        // ==============================
-        // CHANGE PASSWORD (GET)
-        // ==============================
-        public IActionResult ChangePassword()
+        public IActionResult AccessDenied()
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
-                return RedirectToAction("Login");
-
             return View();
         }
 
-        // ==============================
-        // CHANGE PASSWORD (POST)
-        // ==============================
-        [HttpPost]
-        public IActionResult ChangePassword(string currentPassword,
-                                            string newPassword,
-                                            string confirmPassword)
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
-                return RedirectToAction("Login");
-
-            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
-
-            if (user == null)
-                return RedirectToAction("Login");
-
-            if (user.Password != currentPassword)
-            {
-                ViewBag.Error = "Current password is incorrect.";
-                return View();
-            }
-
-            if (newPassword != confirmPassword)
-            {
-                ViewBag.Error = "New password and confirm password do not match.";
-                return View();
-            }
-
-            user.Password = newPassword;
-            _context.SaveChanges();
-
-            ViewBag.Success = "Password changed successfully.";
-            return View();
-        }
-
-        // ==============================
-        // LOGOUT
-        // ==============================
+        // ================= LOGOUT =================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
