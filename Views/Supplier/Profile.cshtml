@@ -1,0 +1,99 @@
+﻿@model MediClinic.Models.ModelViews.SupplierProfileVM
+
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <div class="page-header-simple">
+        <h2>Supplier Profile</h2>
+        <p>Manage your account information</p>
+    </div>
+
+    <div class="info-card">
+
+        <div class="info-grid">
+
+            <div>
+                <span class="info-label">Supplier Name</span>
+                <span class="info-value">@Model.SupplierName</span>
+            </div>
+
+            <div>
+                <span class="info-label">Email</span>
+                <span class="info-value">@Model.Email</span>
+            </div>
+
+            <div>
+                <span class="info-label">Phone</span>
+                <span class="info-value">@Model.Phone</span>
+            </div>
+
+            <div>
+                <span class="info-label">Address</span>
+                <span class="info-value">@Model.Address</span>
+            </div>
+
+            <div>
+                <span class="info-label">Status</span>
+                <span class="status-badge delivered">
+                    @Model.SupplierStatus
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="form-card" style="margin-top:30px;">
+
+        <h3 style="margin-bottom:20px;">Change Password</h3>
+
+        @if (TempData["PasswordError"] != null)
+        {
+            <div class="validation-summary">
+                @TempData["PasswordError"]
+            </div>
+        }
+
+        @if (TempData["PasswordSuccess"] != null)
+        {
+            <div style="color:green; margin-bottom:15px;">
+                @TempData["PasswordSuccess"]
+            </div>
+        }
+
+        <form asp-action="ChangePassword" method="post">
+
+            <div class="form-group">
+                <label>Old Password</label>
+                <input type="password" name="OldPassword" required />
+            </div>
+
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" name="NewPassword" required />
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="ConfirmPassword" required />
+            </div>
+
+            <div class="button-row">
+                <button type="submit" class="btn-primary">
+                    Change Password
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="button-row">
+        <a asp-action="EditProfile" class="btn-primary">
+            Edit Profile
+        </a>
+    </div>
+
+</div>

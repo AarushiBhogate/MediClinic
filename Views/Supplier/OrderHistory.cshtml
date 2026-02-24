@@ -1,0 +1,68 @@
+﻿@model IEnumerable<MediClinic.Models.PurchaseOrderHeader>
+
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <div class="page-header-simple">
+        <h2>Order History</h2>
+        <p>View completed and rejected purchase orders</p>
+    </div>
+
+    <div class="table-card">
+
+        <div class="table-head">
+            <div>PO No</div>
+            <div>Date</div>
+            <div>Status</div>
+            <div>Action</div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="table-row">
+                <div>No orders found</div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        }
+
+        @foreach (var item in Model)
+        {
+            <div class="table-row">
+                <div>@item.Pono</div>
+                <div>@item.Podate?.ToString("dd-MM-yyyy")</div>
+
+                <div>
+                    <span class="status-badge
+                            @(item.PoStatus == "Delivered" ? "delivered" :
+                                                    item.PoStatus == "Rejected" ? "pending" : "")">
+                        @item.PoStatus
+                    </span>
+                </div>
+
+                <div>
+                    @if (item.PoStatus == "Delivered")
+                    {
+                        <span class="status-badge delivered">
+                            Completed
+                        </span>
+                    }
+
+                    @if (item.PoStatus == "Rejected")
+                    {
+                        <span class="status-badge pending">
+                            Rejected
+                        </span>
+                    }
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

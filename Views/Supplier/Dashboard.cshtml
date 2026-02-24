@@ -1,26 +1,92 @@
-﻿@{
-    Layout = "~/Views/Shared/_SupplierLayout.cshtml";
+﻿@model MediClinic.Models.ModelViews.SupplierDashboardVM
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
 }
 
-<h2>Supplier Dashboard</h2>
+<div class="dashboard-container">
 
-<div style="display:flex; gap:30px; margin-top:20px;">
-
-    <div style="background:white; padding:20px; width:220px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-        <h4>Total Orders</h4>
-        <h2>@ViewBag.TotalOrders</h2>
+    <div class="header-section">
+        <h1 class="page-title">Supplier Operations</h1>
+        <p class="page-subtitle">
+            Manage incoming orders and track delivery status.
+        </p>
     </div>
 
-    <div style="background:white; padding:20px; width:220px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-        <h4>Pending Orders</h4>
-        <h2>@ViewBag.PendingOrders</h2>
+    <div class="stats-row">
+
+        <div class="stat-box">
+            <div class="stat-top">
+                <i data-lucide="package"></i>
+                <span>Total Orders</span>
+            </div>
+            <div class="stat-number">@Model.TotalOrders</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-top">
+                <i data-lucide="clock"></i>
+                <span>Pending Orders</span>
+            </div>
+            <div class="stat-number">@Model.PendingOrders</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-top">
+                <i data-lucide="truck"></i>
+                <span>In Transit</span>
+            </div>
+            <div class="stat-number">@Model.DispatchedOrders</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-top">
+                <i data-lucide="check-circle"></i>
+                <span>Completed Orders</span>
+            </div>
+            <div class="stat-number">@Model.DeliveredOrders</div>
+        </div>
+
+    </div>
+
+    <div class="action-grid">
+        
+        <div class="action-card">
+            <div class="action-img-wrapper">
+                <img src="~/images/checking boxes-rafiki.svg" class="action-img" />
+            </div>
+           
+            <h3>Manage Orders</h3>
+            <p>Accept and process incoming orders.</p>
+            <a href="/Supplier/ViewPendingOrders" class="action-btn">
+                View Orders
+            </a>
+        </div>
+        
+        <div class="action-card">
+            <div class="action-img-wrapper">
+                <img src="~/images/checking boxes-amico.svg" class="action-img" />
+            </div>
+            
+            <h3>Order History</h3>
+            <p>Track completed and delivered orders.</p>
+            <a href="/Supplier/OrderHistory" class="action-btn">
+                View History
+            </a>
+        </div>
+
+        <div class="action-card">
+            <div class="action-img-wrapper">
+                <img src="~/images/personal data-pana.svg" class="action-img" />
+            </div>
+
+           
+            <h3>Account Overview</h3>
+            <p>Manage supplier profile and details.</p>
+            <a href="/Supplier/Profile" class="action-btn">
+                View Profile
+            </a>
+        </div>
+
     </div>
 
 </div>
-
-<br />
-
-<a href="/Supplier/ViewPendingOrders"
-   style="display:inline-block; padding:10px 20px; background:#3b82f6; color:white; border-radius:6px; text-decoration:none;">
-    View Orders
-</a>

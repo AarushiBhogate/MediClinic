@@ -10,7 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/chemist.css" />
 </head>
-<body>
+@{
+         var role = Accessor.HttpContext.Session.GetString("Role") ?? "";
+}
+
+<body class="@role">
 
     <div class="layout">
 
@@ -22,55 +26,89 @@
                 <span>MediClinic</span>
             </div> *@
 
+            @{
+                var path = Context.Request.Path.ToString();
+            }
+
             <ul class="menu">
 
-                <li>
-                    <a href="/Chemist/Dashboard"
-                       class="@(Context.Request.Path == "/Chemist/Dashboard" ? "active" : "")">
-                        <i data-lucide="layout-dashboard"></i>
-                   
-                        <span class="text">Dashboard</span>
-                    </a>
-                </li>
+                @if (role == "Chemist")
+                {
+                    <li>
+                        <a href="/Chemist/Dashboard"
+                           class="@(path.Contains("/Chemist/Dashboard") ? "active" : "")">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span class="text">Dashboard</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="/Chemist/ViewDrugRequests"
-                       class="@(Context.Request.Path == "/Chemist/ViewDrugRequests" ? "active" : "")">
-                   
-                        <i data-lucide="pill"></i>
-                       
-                        <span class="text">Requests</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="/Chemist/ViewDrugRequests"
+                           class="@(path.Contains("/Chemist/ViewDrugRequests") ? "active" : "")">
+                            <i data-lucide="pill"></i>
+                            <span class="text">Requests</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="/Chemist/CreatePurchaseOrder"
-                       class="@(Context.Request.Path == "/Chemist/CreatePurchaseOrder" ? "active" : "")">
-                 
-                        <i data-lucide="file-plus"></i>
-                       
-                        <span class="text">Place Order</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="/Chemist/CreatePurchaseOrder"
+                           class="@(path.Contains("/Chemist/CreatePurchaseOrder") ? "active" : "")">
+                            <i data-lucide="file-plus"></i>
+                            <span class="text">Place Order</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="/Chemist/ViewPurchaseOrders"
-                       class="@(Context.Request.Path == "/Chemist/ViewPurchaseOrders" ? "active" : "")">
-                   
-                        <i data-lucide="package"></i>
-                       
-                        <span class="text">View Orders</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="/Chemist/ViewPurchaseOrders"
+                           class="@(path.Contains("/Chemist/ViewPurchaseOrders") ? "active" : "")">
+                            <i data-lucide="package"></i>
+                            <span class="text">View Orders</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="/Chemist/ViewInventory"
-                       class="@(Context.Request.Path == "/Chemist/ViewInventory" ? "active" : "")">
-                        <i data-lucide="archive"></i>
-                      
-                        <span class="text">Inventory</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="/Chemist/ViewInventory"
+                           class="@(path.Contains("/Chemist/ViewInventory") ? "active" : "")">
+                            <i data-lucide="archive"></i>
+                            <span class="text">Inventory</span>
+                        </a>
+                    </li>
+                }
+
+                else if (role == "Supplier")
+                {
+                    <li>
+                        <a href="/Supplier/Dashboard"
+                           class="@(path.Contains("/Supplier/Dashboard") ? "active" : "")">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span class="text">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Supplier/ViewPendingOrders"
+                           class="@(path.Contains("/Supplier/ViewPendingOrders") ? "active" : "")">
+                            <i data-lucide="clock"></i>
+                            <span class="text">Pending Orders</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Supplier/OrderHistory"
+                           class="@(path.Contains("/Supplier/OrderHistory") ? "active" : "")">
+                            <i data-lucide="check-circle"></i>
+                            <span class="text">Order History</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Supplier/Profile"
+                           class="@(path.Contains("/Supplier/Profile") ? "active" : "")">
+                            <i data-lucide="user"></i>
+                            <span class="text">Profile</span>
+                        </a>
+                    </li>
+                }
 
             </ul>
 
@@ -110,7 +148,9 @@
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        lucide.createIcons();
+        document.addEventListener("DOMContentLoaded", function () {
+            lucide.createIcons();
+        });
     </script>
     @RenderSection("Scripts", required: false)
 </body>

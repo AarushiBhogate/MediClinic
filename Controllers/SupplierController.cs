@@ -1,5 +1,7 @@
 ﻿using MediClinic.Models;
+using MediClinic.Models.ModelViews;
 using Microsoft.AspNetCore.Mvc;
+using MediClinic.Models.ModelViews;
 
 namespace MediClinic.Controllers
 {
@@ -33,22 +35,28 @@ namespace MediClinic.Controllers
 
             var supplierId = HttpContext.Session.GetInt32("SupplierId");
 
-            ViewBag.TotalOrders = _context.PurchaseOrderHeaders
-                .Count(p => p.SupplierId == supplierId);
+            if (supplierId == null)
+                return RedirectToAction("Login", "Account");
 
-            ViewBag.PendingOrders = _context.PurchaseOrderHeaders
-                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Pending");
+            var model = new SupplierDashboardVM
+            {
+                TotalOrders = _context.PurchaseOrderHeaders
+                    .Count(p => p.SupplierId == supplierId),
 
-            ViewBag.ApprovedOrders = _context.PurchaseOrderHeaders
-                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Approved");
+                PendingOrders = _context.PurchaseOrderHeaders
+                    .Count(p => p.SupplierId == supplierId && p.PoStatus == "Pending"),
 
-            ViewBag.DispatchedOrders = _context.PurchaseOrderHeaders
-                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Dispatched");
+                ApprovedOrders = _context.PurchaseOrderHeaders
+                    .Count(p => p.SupplierId == supplierId && p.PoStatus == "Approved"),
 
-            ViewBag.DeliveredOrders = _context.PurchaseOrderHeaders
-                .Count(p => p.SupplierId == supplierId && p.PoStatus == "Delivered");
+                DispatchedOrders = _context.PurchaseOrderHeaders
+                    .Count(p => p.SupplierId == supplierId && p.PoStatus == "Dispatched"),
 
-            return View();
+                DeliveredOrders = _context.PurchaseOrderHeaders
+                    .Count(p => p.SupplierId == supplierId && p.PoStatus == "Delivered")
+            };
+
+            return View(model);
         }
 
         // ================= VIEW ORDERS =================
@@ -61,7 +69,25 @@ namespace MediClinic.Controllers
             var supplierId = HttpContext.Session.GetInt32("SupplierId");
 
             var orders = _context.PurchaseOrderHeaders
-                .Where(p => p.SupplierId == supplierId)
+                .Where(p => p.SupplierId == supplierId &&
+                            (p.PoStatus == "Pending" || p.PoStatus == "Approved"))
+                .OrderByDescending(p => p.Podate)
+                .ToList();
+
+            return View(orders);
+        }
+        // OrderHISTORY
+        public IActionResult OrderHistory()
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var orders = _context.PurchaseOrderHeaders
+                .Where(p => p.SupplierId == supplierId &&
+                           (p.PoStatus == "Delivered" || p.PoStatus == "Rejected"))
+                .OrderByDescending(p => p.Podate)
                 .ToList();
 
             return View(orders);
@@ -161,6 +187,135 @@ namespace MediClinic.Controllers
             }
 
             return RedirectToAction("ViewPendingOrders");
+        }
+        // ================= PROFILE =================
+        public IActionResult Profile()
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            if (supplierId == null)
+                return RedirectToAction("Login", "User");
+
+            var supplier = _context.Suppliers
+                .FirstOrDefault(s => s.SupplierId == supplierId);
+
+            if (supplier == null)
+                return RedirectToAction("AccessDenied", "User");
+
+            var model = new SupplierProfileVM
+            {
+                SupplierId = supplier.SupplierId,
+                SupplierName = supplier.SupplierName,
+                Email = supplier.Email,
+                Phone = supplier.Phone,
+                Address = supplier.Address,
+                SupplierStatus = supplier.SupplierStatus
+            };
+
+            return View(model);
+        }
+        // ================= EDIT PROFILE (GET) =================
+        [HttpGet]
+        public IActionResult EditProfile()
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var supplier = _context.Suppliers
+                .FirstOrDefault(s => s.SupplierId == supplierId);
+
+            if (supplier == null)
+                return RedirectToAction("AccessDenied", "User");
+
+            var model = new SupplierProfileVM
+            {
+                SupplierId = supplier.SupplierId,
+                SupplierName = supplier.SupplierName,
+                Email = supplier.Email,
+                Phone = supplier.Phone,
+                Address = supplier.Address,
+                SupplierStatus = supplier.SupplierStatus
+            };
+
+            return View(model);
+        }
+        // ================= EDIT PROFILE (POST) =================
+        [HttpPost]
+        public IActionResult EditProfile(SupplierProfileVM vm)
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var supplier = _context.Suppliers
+                .FirstOrDefault(s => s.SupplierId == supplierId);
+
+            if (supplier == null)
+                return RedirectToAction("AccessDenied", "User");
+
+            // Only allow editing safe fields
+            supplier.Email = vm.Email;
+            supplier.Phone = vm.Phone;
+            supplier.Address = vm.Address;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Profile");
+        }
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordVM vm)
+        {
+            var auth = RequireSupplier();
+            if (auth != null) return auth;
+
+            var supplierId = HttpContext.Session.GetInt32("SupplierId");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+                return RedirectToAction("Login", "User");
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+                return RedirectToAction("AccessDenied", "User");
+
+            // 1️⃣ Verify old password
+            if (user.Password != vm.OldPassword)
+            {
+                TempData["PasswordError"] = "Old password is incorrect.";
+                return RedirectToAction("Profile");
+            }
+
+            // 2️⃣ Validate new password
+            if (string.IsNullOrEmpty(vm.NewPassword) ||
+                vm.NewPassword.Length < 6)
+            {
+                TempData["PasswordError"] = "New password must be at least 6 characters.";
+                return RedirectToAction("Profile");
+            }
+
+            // 3️⃣ Confirm password match
+            if (vm.NewPassword != vm.ConfirmPassword)
+            {
+                TempData["PasswordError"] = "Passwords do not match.";
+                return RedirectToAction("Profile");
+            }
+
+            // 4️⃣ Update password
+            user.Password = vm.NewPassword;
+            _context.SaveChanges();
+
+            TempData["PasswordSuccess"] = "Password changed successfully.";
+
+            return RedirectToAction("Profile");
         }
     }
 }

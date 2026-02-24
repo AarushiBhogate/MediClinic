@@ -1,0 +1,54 @@
+﻿@model MediClinic.Models.ModelViews.SupplierProfileVM
+
+@{
+    Layout = "~/Views/Shared/_ChemistLayout.cshtml";
+}
+
+<div class="dashboard-container">
+
+    <div class="page-header-simple">
+        <h2>Edit Profile</h2>
+        <p>Update your contact information</p>
+    </div>
+
+    <div class="form-card">
+
+        <form asp-action="EditProfile" method="post">
+
+            <input type="hidden" asp-for="SupplierId" />
+
+            <div class="form-group">
+                <label>Supplier Name</label>
+                <input asp-for="SupplierName" class="form-control" readonly />
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="Email" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input asp-for="Phone" />
+            </div>
+
+            <div class="form-group">
+                <label>Address</label>
+                <input asp-for="Address" />
+            </div>
+
+            <div class="button-row">
+                <a asp-action="Profile" class="btn-outline">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn-primary">
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
